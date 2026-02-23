@@ -1,0 +1,46 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
+  "metadata": [
+    {
+     "src": [
+        {
+          "files": ["src/REslava.Result/REslava.Result.csproj"],
+          "src": ".."
+        }
+      ],       
+      "properties": {
+        "TargetFramework": "net8.0"
+      }
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "files": [
+          "**/*.{md,yml}"
+        ],
+        "exclude": [
+          "_site/**"
+        ]
+      }
+    ],
+    "resource": [
+      {
+        "files": [
+          "images/**"
+        ]
+      }
+    ],
+    "output": "../site/reference/api",    
+    "template": [
+      "default",
+      "modern"
+    ],
+    "globalMetadata": {
+      "_appName": "REslava.Result API Reference",
+      "_appTitle": "REslava.Result API Reference",
+      "_enableSearch": true,
+      "pdf": true
+    }    
+  }
+}

@@ -118,3 +118,15 @@ docs/internal/
 GeneratedFiles/
 **/GeneratedFiles/
 nul
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+
+# MkDocs
+site/
+.cache/

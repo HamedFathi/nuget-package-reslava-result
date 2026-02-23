@@ -1,0 +1,17 @@
+# Core documentation
+mkdocs-material>=9.5.0          # Material theme with social plugin support
+
+# README splitting
+mdsplit                          # Splits README.md into sections
+
+# Social card generation
+pillow                            # Image processing for social cards
+cairosvg                          # SVG rendering for social cards
+
+# Git integration (optional but recommended)
+mkdocs-git-revision-date-localized-plugin  # Shows last updated dates
+
+# Add any other plugins you might use, e.g.:
+# mkdocstrings                    # Auto‑generated API docs
+# mkdocs-video                     # Video embeds
+# plantuml-markdown                 # Diagrams

@@ -1,0 +1,132 @@
+name: Build and Deploy MkDocs
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'README.md'
+      - 'mkdocs.yml'
+      - 'mkdocs/**'
+      - '.github/workflows/mkdocs.yml'
+  workflow_dispatch: 
+
+
+# Sets permissions for the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0               # full history for git revision plugin
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+
+      - name: Cache MkDocs
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: ${{ runner.os }}-mkdocs-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-mkdocs-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install mdsplit mkdocs-material pillow cairosvg
+          pip install mkdocs-git-revision-date-localized-plugin
+          # Add any other plugins you use (e.g., mkdocstrings)
+          pip install pyyaml
+          # Optional: for frontmatter titles
+          pip install python-frontmatter          
+
+      - name: Clean docs folder (except index.md)
+        run: python .github/scripts/clean_docs.py --no-dry-run --yes
+
+      - name: Split README into sections
+        run: mdsplit ./README.md -l 2 -o mkdocs/ -f -e utf-8
+
+      - name: Remove leading emojis from level 2 headings
+        run: python .github/scripts/remove_emoji_headings.py --no-dry-run 
+      
+      - name: Add frontmatter and remove duplicate headings
+        run: python .github/scripts/add_frontmatter_and_clean_heading.py
+      
+      - name: Clean up mdsplit output (remove H1 file, flatten folder)
+        run: python .github/scripts/cleanup_mdsplit.py
+        
+      - name: Remove generated TOC file (not needed for MkDocs)
+        run: rm -f mkdocs/table-of-contents.md        
+
+      - name: Organize files into folders
+        run: python .github/scripts/organize_docs.py
+
+      - name: Lowercase all filenames (except index.md)
+        run: python .github/scripts/lowercase_filenames.py        
+      
+      - name: Fix broken links and external references
+        run: python .github/scripts/fix_broken_links.py --apply
+
+      - name: Add admonitions to markdown files
+        run: python .github/scripts/add_admonitions_table.py
+      
+      - name: Generate nav
+        run: python .github/scripts/generate_nav.py      
+
+      - name: Build MkDocs site
+        run: mkdocs build # --strict
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'   # match your project's target framework
+
+      - name: Install DocFX as global tool
+        run: dotnet tool install -g docfx
+
+      - name: Build DocFX API documentation
+        run: |
+          cd docfx
+          docfx metadata docfx.json
+          docfx build docfx.json 
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.x'   # Use the version your projects target     
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site/
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4      
