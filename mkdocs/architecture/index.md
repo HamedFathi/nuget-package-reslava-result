@@ -28,6 +28,7 @@ Peek under the hood – how REslava.Result is built and how its source generator
 -   :simple-uml: __REslava.Result Core Type Hierarchy__  
     UML class diagrams illustrating the core type hierarchy of REslava.Result – Reason & Error hierarchy, Result<T>, and advanced patterns like Maybe<T> and OneOf unions.
     [](solid/uml-v1.12.1-core)
+    {: .is-featured }
 
 -   :simple-uml: __REslava.Result.Sourcegenerators__  
     UML diagrams detailing the source generator architecture of REslava.Result – generator delegation, orchestrators, two‑phase attribute and code generation, and the extension methods produced for Result<T> and OneOf unions.
