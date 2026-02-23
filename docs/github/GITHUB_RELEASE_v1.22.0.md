@@ -35,7 +35,7 @@ public async Task<IActionResult> Create([FromBody] CreateOrderRequest request)
 
 ## Test Suite
 
-- 2,825 tests passing across net8.0, net9.0, net10.0
+- 2,836 tests passing across net8.0, net9.0, net10.0
 - 12 new source generator tests for OneOfToActionResult
 
 ## NuGet Packages

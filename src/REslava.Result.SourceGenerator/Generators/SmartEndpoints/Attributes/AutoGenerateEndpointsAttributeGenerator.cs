@@ -74,6 +74,20 @@ namespace REslava.Result.SourceGenerators.SmartEndpoints
         /// Gets or sets the HTTP method mapping strategy.
         /// </summary>
         public EndpointMappingStrategy Strategy { get; set; } = EndpointMappingStrategy.Convention;
+
+        /// <summary>
+        /// Gets or sets the default output cache duration in seconds for GET endpoints.
+        /// 0 (default) means no caching. Individual methods can override with
+        /// [AutoMapEndpoint(CacheSeconds = N)] or opt out with CacheSeconds = -1.
+        /// </summary>
+        public int CacheSeconds { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the default rate limit policy name for all endpoints.
+        /// Generates .RequireRateLimiting(""policy""). Individual methods can override
+        /// with [AutoMapEndpoint(RateLimitPolicy = ""...""]  or opt out with RateLimitPolicy = ""none"".
+        /// </summary>
+        public string? RateLimitPolicy { get; set; }
     }
 
     /// <summary>

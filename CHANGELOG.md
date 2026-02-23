@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) guideline.
 
+## [1.23.0] - 2026-02-23
+
+### ✨ Added
+- **SmartEndpoints: Endpoint Filters** — new `[SmartFilter(typeof(T))]` attribute (`AllowMultiple = true`) generates `.AddEndpointFilter<T>()` for each filter in declaration order
+- **SmartEndpoints: Output Caching** — `CacheSeconds` property on `[AutoGenerateEndpoints]` (class default) and `[AutoMapEndpoint]` (method override); generates `.CacheOutput(x => x.Expire(...))` only for GET endpoints; `-1` = explicit opt-out
+- **SmartEndpoints: Rate Limiting** — `RateLimitPolicy` property on both attribute levels; generates `.RequireRateLimiting("policy")`; `"none"` = explicit opt-out; method value overrides class default
+- **FastMinimalAPI Demo: SmartCatalogController** — showcases all three features with `LoggingEndpointFilter`, output cache + rate limiter middleware registered in `Program.cs`
+- **scripts/validate-release.sh** — pre-release validation checklist (9 checks: version, CHANGELOG, release notes file, README roadmap/history, tests, git state, TODO check, test count accuracy)
+- **11 new source generator tests** — `SmartEndpoints_FiltersAndCachingTests.cs`
+
+### Stats
+- 2,836 tests passing across net8.0, net9.0, net10.0 + generator + analyzer tests
+
 ## [1.22.0] - 2026-02-18
 
 ### ✨ Added
@@ -22,7 +35,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 - **SmartEndpoints OpenAPI: accurate error status codes** — `DetermineOpenApiStatusCode` maps `ValidationError` to 422 (was 400). `Result<T>` endpoints now declare `.Produces(400)`, `.Produces(404)`, `.Produces(409)`, `.Produces(422)` (was only 400).
 
 ### Stats
-- 2,825 tests passing across net8.0, net9.0, net10.0 + generator + analyzer tests
+- 2,836 tests passing across net8.0, net9.0, net10.0 + generator + analyzer tests
 
 ## [1.21.0] - 2026-02-17
 

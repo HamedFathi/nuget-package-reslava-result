@@ -1,0 +1,280 @@
+#!/usr/bin/env bash
+# validate-release.sh — Pre-release validation checklist for REslava.Result packages.
+#
+# Usage:
+#   ./scripts/validate-release.sh 1.23.0        # validate a specific version
+#   ./scripts/validate-release.sh               # auto-read version from Directory.Build.props
+#   ./scripts/validate-release.sh --skip-tests  # skip dotnet test (quick structural checks only)
+#
+# Checks:
+#   1. Directory.Build.props <Version> matches argument
+#   2. CHANGELOG.md has ## [VERSION] entry
+#   3. docs/github/GITHUB_RELEASE_v{VERSION}.md exists
+#   4. README.md Roadmap shows this version as (Current) ✅
+#   5. README.md Version History has **v{VERSION}** entry
+#   6. All tests pass (dotnet test --configuration Release)
+#   7. No uncommitted git changes
+#   8. No TODO / placeholder text in release notes
+#   9. Test counts in docs match actual test output
+
+set -u
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+CACHE_FILE="$REPO_ROOT/scripts/.test-counts-cache"
+TMPFILE="$REPO_ROOT/scripts/.test-output-tmp"
+
+SKIP_TESTS=false
+VERSION=""
+FAIL=0
+
+# ANSI colors (gracefully degraded when not a terminal)
+if [[ -t 1 ]]; then
+  RED='\033[0;31m'
+  GREEN='\033[0;32m'
+  YELLOW='\033[1;33m'
+  BOLD='\033[1m'
+  RESET='\033[0m'
+else
+  RED='' GREEN='' YELLOW='' BOLD='' RESET=''
+fi
+
+# ─── Argument parsing ─────────────────────────────────────────────────────────
+
+for arg in "$@"; do
+  case "$arg" in
+    --skip-tests) SKIP_TESTS=true ;;
+    -h|--help)
+      sed -n '2,13p' "$0" | sed 's/^# \?//'
+      exit 0
+      ;;
+    [0-9]*) VERSION="$arg" ;;
+  esac
+done
+
+# Auto-read version from Directory.Build.props if not provided
+if [[ -z "$VERSION" ]]; then
+  VERSION=$(grep -oP '<Version>\K[^<]+' "$REPO_ROOT/Directory.Build.props" | head -1 || true)
+  if [[ -n "$VERSION" ]]; then
+    echo "No version specified — using version from Directory.Build.props: $VERSION"
+  fi
+fi
+
+if [[ -z "$VERSION" ]]; then
+  echo "ERROR: Could not determine version. Pass it as an argument or set <Version> in Directory.Build.props."
+  exit 1
+fi
+
+echo ""
+echo -e "${BOLD}Validating release v${VERSION}${RESET}"
+echo "──────────────────────────────────────────"
+echo ""
+
+# ─── Helpers ─────────────────────────────────────────────────────────────────
+
+pass() { echo -e "  ${GREEN}✓${RESET}  $1"; }
+fail() { echo -e "  ${RED}✗${RESET}  $1"; FAIL=$(( FAIL + 1 )); }
+warn() { echo -e "  ${YELLOW}!${RESET}  $1"; }
+
+fmt() { echo "$1" | sed ':a;s/\B[0-9]\{3\}\>$/,&/;ta'; }
+
+# ─── Check 1: Directory.Build.props version ──────────────────────────────────
+
+echo -e "${BOLD}1. Version in Directory.Build.props${RESET}"
+
+PROPS_VERSION=$(grep -oP '<Version>\K[^<]+' "$REPO_ROOT/Directory.Build.props" | head -1 || true)
+if [[ "$PROPS_VERSION" == "$VERSION" ]]; then
+  pass "Directory.Build.props: <Version>${PROPS_VERSION}</Version>"
+else
+  fail "Directory.Build.props has version '${PROPS_VERSION}', expected '${VERSION}'"
+fi
+echo ""
+
+# ─── Check 2: CHANGELOG.md entry ─────────────────────────────────────────────
+
+echo -e "${BOLD}2. CHANGELOG.md entry${RESET}"
+
+if grep -q "^## \[${VERSION}\]" "$REPO_ROOT/CHANGELOG.md"; then
+  pass "CHANGELOG.md has ## [${VERSION}] entry"
+else
+  fail "CHANGELOG.md is missing ## [${VERSION}] entry"
+fi
+echo ""
+
+# ─── Check 3: GitHub release notes file ──────────────────────────────────────
+
+echo -e "${BOLD}3. GitHub release notes file${RESET}"
+
+RELEASE_FILE="$REPO_ROOT/docs/github/GITHUB_RELEASE_v${VERSION}.md"
+if [[ -f "$RELEASE_FILE" ]]; then
+  pass "docs/github/GITHUB_RELEASE_v${VERSION}.md exists"
+else
+  fail "docs/github/GITHUB_RELEASE_v${VERSION}.md not found"
+fi
+echo ""
+
+# ─── Check 4: README.md Roadmap (Current) marker ─────────────────────────────
+
+echo -e "${BOLD}4. README.md Roadmap — (Current) ✅ marker${RESET}"
+
+if grep -q "v${VERSION} (Current) ✅" "$REPO_ROOT/README.md"; then
+  pass "README.md Roadmap: v${VERSION} (Current) ✅"
+else
+  fail "README.md Roadmap does not show 'v${VERSION} (Current) ✅'"
+  CURRENT_LINE=$(grep -m1 "(Current) ✅" "$REPO_ROOT/README.md" || true)
+  if [[ -n "$CURRENT_LINE" ]]; then
+    warn "Currently marked as (Current): $(echo "$CURRENT_LINE" | sed 's/^[[:space:]]*//' | cut -c1-80)"
+  fi
+fi
+echo ""
+
+# ─── Check 5: README.md Version History ──────────────────────────────────────
+
+echo -e "${BOLD}5. README.md Version History entry${RESET}"
+
+if grep -q "\*\*v${VERSION}\*\*" "$REPO_ROOT/README.md"; then
+  pass "README.md Version History: **v${VERSION}** entry found"
+else
+  fail "README.md Version History is missing **v${VERSION}** entry"
+fi
+echo ""
+
+# ─── Check 6: Test suite ─────────────────────────────────────────────────────
+
+echo -e "${BOLD}6. Test suite${RESET}"
+
+if [[ "$SKIP_TESTS" == true ]]; then
+  warn "Skipping tests (--skip-tests). Pass/fail status not verified."
+else
+  echo "  Running tests (this may take a minute)..."
+  dotnet test "$REPO_ROOT" --configuration Release --verbosity minimal 2>&1 \
+    | tr -d '\r' > "$TMPFILE" || true
+
+  FAILED_COUNT=$(grep -oP 'Failed:\s+\K[0-9]+' "$TMPFILE" | awk '{s+=$1} END{print s+0}')
+  PASSED_COUNT=$(grep -oP 'Passed:\s+\K[0-9]+' "$TMPFILE" | awk '{s+=$1} END{print s+0}')
+
+  if [[ "$FAILED_COUNT" -gt 0 ]]; then
+    fail "$FAILED_COUNT test(s) failed — fix all failures before tagging"
+    grep '^Failed' "$TMPFILE" | sed 's/^/      /'
+  else
+    pass "$PASSED_COUNT tests passed across all TFMs"
+
+    # Cache counts for check 9
+    CORE_LINES=$(grep -E '^Passed!' "$TMPFILE" | grep 'REslava\.Result\.Tests\.dll' || true)
+    TFM_COUNT=$(echo "$CORE_LINES" | grep -c '.' || echo 0)
+    CORE_PER_TFM=$(echo "$CORE_LINES" | head -1 | grep -oP 'Passed:\s+\K[0-9]+' || true)
+    GENERATOR=$(grep -E '^Passed!' "$TMPFILE" | grep 'SourceGenerators\.Tests\.dll' | grep -oP 'Passed:\s+\K[0-9]+' || true)
+    ANALYZER=$(grep -E '^Passed!' "$TMPFILE" | grep 'Analyzers\.Tests\.dll' | grep -oP 'Passed:\s+\K[0-9]+' || true)
+
+    if [[ -n "$CORE_PER_TFM" && -n "$GENERATOR" && -n "$ANALYZER" && "$TFM_COUNT" -gt 0 ]]; then
+      CORE_TOTAL=$(( CORE_PER_TFM * TFM_COUNT ))
+      ACTUAL_TOTAL=$(( CORE_TOTAL + GENERATOR + ANALYZER ))
+      cat > "$CACHE_FILE" <<EOF
+CORE_PER_TFM=$CORE_PER_TFM
+TFM_COUNT=$TFM_COUNT
+CORE_TOTAL=$CORE_TOTAL
+GENERATOR=$GENERATOR
+ANALYZER=$ANALYZER
+TOTAL=$ACTUAL_TOTAL
+EOF
+    fi
+  fi
+  rm -f "$TMPFILE"
+fi
+echo ""
+
+# ─── Check 7: No uncommitted git changes ─────────────────────────────────────
+
+echo -e "${BOLD}7. Git working tree${RESET}"
+
+GIT_STATUS=$(git -C "$REPO_ROOT" status --porcelain 2>/dev/null || true)
+if [[ -z "$GIT_STATUS" ]]; then
+  pass "Working tree is clean — no uncommitted changes"
+else
+  CHANGED=$(echo "$GIT_STATUS" | grep -c '.' || echo 0)
+  fail "$CHANGED uncommitted change(s) — commit or stash before tagging"
+  echo "$GIT_STATUS" | head -10 | sed 's/^/      /'
+  if [[ "$CHANGED" -gt 10 ]]; then
+    warn "  ... ($(( CHANGED - 10 )) more files not shown)"
+  fi
+fi
+echo ""
+
+# ─── Check 8: No TODO / placeholder in release notes ─────────────────────────
+
+echo -e "${BOLD}8. Release notes completeness${RESET}"
+
+if [[ -f "$RELEASE_FILE" ]]; then
+  TODO_LINES=$(grep -inE '\bTODO\b|placeholder|\bdescribe\b|fill in|\bTBD\b' "$RELEASE_FILE" || true)
+  if [[ -z "$TODO_LINES" ]]; then
+    pass "No TODO/placeholder text in GITHUB_RELEASE_v${VERSION}.md"
+  else
+    TODO_COUNT=$(echo "$TODO_LINES" | grep -c '.' || echo 0)
+    fail "$TODO_COUNT TODO/placeholder line(s) in GITHUB_RELEASE_v${VERSION}.md"
+    echo "$TODO_LINES" | head -5 | sed 's/^/      /'
+    if [[ "$TODO_COUNT" -gt 5 ]]; then
+      warn "  ... ($(( TODO_COUNT - 5 )) more lines not shown)"
+    fi
+  fi
+else
+  warn "Skipping (release file not found — see check 3)"
+fi
+echo ""
+
+# ─── Check 9: Test counts in docs match actual ───────────────────────────────
+
+echo -e "${BOLD}9. Test counts in documentation${RESET}"
+
+if [[ -f "$CACHE_FILE" ]]; then
+  # shellcheck disable=SC1090
+  source "$CACHE_FILE"
+  ACTUAL_TOTAL_FMT=$(fmt "$TOTAL")
+
+  # README.md badge
+  README_BADGE=$(grep -oP 'tests-\K[0-9]+(?=%20passing)' "$REPO_ROOT/README.md" | head -1 || true)
+  if [[ "$README_BADGE" == "$TOTAL" ]]; then
+    pass "README.md badge: tests-${TOTAL}%20passing ✓"
+  else
+    fail "README.md badge shows 'tests-${README_BADGE}%20passing', expected '${TOTAL}'"
+  fi
+
+  # CHANGELOG.md latest Stats line
+  CHANGELOG_LINE=$(grep -m1 'tests passing across net' "$REPO_ROOT/CHANGELOG.md" || true)
+  if echo "$CHANGELOG_LINE" | grep -q "$ACTUAL_TOTAL_FMT"; then
+    pass "CHANGELOG.md latest Stats: ${ACTUAL_TOTAL_FMT} tests ✓"
+  else
+    CHANGELOG_COUNT=$(echo "$CHANGELOG_LINE" | grep -oP '[0-9,]+(?= tests passing)' | head -1 || true)
+    fail "CHANGELOG.md Stats shows '${CHANGELOG_COUNT}' tests, expected '${ACTUAL_TOTAL_FMT}'"
+    warn "Run ./scripts/sync-test-counts.sh to fix"
+  fi
+
+  # GITHUB_RELEASE release notes count
+  if [[ -f "$RELEASE_FILE" ]]; then
+    RELEASE_COUNT=$(grep -oP '[0-9,]+(?= tests passing)' "$RELEASE_FILE" | head -1 || true)
+    if [[ "$RELEASE_COUNT" == "$ACTUAL_TOTAL_FMT" ]]; then
+      pass "GITHUB_RELEASE_v${VERSION}.md: ${ACTUAL_TOTAL_FMT} tests ✓"
+    else
+      fail "GITHUB_RELEASE_v${VERSION}.md shows '${RELEASE_COUNT}' tests, expected '${ACTUAL_TOTAL_FMT}'"
+      warn "Run ./scripts/sync-test-counts.sh to fix"
+    fi
+  fi
+else
+  if [[ "$SKIP_TESTS" == true ]]; then
+    warn "No cached test counts. Run without --skip-tests to enable count verification."
+  else
+    warn "Test counts cache not populated (check 6 may have failed). Skipping count checks."
+  fi
+fi
+echo ""
+
+# ─── Summary ─────────────────────────────────────────────────────────────────
+
+echo "──────────────────────────────────────────"
+if [[ "$FAIL" -eq 0 ]]; then
+  echo -e "${GREEN}${BOLD}✓ All checks passed — v${VERSION} is ready to tag!${RESET}"
+  echo ""
+  echo "  Next step:  git tag v${VERSION} && git push origin v${VERSION}"
+  exit 0
+else
+  echo -e "${RED}${BOLD}✗ ${FAIL} check(s) failed — fix the issues above before tagging.${RESET}"
+  exit 1
+fi

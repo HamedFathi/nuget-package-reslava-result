@@ -81,6 +81,20 @@ namespace REslava.Result.SourceGenerators.SmartEndpoints
         /// </summary>
         public bool AllowAnonymous { get; set; }
 
+        /// <summary>
+        /// Gets or sets the output cache duration in seconds for this endpoint.
+        /// Overrides the class-level CacheSeconds. Use -1 to explicitly disable caching
+        /// even when the class sets a default. Only applied to GET endpoints.
+        /// </summary>
+        public int CacheSeconds { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the rate limit policy name for this endpoint.
+        /// Overrides the class-level RateLimitPolicy.
+        /// Use ""none"" to explicitly disable rate limiting for this method.
+        /// </summary>
+        public string? RateLimitPolicy { get; set; }
+
         public AutoMapEndpointAttribute(string route)
         {
             Route = route ?? throw new ArgumentNullException(nameof(route));

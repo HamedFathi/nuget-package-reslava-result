@@ -1,5 +1,6 @@
 using FastMinimalAPI.REslava.Result.Demo.Data;
 using FastMinimalAPI.REslava.Result.Demo.Endpoints;
+using FastMinimalAPI.REslava.Result.Demo.Filters;
 using FastMinimalAPI.REslava.Result.Demo.Services;
 using FastMinimalAPI.REslava.Result.Demo.SmartEndpoints;
 using Generated.SmartEndpoints;
@@ -61,6 +62,26 @@ builder.Services.AddScoped<OrderService>();
 // Register SmartEndpoint controllers (resolved via DI by the generated endpoints)
 builder.Services.AddScoped<SmartProductController>();
 builder.Services.AddScoped<SmartOrderController>();
+builder.Services.AddScoped<SmartCatalogController>();
+
+// Output caching (for SmartCatalogController CacheSeconds demo)
+builder.Services.AddOutputCache();
+
+// Rate limiting (for SmartCatalogController RateLimitPolicy demo)
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("api", o =>
+    {
+        o.Window = TimeSpan.FromMinutes(1);
+        o.PermitLimit = 100;
+    });
+    options.AddFixedWindowLimiter("strict", o =>
+    {
+        o.Window = TimeSpan.FromMinutes(1);
+        o.PermitLimit = 10;
+    });
+    options.RejectionStatusCode = 429;
+});
 
 // Add CORS for development
 builder.Services.AddCors(options =>
@@ -108,6 +129,8 @@ app.MapScalarApiReference();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseOutputCache();
+app.UseRateLimiter();
 
 // Manual endpoints (traditional approach — full control, more boilerplate)
 app.MapUserEndpoints();
@@ -172,7 +195,7 @@ app.MapGet("/", () => Results.Ok(new
         openapi = "/openapi/v1.json",
         health = "/health",
         manual = new { users = "/api/users", products = "/api/products", orders = "/api/orders" },
-        smart = new { products = "/api/smart/products", orders = "/api/smart/orders" }
+        smart = new { products = "/api/smart/products", orders = "/api/smart/orders", catalog = "/api/smart/catalog" }
     },
     documentation = "https://github.com/reslava/nuget-package-reslava-result",
     features = new[]
@@ -182,6 +205,7 @@ app.MapGet("/", () => Results.Ok(new
         "OneOf<T1,T2,T3> for complex scenarios (3 types)",
         "OneOf<T1,T2,T3,T4> for advanced patterns (4 types)",
         "SmartEndpoints: auto-generated endpoints via source generator (~85% less code)",
+        "SmartEndpoints: Filters, Output Caching, and Rate Limiting via attributes",
         "Railway-oriented programming",
         "Zero exception-based control flow",
         "Production-ready error responses",

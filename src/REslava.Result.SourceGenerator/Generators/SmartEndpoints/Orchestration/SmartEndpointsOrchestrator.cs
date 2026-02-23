@@ -19,12 +19,14 @@ namespace REslava.Result.SourceGenerators.SmartEndpoints.Orchestration
         private readonly IAttributeGenerator _autoGenerateAttributeGenerator;
         private readonly IAttributeGenerator _autoMapAttributeGenerator;
         private readonly IAttributeGenerator _smartAllowAnonymousAttributeGenerator;
+        private readonly IAttributeGenerator _smartFilterAttributeGenerator;
 
         public SmartEndpointsOrchestrator()
         {
             _autoGenerateAttributeGenerator = new AutoGenerateEndpointsAttributeGenerator();
             _autoMapAttributeGenerator = new AutoMapEndpointAttributeGenerator();
             _smartAllowAnonymousAttributeGenerator = new SmartAllowAnonymousAttributeGenerator();
+            _smartFilterAttributeGenerator = new SmartFilterAttributeGenerator();
         }
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
@@ -38,6 +40,8 @@ namespace REslava.Result.SourceGenerators.SmartEndpoints.Orchestration
                     _autoMapAttributeGenerator.GenerateAttribute());
                 ctx.AddSource("SmartAllowAnonymousAttribute.g.cs",
                     _smartAllowAnonymousAttributeGenerator.GenerateAttribute());
+                ctx.AddSource("SmartFilterAttribute.g.cs",
+                    _smartFilterAttributeGenerator.GenerateAttribute());
             });
 
             // Step 2: Detect classes with [AutoGenerateEndpoints]
@@ -137,6 +141,20 @@ namespace REslava.Result.SourceGenerators.SmartEndpoints.Orchestration
                     requiresAuth = true;
             }
 
+            // Extract CacheSeconds and RateLimitPolicy from class attribute
+            var classCacheSeconds = 0;
+            var classRateLimitPolicy = (string?)null;
+            if (attr != null)
+            {
+                var cacheArg = attr.NamedArguments.FirstOrDefault(kv => kv.Key == "CacheSeconds");
+                if (cacheArg.Key == "CacheSeconds" && cacheArg.Value.Value is int cacheVal)
+                    classCacheSeconds = cacheVal;
+
+                var rateLimitArg = attr.NamedArguments.FirstOrDefault(kv => kv.Key == "RateLimitPolicy");
+                if (rateLimitArg.Key == "RateLimitPolicy" && rateLimitArg.Value.Value is string rlVal)
+                    classRateLimitPolicy = rlVal;
+            }
+
             var controller = new ControllerMetadata
             {
                 ClassName = classSymbol.Name,
@@ -146,7 +164,9 @@ namespace REslava.Result.SourceGenerators.SmartEndpoints.Orchestration
                 HasAutoGenerateAttribute = true,
                 RequiresAuth = requiresAuth,
                 Policies = policies,
-                Roles = roles
+                Roles = roles,
+                CacheSeconds = classCacheSeconds,
+                RateLimitPolicy = classRateLimitPolicy
             };
 
             // Process public methods
@@ -232,6 +252,9 @@ namespace REslava.Result.SourceGenerators.SmartEndpoints.Orchestration
             // Apply class-level auth inheritance (method overrides take priority)
             ApplyAuthInheritance(endpoint, controller);
 
+            // Extract [SmartFilter], CacheSeconds, RateLimitPolicy
+            ExtractFilterAndCachingMetadata(methodSymbol, endpoint, controller);
+
             // Build OpenAPI metadata (after auth, so Produces(401) can be added)
             endpoint.Summary = ExtractSummary(methodSymbol);
             endpoint.ProducesList = BuildProducesList(endpoint);
@@ -300,6 +323,51 @@ namespace REslava.Result.SourceGenerators.SmartEndpoints.Orchestration
                 if (!endpoint.Roles.Any() && controller.Roles.Any())
                     endpoint.Roles = new List<string>(controller.Roles);
             }
+        }
+
+        private void ExtractFilterAndCachingMetadata(
+            IMethodSymbol methodSymbol,
+            EndpointMetadata endpoint,
+            ControllerMetadata controller)
+        {
+            var attrs = methodSymbol.GetAttributes();
+
+            // Collect [SmartFilter(typeof(T))] — one per attribute, AllowMultiple
+            foreach (var filterAttr in attrs.Where(a => a.AttributeClass?.Name == "SmartFilterAttribute"))
+            {
+                if (filterAttr.ConstructorArguments.Length > 0 &&
+                    filterAttr.ConstructorArguments[0].Value is INamedTypeSymbol filterType)
+                {
+                    endpoint.FilterTypes.Add(
+                        filterType.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat));
+                }
+            }
+
+            // CacheSeconds: method [AutoMapEndpoint] wins if set; fall back to class default
+            var mapAttr = attrs.FirstOrDefault(a => a.AttributeClass?.Name == "AutoMapEndpointAttribute");
+            var methodCacheSet = false;
+            if (mapAttr != null)
+            {
+                var cacheArg = mapAttr.NamedArguments.FirstOrDefault(kv => kv.Key == "CacheSeconds");
+                if (cacheArg.Key == "CacheSeconds" && cacheArg.Value.Value is int methodCache)
+                {
+                    endpoint.CacheSeconds = methodCache;
+                    methodCacheSet = true;
+                }
+
+                var rlArg = mapAttr.NamedArguments.FirstOrDefault(kv => kv.Key == "RateLimitPolicy");
+                if (rlArg.Key == "RateLimitPolicy" && rlArg.Value.Value is string methodRl)
+                    endpoint.RateLimitPolicy = methodRl;
+                else
+                    endpoint.RateLimitPolicy = controller.RateLimitPolicy;
+            }
+            else
+            {
+                endpoint.RateLimitPolicy = controller.RateLimitPolicy;
+            }
+
+            if (!methodCacheSet)
+                endpoint.CacheSeconds = controller.CacheSeconds;
         }
 
         #region OpenAPI Metadata Helpers

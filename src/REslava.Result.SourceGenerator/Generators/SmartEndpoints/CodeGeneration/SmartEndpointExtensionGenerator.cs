@@ -196,6 +196,26 @@ namespace REslava.Result.SourceGenerators.Generators.SmartEndpoints.CodeGenerati
                 }
             }
 
+            // Endpoint filters (.AddEndpointFilter<T>()) — applied in declaration order
+            if (endpoint.FilterTypes != null)
+            {
+                foreach (var filterType in endpoint.FilterTypes)
+                    chain.Add($".AddEndpointFilter<{filterType}>()");
+            }
+
+            // Output caching — only GET, only if CacheSeconds > 0; -1 = explicitly disabled
+            if (endpoint.CacheSeconds > 0 && endpoint.HttpMethod == "GET")
+            {
+                chain.Add($".CacheOutput(x => x.Expire(global::System.TimeSpan.FromSeconds({endpoint.CacheSeconds})))");
+            }
+
+            // Rate limiting — skip if null/empty or "none" (explicit opt-out)
+            if (!string.IsNullOrEmpty(endpoint.RateLimitPolicy) &&
+                !endpoint.RateLimitPolicy.Equals("none", System.StringComparison.OrdinalIgnoreCase))
+            {
+                chain.Add($".RequireRateLimiting(\"{EscapeString(endpoint.RateLimitPolicy)}\")");
+            }
+
             // Emit chain — last item gets semicolon
             for (int i = 0; i < chain.Count; i++)
             {

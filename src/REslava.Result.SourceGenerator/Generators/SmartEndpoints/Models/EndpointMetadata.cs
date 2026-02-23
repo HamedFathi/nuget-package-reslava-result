@@ -69,6 +69,24 @@ namespace REslava.Result.SourceGenerators.Generators.SmartEndpoints.Models
         /// Pre-computed .Produces() metadata for OpenAPI documentation.
         /// </summary>
         public List<ProducesMetadata> ProducesList { get; set; } = new();
+
+        /// <summary>
+        /// Fully-qualified filter type names to register with .AddEndpointFilter&lt;T&gt;().
+        /// Populated from [SmartFilter(typeof(T))] attributes on the method.
+        /// </summary>
+        public List<string> FilterTypes { get; set; } = new();
+
+        /// <summary>
+        /// Output cache duration in seconds for GET endpoints.
+        /// 0 = no cache (default). -1 = explicitly disabled (overrides class default).
+        /// </summary>
+        public int CacheSeconds { get; set; } = 0;
+
+        /// <summary>
+        /// Rate limit policy name. Null or empty = no rate limiting.
+        /// "none" = explicitly disabled (overrides class default).
+        /// </summary>
+        public string? RateLimitPolicy { get; set; }
     }
 
     /// <summary>
@@ -136,5 +154,17 @@ namespace REslava.Result.SourceGenerators.Generators.SmartEndpoints.Models
         /// Class-level required roles.
         /// </summary>
         public List<string> Roles { get; set; } = new();
+
+        /// <summary>
+        /// Default output cache duration in seconds for GET endpoints in this controller.
+        /// 0 = no cache. Overridden per-method via [AutoMapEndpoint(CacheSeconds = N)].
+        /// </summary>
+        public int CacheSeconds { get; set; } = 0;
+
+        /// <summary>
+        /// Default rate limit policy for all endpoints in this controller.
+        /// Null = no rate limiting. Overridden per-method via [AutoMapEndpoint(RateLimitPolicy = "...")].
+        /// </summary>
+        public string? RateLimitPolicy { get; set; }
     }
 }
