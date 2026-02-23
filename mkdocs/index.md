@@ -16,7 +16,8 @@ hide:
 ![Test Suite](https://img.shields.io/badge/tests-2825%20passing-brightgreen)
 </div>
 
-**The only .NET library that blends functional error handling with compile‑time API generation.**
+**:material-api: The only .NET library that blends functional error handling with compile‑time API generation.**
+**:material-source-repository: [nuget-package-reslava-result GitHub repo](https://github.com/reslava/nuget-package-reslava-result)**
 
 ---
 

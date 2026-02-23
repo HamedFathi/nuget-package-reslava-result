@@ -1,7 +1,7 @@
 # REslava.Result - Railway-Oriented Programming for .NET
 
 <div align="center">
-
+[![Documentation](https://img.shields.io/badge/Documentation-mkDocs-0094F5logo=materialformkdocs)](https://reslava.github.io/nuget-package-reslava-result/)
 ![.NET](https://img.shields.io/badge/.NET-512BD4?logo=dotnet&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-239120?&logo=csharp&logoColor=white)
 ![NuGet Version](https://img.shields.io/nuget/v/REslava.Result.SourceGenerators?style=flat&logo=nuget)
@@ -12,9 +12,12 @@
 ![Test Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
 ![Test Suite](https://img.shields.io/badge/tests-2843%20passing-brightgreen)
 
+</div>
+
 **📐 Complete Functional Programming Framework + ASP.NET Integration + OneOf Extensions**
 
-</div>
+**📖 Comprehensive documentation is available at [reslava.github.io/nuget-package-reslava-result](https://reslava.github.io/nuget-package-reslava-result/)**
+Includes API reference, advanced patterns, and interactive examples.
 
 ### Why REslava.Result?
 
