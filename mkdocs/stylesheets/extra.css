@@ -1,0 +1,251 @@
+:root {
+  /* Card background palette */
+  --card-bg-1: #f8e3e3; /* soft pink */
+  --card-bg-2: #e3f0e8; /* mint */
+  --card-bg-3: #e3e9fa; /* lavender */
+  --card-bg-4: #faf0e3; /* peach */
+  --card-bg-5: #e8f4f0; /* seafoam */
+  --card-bg-6: #f2e3f5; /* orchid */
+  --card-bg-7: #fff4d9; /* vanilla */
+
+  /* Matching text / icon colors */
+  --card-fg-1: #b13e3e;
+  --card-fg-2: #2f7a5c;
+  --card-fg-3: #3f5c9a;
+  --card-fg-4: #b45f2b;
+  --card-fg-5: #1c7e6f;
+  --card-fg-6: #8a4f9e;
+  --card-fg-7: #b8882c;
+
+  /* Accent borders (slightly stronger than bg) */
+  --card-accent-1: #e39a9a;
+  --card-accent-2: #8fd1b4;
+  --card-accent-3: #9fb1e8;
+  --card-accent-4: #e8c19f;
+  --card-accent-5: #7fd1c4;
+  --card-accent-6: #c49fe8;
+  --card-accent-7: #e8d59f;
+
+}
+[data-md-color-scheme="slate"] {
+  --card-bg-1: #3a1f1f;
+  --card-bg-2: #1f3a2d;
+  --card-bg-3: #1f263a;
+  --card-bg-4: #3a2b1f;
+  --card-bg-5: #1f3a36;
+  --card-bg-6: #33203a;
+  --card-bg-7: #3a331f;
+
+  --card-fg-1: #f2b8b8;
+  --card-fg-2: #9fe0c0;
+  --card-fg-3: #b8c8f2;
+  --card-fg-4: #f2c2a0;
+  --card-fg-5: #9fe0d6;
+  --card-fg-6: #d6b0f2;
+  --card-fg-7: #f2e0a0;
+
+  --card-accent-1: #f2b8b8;
+  --card-accent-2: #9fe0c0;
+  --card-accent-3: #b8c8f2;
+  --card-accent-4: #f2c2a0;
+  --card-accent-5: #9fe0d6;
+  --card-accent-6: #d6b0f2;
+  --card-accent-7: #f2e0a0;
+}
+/* Card container – already styled by Material, we just enhance */
+.md-typeset .grid.cards {
+  gap: 1.2rem; /* slightly more breathing room */
+}
+
+/* Individual card – base styles */
+.md-typeset .grid.cards > ul > li {
+  border-radius: 1.2rem;   /* softer corners */
+  padding: 1.5rem 1.2rem;   /* more comfortable padding */
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.04); /* very subtle shadow */
+  border: none;              /* remove default border */
+}
+
+/* Hover effect – gentle lift */
+.md-typeset .grid.cards > ul > li:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+/* Icon styling – make them pop */
+.grid.cards .twemoji svg {    
+    width: 1.7rem;
+    height: 1.7rem;
+    max-height: none;
+    margin-left: -0.2rem;
+    margin-top: -0.6rem;
+    fill: currentColor;
+}
+
+/* Apply repeating palette using CSS variables */
+.md-typeset .grid.cards > ul > li:nth-child(7n + 1) {
+  background: var(--card-bg-1);
+  color: var(--card-fg-1);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n + 2) {
+  background: var(--card-bg-2);
+  color: var(--card-fg-2);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n + 3) {
+  background: var(--card-bg-3);
+  color: var(--card-fg-3);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n + 4) {
+  background: var(--card-bg-4);
+  color: var(--card-fg-4);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n + 5) {
+  background: var(--card-bg-5);
+  color: var(--card-fg-5);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n + 6) {
+  background: var(--card-bg-6);
+  color: var(--card-fg-6);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n) {
+  background: var(--card-bg-7);
+  color: var(--card-fg-7);
+}
+
+.md-typeset .grid.cards > ul > li {
+  border-right: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n + 1) {
+  border-right-color: var(--card-accent-1);
+  border-bottom-color: var(--card-accent-1);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n + 2) {
+  border-right-color: var(--card-accent-2);
+  border-bottom-color: var(--card-accent-2);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n + 3) {
+  border-right-color: var(--card-accent-3);
+  border-bottom-color: var(--card-accent-3);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n + 4) {
+  border-right-color: var(--card-accent-4);
+  border-bottom-color: var(--card-accent-4);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n + 5) {
+  border-right-color: var(--card-accent-5);
+  border-bottom-color: var(--card-accent-5);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n + 6) {
+  border-right-color: var(--card-accent-6);
+  border-bottom-color: var(--card-accent-6);
+}
+
+.md-typeset .grid.cards > ul > li:nth-child(7n) {
+  border-right-color: var(--card-accent-7);
+  border-bottom-color: var(--card-accent-7);
+}
+
+.md-typeset .grid.cards > ul > li {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  filter: saturate(1.15) brightness(0.95);
+}
+
+.md-typeset .grid.cards > ul > li:hover {
+  box-shadow:
+    0 10px 20px rgba(0,0,0,0.08),
+    inset 0 0 0 1px rgba(255,255,255,0.2);
+}
+
+/* Keyboard & accessibility polish*/
+.md-typeset .grid.cards > ul > li:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, currentColor 35%, transparent),
+    0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Disable MkDocs Material link arrow inside grid cards 
+.md-typeset .grid.cards > ul > li p > a {  
+  display: none;
+}*/
+
+/* Disable MkDocs Material link arrow inside grid cards 
+.md-typeset .grid.cards > ul > li p > a {
+  content: none !important;
+  display: none;/* !important;
+  mask: none !important;
+  -webkit-mask: none !important;
+  background: none !important;
+}*/
+
+/* this fix need to tabs keypress to follow 
+.md-typeset .grid.cards > ul > li p > a {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+*/
+
+/* Small performance win */
+.md-typeset .grid.cards > ul > li {
+  will-change: transform;
+}
+
+/* Card density tuning for large grids */
+.md-typeset .grid.cards {
+  align-items: stretch;
+}
+
+.md-typeset .grid.cards > ul > li {
+  display: flex;
+  flex-direction: column;
+}
+
+/* “featured” card variant 
+ then in MarkDown:
+ - {: .is-featured }*/  
+.md-typeset .grid.cards > ul > li:has(p.is-featured) {
+  border-right-width: 4px;
+  border-bottom-width: 4px;
+  transform: scale(1.04);
+}
+
+.md-typeset .grid.cards > ul > li:has(p.is-featured)::before {
+  content: "✨ Featured";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  /*background: #fec5bb;*/
+  color: #222;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+/*.md-typeset .grid.cards > ul > li:has(p.is-featured) {
+  transform: rotate(-1deg);
+  transition: transform 0.2s ease;
+}*/

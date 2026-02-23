@@ -1,5 +1,5 @@
 site_name: REslava.Result
-site_url: https://reslava.github.io/docs-reslava-result/
+site_url: https://reslava.github.io/nuget-package-reslava-result/
 site_description: Functional Error Handling & Zero‑Boilerplate APIs for .NET
 docs_dir: mkdocs
 use_directory_urls: true
@@ -8,7 +8,6 @@ theme:
   features:
   - navigation.tabs
   palette:
-  - scheme: default
     primary: indigo
     accent: indigo
     toggle:
