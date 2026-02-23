@@ -1,24 +1,26 @@
 site_name: REslava.Result
-site_url: https://reslava.github.io/nuget-package-reslava-result/
+site_url: https://reslava.github.io/nuget-package-reslava-result/          
+repo_url: https://github.com/reslava/nuget-package-reslava-result          
 site_description: Functional Error Handling & Zero‑Boilerplate APIs for .NET
 docs_dir: mkdocs
 use_directory_urls: true
 theme:
   name: material
   features:
-  - navigation.tabs
+    - navigation.tabs
   palette:
-    primary: indigo
-    accent: indigo
-    toggle:
-      icon: material/weather-night
-      name: Switch to dark mode
-  - scheme: slate
-    primary: indigo
-    accent: indigo
-    toggle:
-      icon: material/weather-sunny
-      name: Switch to light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
   icon:
     repo: fontawesome/brands/github
   logo: assets/logo.png

@@ -6,6 +6,7 @@ Generate hierarchical MkDocs navigation from the docs folder.
 - Other .md files become pages under their parent section.
 - Files are sorted naturally.
 - Updates only the 'nav' section in mkdocs.yml.
+- Strips leading emojis from all titles.
 """
 
 import os
@@ -23,6 +24,32 @@ SECTION_ORDER = [
     "reference",
     "community"
 ]
+
+# Unicode ranges for emojis and common symbols (inclusive)
+EMOJI_RANGES = [
+    (0x1F000, 0x1F9FF),  # Miscellaneous Symbols and Pictographs, Emoticons, etc.
+    (0x2600, 0x26FF),    # Miscellaneous Symbols
+    (0x2700, 0x27BF),    # Dingbats
+]
+
+def is_emoji(char):
+    """Return True if the character's code point falls in any emoji range."""
+    code = ord(char)
+    return any(start <= code <= end for start, end in EMOJI_RANGES)
+
+def strip_leading_emojis(text):
+    """Remove leading emoji characters from text."""
+    if not text:
+        return text
+    # Find first non-emoji character
+    for i, ch in enumerate(text):
+        if not is_emoji(ch):
+            break
+    else:
+        # All characters are emojis
+        return ''
+    # Return the rest of the string after the emoji run
+    return text[i:]
 
 # Optional: read frontmatter for better titles
 try:
@@ -51,19 +78,29 @@ def get_title_from_file(filepath, default_as_filename=True):
     """
     Extract title from frontmatter if available.
     If not, return filename converted to Title Case (unless default_as_filename=False).
+    Strips leading emojis from the title.
     """
+    title = None
     if HAS_FRONTMATTER:
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
                 post = frontmatter.load(f)
                 if post.get('title'):
-                    print(f"DEBUG: Found title '{post['title']}' in {filepath}")  # add this
-                    return post['title']
+                    title = post['title']
+                    print(f"DEBUG: Found title '{title}' in {filepath}")
         except Exception as e:
             print(f"DEBUG: Error reading frontmatter in {filepath}: {e}")
-    if default_as_filename:
-        return filepath.stem.replace('-', ' ').title()
-    return None  # caller will provide a fallback
+    
+    if title is None and default_as_filename:
+        title = filepath.stem.replace('-', ' ').title()
+    
+    # Strip leading emojis if we have a title
+    if title:
+        title = strip_leading_emojis(title).strip()
+        if not title:
+            title = "Overview"  # fallback if stripped to nothing
+    
+    return title
 
 def generate_nav(current_path):
     """
@@ -82,8 +119,9 @@ def generate_nav(current_path):
         index_file = dir_path / "index.md"
         sub_nav = generate_nav(dir_path)
 
-        # Section title = folder name (Title Case)
+        # Section title = folder name (Title Case), then strip emojis
         section_title = dir_name.replace('-', ' ').title()
+        section_title = strip_leading_emojis(section_title).strip()
         # Special case for "aspnet" -> "ASP.NET"
         if dir_name.lower() == "aspnet":
             section_title = "ASP.NET"
@@ -111,6 +149,9 @@ def generate_nav(current_path):
         # These files are at the current level (no subfolder). They become top-level pages.
         rel_path = file_path.relative_to(DOCS_DIR)
         title = get_title_from_file(file_path)
+        # Ensure title is not empty
+        if not title:
+            title = "Untitled"
         entries.append({title: str(rel_path).replace('\\', '/')})
 
     return entries
