@@ -54,6 +54,7 @@
     <Compile Include="SmartEndpoints\SmartEndpoints_OpenApiMetadataTests.cs" />
     <Compile Include="SmartEndpoints\SmartEndpoints_AuthorizationTests.cs" />
     <Compile Include="SmartEndpoints\SmartEndpoints_FiltersAndCachingTests.cs" />
+    <Compile Include="Validate\ValidateGeneratorTests.cs" />
   </ItemGroup>
 
   <!-- Temporarily exclude broken test file -->

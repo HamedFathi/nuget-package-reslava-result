@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) guideline.
 
+## [1.24.0] - 2026-02-23
+
+### ✨ Added
+- `[Validate]` source generator — decorate any record/class to get a `.Validate()` extension method returning `Result<T>`; delegates to `Validator.TryValidateObject` so all 20+ `DataAnnotations` types work automatically; invalid fields surface as `ValidationError` with `FieldName` populated; composable with `.Bind()` / `.ToIResult()` / `.ToActionResult()`
+
+### Stats
+- 2,843 tests passing across net8.0, net9.0, net10.0 + generator + analyzer tests
+
 ## [1.23.0] - 2026-02-23
 
 ### ✨ Added

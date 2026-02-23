@@ -10,7 +10,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/reslava/REslava.Result)](https://github.com/reslava/REslava.Result/stargazers) 
 [![NuGet Downloads](https://img.shields.io/nuget/dt/REslava.Result)](https://www.nuget.org/packages/REslava.Result)
 ![Test Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
-![Test Suite](https://img.shields.io/badge/tests-2836%20passing-brightgreen)
+![Test Suite](https://img.shields.io/badge/tests-2843%20passing-brightgreen)
 
 **📐 Complete Functional Programming Framework + ASP.NET Integration + OneOf Extensions**
 
@@ -1193,9 +1193,9 @@ return GetUser(id).ToIResult(); // 🆕 Automatic HTTP mapping!
 ## 🧪 Testing & Quality Assurance
 
 ### 📊 Comprehensive Test Suite
-**2,836 Tests Passing** 🎉
+**2,843 Tests Passing** 🎉
 - **Core Library Tests**: 896 tests per TFM (net8.0, net9.0, net10.0) = 2,688 tests
-- **Source Generator Tests**: 94 tests for all generators
+- **Source Generator Tests**: 101 tests for all generators
 - **Analyzer Tests**: 54 tests for RESL1001–RESL1004 + RESL2001
 - **Multi-TFM**: All core tests run on 3 target frameworks
 
@@ -1262,7 +1262,7 @@ tests/REslava.Result.SourceGenerators.Tests/
 # .github/workflows/ci.yml
 - Build Solution: dotnet build --configuration Release
 - Run Tests: dotnet test --configuration Release --no-build
-- Total Tests: 2,836+ passing
+- Total Tests: 2,843+ passing
 - Coverage: 95%+ code coverage
 ```
 
@@ -1288,7 +1288,7 @@ tests/REslava.Result.SourceGenerators.Tests/
 
 ### 🔍 Test Quality Metrics
 **High Standards**
-- ✅ **2,836/2,836 tests passing** (100% success rate)
+- ✅ **2,843/2,843 tests passing** (100% success rate)
 - ✅ **95%+ code coverage** (comprehensive coverage)
 - ✅ **Zero flaky tests** (reliable CI/CD)
 - ✅ **Fast execution** (complete suite < 15 seconds)
@@ -1297,10 +1297,10 @@ tests/REslava.Result.SourceGenerators.Tests/
 ### 🏃‍♂️ Running Tests Locally
 **Quick Test Commands**
 ```bash
-# Run all tests (2,836 tests across 3 TFMs)
+# Run all tests (2,843 tests across 3 TFMs)
 dotnet test --configuration Release
 
-# Run only Source Generator tests (94 tests)
+# Run only Source Generator tests (101 tests)
 dotnet test tests/REslava.Result.SourceGenerators.Tests/
 
 # Run only Analyzer tests (54 tests)
@@ -1509,7 +1509,11 @@ public IResult GetUser(int id) =>
 
 ## 🎯 Roadmap
 
-### v1.23.0 (Current) ✅
+### v1.24.0 (Current) ✅
+- **`[Validate]` Source Generator** — decorate any record/class to get `.Validate()` returning `Result<T>`; delegates to `Validator.TryValidateObject` (all 20+ `DataAnnotations` types supported); field errors surface as `ValidationError` with `FieldName`; composable with `.Bind()` / `.ToIResult()` / `.ToActionResult()`
+- 7 new generator tests, 2,843 total tests
+
+### v1.23.0 ✅
 - **SmartEndpoints: Endpoint Filters** — `[SmartFilter(typeof(T))]` attribute generates `.AddEndpointFilter<T>()`, stackable (AllowMultiple = true)
 - **SmartEndpoints: Output Caching** — `CacheSeconds` property on `[AutoGenerateEndpoints]` and `[AutoMapEndpoint]`; class-level default, method-level override, `-1` to opt out; only applied to GET
 - **SmartEndpoints: Rate Limiting** — `RateLimitPolicy` property on both attribute levels; `"none"` to opt out; inherits class default
@@ -1609,6 +1613,7 @@ See the full list of contributors in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ## 📈 Version History
 
+- **v1.24.0** - Compile-Time Validation Generator: [Validate] attribute generates .Validate() → Result<T> via Validator.TryValidateObject, 7 new tests, 2,843 tests
 - **v1.23.0** - SmartEndpoints Production Readiness: Endpoint Filters ([SmartFilter]), Output Caching (CacheSeconds), Rate Limiting (RateLimitPolicy), 11 new tests, 2,836 tests
 - **v1.22.0** - Domain Error Completeness: OneOf<>.ToActionResult() MVC generator, OneOfToIResult tag-based error mapping, SmartEndpoints accurate OpenAPI docs (ValidationError → 422), 12 new tests, 2,825 tests
 - **v1.21.0** - ASP.NET MVC Support: Result<T>.ToActionResult() source generator (convention-based + explicit overload), FastMvcAPI demo app, 9 new tests

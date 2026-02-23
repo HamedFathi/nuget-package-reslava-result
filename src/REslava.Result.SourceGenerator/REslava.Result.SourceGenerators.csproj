@@ -127,6 +127,12 @@
     <Compile Include="Generators\OneOfToIResult\Attributes\OneOfExtensionsAttributeGenerator.cs" />
     <Compile Include="Generators\OneOfToIResult\Attributes\MapToProblemDetailsAttributeGenerator.cs" />
     <Compile Include="Generators\OneOfToIResult\CodeGeneration\OneOfToIResultExtensionGenerator.cs" />
+
+    <!-- Validate Generator - Data Annotation Validation → Result<T> -->
+    <Compile Include="Generators\Validate\ValidateGenerator.cs" />
+    <Compile Include="Generators\Validate\Orchestration\ValidateOrchestrator.cs" />
+    <Compile Include="Generators\Validate\Attributes\ValidateAttributeGenerator.cs" />
+    <Compile Include="Generators\Validate\CodeGeneration\ValidateExtensionGenerator.cs" />
   </ItemGroup>
 
 </Project>
