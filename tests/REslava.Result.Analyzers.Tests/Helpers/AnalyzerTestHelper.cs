@@ -79,6 +79,42 @@ namespace REslava.Result.AdvancedPatterns
 ";
 
     /// <summary>
+    /// Minimal stubs for Error and domain-specific error types so RESL1005 can resolve them.
+    /// </summary>
+    internal const string ErrorStubSource = @"
+namespace REslava.Result
+{
+    public interface IError { }
+    public class Error : IError
+    {
+        public Error(string message) { }
+        public Error(string message, string propertyName) { }
+    }
+    public class NotFoundError : IError
+    {
+        public NotFoundError(string message) { }
+    }
+    public class ValidationError : IError
+    {
+        public ValidationError(string message) { }
+        public ValidationError(string message, string fieldName) { }
+    }
+    public class ConflictError : IError
+    {
+        public ConflictError(string message) { }
+    }
+    public class UnauthorizedError : IError
+    {
+        public UnauthorizedError(string message) { }
+    }
+    public class ForbiddenError : IError
+    {
+        public ForbiddenError(string message) { }
+    }
+}
+";
+
+    /// <summary>
     /// Creates a test for UnsafeValueAccessAnalyzer (backward compat for existing tests).
     /// </summary>
     public static CSharpAnalyzerTest<UnsafeValueAccessAnalyzer, DefaultVerifier> CreateTest(string testCode)

@@ -12,7 +12,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/reslava/REslava.Result)](https://github.com/reslava/REslava.Result/stargazers) 
 [![NuGet Downloads](https://img.shields.io/nuget/dt/REslava.Result)](https://www.nuget.org/packages/REslava.Result)
 ![Test Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
-![Test Suite](https://img.shields.io/badge/tests-2843%20passing-brightgreen)
+![Test Suite](https://img.shields.io/badge/tests-2862%20passing-brightgreen)
 
 </div>
 
@@ -78,8 +78,8 @@ Includes API reference, advanced patterns, and interactive examples.
 - [🎯 Quick Examples](#-quick-examples) — Real-world code samples
 
 **🧪 Testing & Quality**
-- [🧪 Testing & Quality Assurance](#-testing--quality-assurance) — 2,843 tests, CI/CD pipeline
-- [🛡️ Safety Analyzers](#️-safety-analyzers) — RESL1001–RESL2001, 5 diagnostics + 3 code fixes
+- [🧪 Testing & Quality Assurance](#-testing--quality-assurance) — 2,862 tests, CI/CD pipeline
+- [🛡️ Safety Analyzers](#️-safety-analyzers) — RESL1001–RESL1005 + RESL2001, 6 diagnostics + 3 code fixes
 - [📈 Production Benefits](#-production-benefits) — Enterprise-ready advantages
 - [🌍 Real-World Impact](#-real-world-impact) — Success stories and use cases
 - [🏆 Why Choose REslava.Result?](#-why-choose-reslavaresult) — Unique advantages
@@ -250,7 +250,7 @@ public IResult GetUser(int id) =>
 | **Library/Service** | [📐 Core Library](#-reslavaresult-core-library) | Result pattern, validation, functional programming |
 | **Custom Generator** | [⚙️ How Generators Work](#-how-generators-work) | Build your own source generators |
 | **Advanced App** | [🧠 Advanced Patterns](#-advanced-patterns) | Maybe, OneOf, validation rules |
-| **Testing** | [🧪 Testing & Quality](#-testing--quality-assurance) | 2,825+ tests, CI/CD, test strategies |
+| **Testing** | [🧪 Testing & Quality](#-testing--quality-assurance) | 2,862+ tests, CI/CD, test strategies |
 | **Curious About Magic** | [📐 Complete Architecture](#-complete-architecture) | How generators work, SOLID design |
 
 ---
@@ -1281,6 +1281,36 @@ public class CatalogController
 }
 ```
 
+### Auto-Validation
+
+Decorate a request type with `[Validate]` (from `REslava.Result.SourceGenerators`) and SmartEndpoints injects the validation call automatically — no extra code in the controller method needed:
+
+```csharp
+[Validate]
+public record CreateProductRequest(
+    [Required] string Name,
+    [Range(0.01, double.MaxValue)] decimal Price);
+
+[AutoGenerateEndpoints(RoutePrefix = "/api/catalog")]
+public class CatalogController
+{
+    public Task<Result<Product>> CreateProduct(CreateProductRequest request) => ...;
+}
+```
+
+Generated lambda (v1.26.0+):
+```csharp
+catalogGroup.MapPost("", async (CreateProductRequest request, CatalogController service) =>
+{
+    var validation = request.Validate();
+    if (!validation.IsSuccess) return validation.ToIResult();  // 422 on failure
+    var result = await service.CreateProduct(request);
+    return result.ToIResult();
+});
+```
+
+Before v1.26.0 this required a manual `.Validate().ToIResult()` in the endpoint body. Now placing `[Validate]` on the request type is the only signal required. Only POST/PUT body parameters are auto-validated; GET query parameters are not affected.
+
 ---
 
 ## 🔀 OneOf to IResult
@@ -1655,7 +1685,7 @@ Each generator (`ResultToIResultGenerator`, `SmartEndpointsGenerator`, `Validate
 |---------|---------|
 | `REslava.Result` | Core library — Result&lt;T&gt;, Maybe&lt;T&gt;, OneOf, domain errors (NotFound/Validation/Conflict/Unauthorized/Forbidden), LINQ, validation, JSON serialization, async patterns |
 | `REslava.Result.SourceGenerators` | ASP.NET source generators — SmartEndpoints, ToIResult (Minimal API), ToActionResult (MVC), OneOf extensions |
-| `REslava.Result.Analyzers` | Roslyn safety analyzers — RESL1001–RESL1004 + RESL2001 (5 diagnostics + 3 code fixes) |
+| `REslava.Result.Analyzers` | Roslyn safety analyzers — RESL1001–RESL1005 + RESL2001 (6 diagnostics + 3 code fixes) |
 
 ### 🚀 NuGet Package Contents
 ```
@@ -1838,10 +1868,10 @@ return GetUser(id).ToIResult(); // 🆕 Automatic HTTP mapping!
 ## 🧪 Testing & Quality Assurance
 
 ### 📊 Comprehensive Test Suite
-**2,843 Tests Passing** 🎉
+**2,862 Tests Passing** 🎉
 - **Core Library Tests**: 896 tests per TFM (net8.0, net9.0, net10.0) = 2,688 tests
-- **Source Generator Tests**: 101 tests for all generators
-- **Analyzer Tests**: 54 tests for RESL1001–RESL1004 + RESL2001
+- **Source Generator Tests**: 106 tests for all generators
+- **Analyzer Tests**: 68 tests for RESL1001–RESL1005 + RESL2001
 - **Multi-TFM**: All core tests run on 3 target frameworks
 
 ### 📐 Source Generator Test Architecture
@@ -1907,7 +1937,7 @@ tests/REslava.Result.SourceGenerators.Tests/
 # .github/workflows/ci.yml
 - Build Solution: dotnet build --configuration Release
 - Run Tests: dotnet test --configuration Release --no-build
-- Total Tests: 2,843+ passing
+- Total Tests: 2,862+ passing
 - Coverage: 95%+ code coverage
 ```
 
@@ -1933,7 +1963,7 @@ tests/REslava.Result.SourceGenerators.Tests/
 
 ### 🔍 Test Quality Metrics
 **High Standards**
-- ✅ **2,843/2,843 tests passing** (100% success rate)
+- ✅ **2,862/2,862 tests passing** (100% success rate)
 - ✅ **95%+ code coverage** (comprehensive coverage)
 - ✅ **Zero flaky tests** (reliable CI/CD)
 - ✅ **Fast execution** (complete suite < 15 seconds)
@@ -1942,13 +1972,13 @@ tests/REslava.Result.SourceGenerators.Tests/
 ### 🏃‍♂️ Running Tests Locally
 **Quick Test Commands**
 ```bash
-# Run all tests (2,843 tests across 3 TFMs)
+# Run all tests (2,862 tests across 3 TFMs)
 dotnet test --configuration Release
 
-# Run only Source Generator tests (101 tests)
+# Run only Source Generator tests (106 tests)
 dotnet test tests/REslava.Result.SourceGenerators.Tests/
 
-# Run only Analyzer tests (54 tests)
+# Run only Analyzer tests (68 tests)
 dotnet test tests/REslava.Result.Analyzers.Tests/
 
 # Run core library tests (896 per TFM)
@@ -2049,6 +2079,27 @@ var user = oneOf.Match(         // No warning — exhaustive pattern match
     error => throw new ValidationException());
 ```
 
+### RESL1005 — Consider Domain Error `[Info]`
+
+```csharp
+// ⚠️ RESL1005: Consider using 'NotFoundError' instead of 'Error' — it carries HTTP status context
+//            and integrates automatically with 'ToIResult()'
+return Result<User>.Fail(new Error("user not found"));
+
+// ✅ Domain-specific — sets HttpStatusCode=404 automatically, ToIResult() maps it correctly:
+return Result<User>.Fail(new NotFoundError("user not found"));
+```
+
+Triggers when the message string implies a known HTTP error category:
+
+| Keyword(s) in message | Suggested type |
+|---|---|
+| `not found`, `missing` | `NotFoundError` |
+| `conflict`, `already exists` | `ConflictError` |
+| `unauthorized` | `UnauthorizedError` |
+| `forbidden`, `access denied` | `ForbiddenError` |
+| `invalid`, `validation` | `ValidationError` |
+
 ---
 
 ## 📈 Production Benefits
@@ -2119,7 +2170,12 @@ var user = oneOf.Match(         // No warning — exhaustive pattern match
 
 ## 🎯 Roadmap
 
-### v1.25.0 (Current) ✅
+### v1.26.0 (Current) ✅
+- **RESL1005 analyzer** — Info-level diagnostic suggests domain error types (`NotFoundError`, `ConflictError`, etc.) when `new Error("...")` message implies an HTTP error category; 14 new tests
+- **SmartEndpoints Auto-Validation** — `[Validate]` on a body parameter type auto-injects `.Validate()` into the generated lambda; returns 422 early on failure; 5 new tests
+- 2,862 tests
+
+### v1.25.0 ✅
 - **Documentation Website** — MkDocs Material site auto-generated from README.md; 8 nav sections, dark/light, search, social cards
 - **DocFX API Reference landing page** — Bootstrap namespace cards, Core Types grid, quick-links to docs/GitHub/NuGet
 - **CI optimization** — path allowlist (src/tests only); docs commits no longer trigger test suite
@@ -2183,6 +2239,7 @@ var user = oneOf.Match(         // No warning — exhaustive pattern match
 
 ## 📈 Version History
 
+- **v1.26.0** - RESL1005 domain error suggestion analyzer, SmartEndpoints auto-validation ([Validate] on body param type injects .Validate() into lambda), 19 new tests, 2,862 tests
 - **v1.25.0** - Documentation Site & API Reference: MkDocs Material website, DocFX Bootstrap landing page, CI path filtering, pipeline fixes, 2,843 tests
 - **v1.24.0** - Compile-Time Validation Generator: [Validate] attribute generates .Validate() → Result<T> via Validator.TryValidateObject, 7 new tests, 2,843 tests
 - **v1.23.0** - SmartEndpoints Production Readiness: Endpoint Filters ([SmartFilter]), Output Caching (CacheSeconds), Rate Limiting (RateLimitPolicy), 11 new tests, 2,836 tests

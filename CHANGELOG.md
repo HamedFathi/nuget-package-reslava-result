@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) guideline.
 
+## [1.26.0] - 2026-02-24
+
+### ✨ Added
+- **RESL1005 analyzer** — Info-level diagnostic that suggests a domain-specific error type (`NotFoundError`, `ConflictError`, `UnauthorizedError`, `ForbiddenError`, `ValidationError`) when `new Error("...")` is used with a message that implies a well-known HTTP error category. Helps developers discover domain errors that carry automatic HTTP status context and integrate with `ToIResult()`.
+- **SmartEndpoints: Auto-Validation** — when a method's body parameter type is decorated with `[Validate]`, the generated endpoint lambda automatically calls `.Validate()` and returns early with the validation result before invoking the service. Requires no attribute on the method — decoration on the type is the only signal. Adds `using Generated.ValidationExtensions;` conditionally.
+
+### Stats
+- 2,862 tests passing across net8.0, net9.0, net10.0 + generator (106) + analyzer (68) tests
+
 ## [1.25.0] - 2026-02-24
 
 ### ✨ Added

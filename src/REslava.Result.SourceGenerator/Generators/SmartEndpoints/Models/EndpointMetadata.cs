@@ -99,6 +99,12 @@ namespace REslava.Result.SourceGenerators.Generators.SmartEndpoints.Models
         public ParameterSource Source { get; set; } = ParameterSource.Query;
         public bool IsOptional { get; set; }
         public string? DefaultValue { get; set; }
+
+        /// <summary>
+        /// True when the parameter's type is decorated with [Validate],
+        /// causing SmartEndpoints to inject a .Validate() call in the generated lambda.
+        /// </summary>
+        public bool HasValidateAttribute { get; set; }
     }
 
     /// <summary>

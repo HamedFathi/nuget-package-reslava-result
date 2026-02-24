@@ -60,6 +60,11 @@ namespace REslava.Result.SourceGenerators.Generators.SmartEndpoints.CodeGenerati
             builder.AppendLine("using System.Threading.Tasks;");
             builder.AppendLine("using Generated.ResultExtensions;");
             builder.AppendLine("using Generated.OneOfExtensions;");
+            var anyValidation = controllers.Any(c =>
+                c.Endpoints.Any(e =>
+                    e.Parameters.Any(p => p.HasValidateAttribute && p.Source == ParameterSource.Body)));
+            if (anyValidation)
+                builder.AppendLine("using Generated.ValidationExtensions;");
             builder.AppendLine();
 
             // Namespace and class
@@ -144,6 +149,14 @@ namespace REslava.Result.SourceGenerators.Generators.SmartEndpoints.CodeGenerati
             // Map method + handler lambda
             builder.AppendLine($"            {groupVarName}.{mapMethod}(\"{relativeRoute}\", {asyncKeyword}({fullParamList}) =>");
             builder.AppendLine("            {");
+            var validatedBodyParam = endpoint.Parameters
+                .FirstOrDefault(p => p.Source == ParameterSource.Body && p.HasValidateAttribute);
+            if (validatedBodyParam != null)
+            {
+                builder.AppendLine($"                var validation = {validatedBodyParam.Name}.Validate();");
+                builder.AppendLine("                if (!validation.IsSuccess) return validation.ToIResult();");
+                builder.AppendLine();
+            }
             builder.AppendLine($"                var result = {awaitKeyword}service.{endpoint.MethodName}({argList});");
             builder.AppendLine("                return result.ToIResult();");
             builder.AppendLine("            })");

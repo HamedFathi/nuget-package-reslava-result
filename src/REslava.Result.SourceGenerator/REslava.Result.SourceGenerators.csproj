@@ -17,7 +17,7 @@
     <Product>REslava.Result.SourceGenerators</Product>
     <Description>Source generators for REslava.Result library. Automatically generates extension methods to convert Result types to ASP.NET Core IResult with proper HTTP status codes and ProblemDetails.</Description>
     <Copyright>Copyright © REslava 2025</Copyright>
-    <PackageProjectUrl>https://github.com/reslava/nuget-package-reslava-result</PackageProjectUrl>
+    <PackageProjectUrl>https://reslava.github.io/nuget-package-reslava-result</PackageProjectUrl>
     <RepositoryUrl>https://github.com/reslava/nuget-package-reslava-result</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

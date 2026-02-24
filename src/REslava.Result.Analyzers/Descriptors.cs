@@ -50,5 +50,14 @@ namespace REslava.Result.Analyzers
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true,
             description: "Accessing .AsT* on a OneOf without checking the corresponding .IsT* throws InvalidOperationException. Use Match() for safe access.");
+
+        public static readonly DiagnosticDescriptor RESL1005_SuggestDomainError = new(
+            id: "RESL1005",
+            title: "Consider using a domain-specific error type",
+            messageFormat: "Consider using '{0}' instead of 'Error' — it carries HTTP status context and integrates automatically with 'ToIResult()'.",
+            category: "REslava.Result.Usage",
+            defaultSeverity: DiagnosticSeverity.Info,
+            isEnabledByDefault: true,
+            description: "REslava.Result provides domain-specific error types (NotFoundError, ValidationError, ConflictError, UnauthorizedError, ForbiddenError) that set HttpStatusCode tags automatically. Using these instead of the generic Error class improves HTTP mapping accuracy and makes intent explicit.");
     }
 }

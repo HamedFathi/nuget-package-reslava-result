@@ -242,7 +242,9 @@ namespace REslava.Result.SourceGenerators.SmartEndpoints.Orchestration
                 {
                     Name = p.Name,
                     Type = p.Type.ToDisplayString(),
-                    Source = InferParameterSource(p.Name, httpMethod)
+                    Source = InferParameterSource(p.Name, httpMethod),
+                    HasValidateAttribute = p.Type.GetAttributes()
+                        .Any(a => a.AttributeClass?.Name == "ValidateAttribute")
                 }).ToList()
             };
 

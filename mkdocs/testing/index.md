@@ -5,7 +5,7 @@ hide:
 
 # Testing & Quality
 
-2,843+ passing tests, 95%+ coverage, and real‑world reliability.
+2,857+ passing tests, 95%+ coverage, and real‑world reliability.
 
 <div class="grid cards" markdown>
 
@@ -26,7 +26,7 @@ hide:
     [](production-benefits.md)
 
 -   :material-shield-check: __Safety Analyzers__
-    RESL1001–RESL2001: 5 Roslyn diagnostics and 3 code fixes for compile-time safety.
+    RESL1001–RESL1005 + RESL2001: 6 Roslyn diagnostics and 3 code fixes for compile-time safety.
     [](safety-analyzers.md)
 
 </div>

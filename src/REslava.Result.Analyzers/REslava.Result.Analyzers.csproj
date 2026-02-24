@@ -14,7 +14,7 @@
     <Description>Roslyn analyzers for REslava.Result. Detects unsafe .Value access without IsSuccess checks and suggests safe alternatives.</Description>
     <PackageTags>analyzers;roslyn;result;code-fix;diagnostics</PackageTags>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/reslava/nuget-package-reslava-result</PackageProjectUrl>
+    <PackageProjectUrl>https://reslava.github.io/nuget-package-reslava-result</PackageProjectUrl>
     <RepositoryUrl>https://github.com/reslava/nuget-package-reslava-result</RepositoryUrl>
     <PackageReadmeFile>README.REslava.Result.Analyzers.md</PackageReadmeFile>
     <PackageIcon>icon.png</PackageIcon>
