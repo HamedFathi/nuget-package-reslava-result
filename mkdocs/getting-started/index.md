@@ -11,7 +11,11 @@ Choose your path and start building with REslava.Result in minutes.
 
 <div class="grid cards" markdown>
 
--   :material-clock-fast: __Quick Start__  
+-   :material-package-down: __Installation__
+    NuGet setup, supported frameworks, and prerequisites.
+    [](installation)
+
+-   :material-clock-fast: __Quick Start__
     Installation and a complete generator showcase.
     [](quick-start)
 

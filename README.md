@@ -49,12 +49,15 @@ Includes API reference, advanced patterns, and interactive examples.
 
 | 🎯 **Section** | 📖 **Description** |
 |------------------|---------------------|
+| [📦 Installation](#-installation) | NuGet setup, TFMs, prerequisites |
 | [🚀 Quick Start](#-quick-start) | Installation and complete generator showcase |
 | [🧪 Quick Start Scenarios](#-quick-start-scenarios) | Hands-on tutorials |
 | [📚 Choose Your Path](#-choose-your-path) | Find exactly what you need |
 | [🎯 The Transformation: 70-90% Less Code](#-the-transformation-70-90-less-code) | See how boilerplate disappears |
 | [🎉 Ready to Transform?](#-ready-to-transform-your-error-handling) | Jump in — get started now |
 | [📐 REslava.Result Core Library](#-reslavaresult-core-library) | Functional programming foundation |
+| [✅ Validation Rules](#-validation-rules) | Declarative rule-based validation framework |
+| [🏷️ Validation Attributes](#️-validation-attributes) | `[Validate]` source generator (v1.24.0) |
 | [🧠 Advanced Patterns](#-advanced-patterns) | Maybe, LINQ, functional composition |
 | [🚀 ASP.NET Integration](#-aspnet-integration) | Minimal API (ToIResult) + MVC (ToActionResult) |
 | [📐 Complete Architecture](#-complete-architecture) | How generators work internally |
@@ -71,6 +74,42 @@ Includes API reference, advanced patterns, and interactive examples.
 | [📄 License](#-license) | MIT License details |
 | [🙏 Acknowledgments](#-acknowledgments) | Community credits |
 | [Contributors](#contributors) | Project contributors |
+
+---
+
+## 📦 Installation
+
+### NuGet CLI
+
+```bash
+dotnet add package REslava.Result                      # Core library — Result<T>, errors, functional composition
+dotnet add package REslava.Result.SourceGenerators     # Source generators — SmartEndpoints, [Validate], OneOfToIResult
+dotnet add package REslava.Result.Analyzers            # Roslyn analyzers — catch unsafe .Value access at compile time
+```
+
+### PackageReference (csproj)
+
+```xml
+<ItemGroup>
+  <PackageReference Include="REslava.Result" Version="1.25.0" />
+  <PackageReference Include="REslava.Result.SourceGenerators" Version="1.25.0" />
+  <PackageReference Include="REslava.Result.Analyzers" Version="1.25.0" />
+</ItemGroup>
+```
+
+### Supported Frameworks
+
+| Package | Target Frameworks |
+|---------|------------------|
+| `REslava.Result` | .NET 8, .NET 9, .NET 10 |
+| `REslava.Result.SourceGenerators` | .NET Standard 2.0 (generates code for any TFM) |
+| `REslava.Result.Analyzers` | .NET Standard 2.0 |
+
+### Prerequisites
+
+- **.NET 8 SDK or later** — required for the core library
+- **C# 12 or later** — recommended (required for some generator patterns)
+- **Visual Studio 2022 17.8+**, **VS Code with C# Dev Kit**, or **JetBrains Rider**
 
 ---
 
@@ -693,6 +732,139 @@ var results = userIds
 - Accessing `.Value` without checking `IsSuccess` first (use `GetValueOrDefault` or `Match`)
 - Deep nesting — break complex pipelines into small named methods
 - Ignoring errors — always handle the failure case in `Match`
+
+---
+
+## ✅ Validation Rules
+
+The built-in validation framework lets you compose declarative rules that accumulate all failures and return `Result<T>`.
+
+### Basic Usage
+
+```csharp
+var validator = Validator.Create<User>()
+    .Rule(u => u.Email, email => email.Contains("@"), "Invalid email address")
+    .Rule(u => u.Name, name => !string.IsNullOrWhiteSpace(name), "Name is required")
+    .Rule(u => u.Age, age => age >= 18, "Must be 18 or older");
+
+Result<User> result = validator.Validate(user);
+```
+
+### All Failures Collected
+
+Unlike `if`/`throw` validation, every rule is always evaluated — all failures surface together:
+
+```csharp
+if (!result.IsSuccess)
+{
+    foreach (var error in result.Errors)
+        Console.WriteLine($"{error.Message}");
+    // Outputs all failures in one pass
+}
+```
+
+### Pipeline Composition
+
+```csharp
+// Validate → bind business logic → transform output
+Result<OrderDto> dto = await validator.Validate(request)
+    .BindAsync(r => _service.CreateOrderAsync(r))
+    .Map(order => order.ToDto());
+
+// In Minimal APIs
+return validator.Validate(request).ToIResult();
+```
+
+### Custom Validators
+
+```csharp
+public class PasswordValidator : IValidationRule<string>
+{
+    public Result<string> Validate(string value) =>
+        value.Length >= 8
+            ? Result<string>.Ok(value)
+            : Result<string>.Fail(new ValidationError("Password must be at least 8 characters"));
+}
+
+var validator = Validator.Create<RegisterRequest>()
+    .Rule(r => r.Password, new PasswordValidator());
+```
+
+---
+
+## 🏷️ Validation Attributes
+
+**v1.24.0** — The `[Validate]` source generator creates a `.Validate()` extension method for any record or class decorated with `System.ComponentModel.DataAnnotations` attributes, returning `Result<T>` — fully composable with the rest of the pipeline.
+
+### Quick Setup
+
+```csharp
+using REslava.Result.SourceGenerators;
+
+[Validate]
+public record CreateProductRequest(
+    [Required] string Name,
+    [Range(0.01, double.MaxValue)] decimal Price,
+    [StringLength(500)] string? Description
+);
+```
+
+### Generated Extension Method
+
+The generator emits this code at compile time — no runtime reflection overhead:
+
+```csharp
+// Auto-generated in Generated.ValidationExtensions namespace
+public static Result<CreateProductRequest> Validate(this CreateProductRequest instance)
+{
+    var context = new ValidationContext(instance);
+    var results = new List<ValidationResult>();
+    if (Validator.TryValidateObject(instance, context, results, validateAllProperties: true))
+        return Result<CreateProductRequest>.Ok(instance);
+
+    var errors = results
+        .Select(r => (IError)new ValidationError(
+            r.ErrorMessage ?? "Validation failed",
+            r.MemberNames.FirstOrDefault()))
+        .ToList();
+    return Result<CreateProductRequest>.Fail(errors);
+}
+```
+
+### Pipeline Integration
+
+```csharp
+// Minimal API — validate and respond in one line
+app.MapPost("/api/products", (CreateProductRequest request) =>
+    request.Validate().ToIResult());
+
+// MVC Controller — validate then call service
+return (await request.Validate()
+    .BindAsync(r => _service.CreateAsync(r)))
+    .ToActionResult();
+
+// Chain further operations
+Result<ProductDto> result = await request.Validate()
+    .BindAsync(r => _service.CreateAsync(r))
+    .Map(p => p.ToDto());
+```
+
+### Supported Annotations
+
+All 20+ `System.ComponentModel.DataAnnotations` types work automatically because the generator delegates to `Validator.TryValidateObject`:
+
+`[Required]`, `[Range]`, `[StringLength]`, `[MinLength]`, `[MaxLength]`, `[RegularExpression]`, `[EmailAddress]`, `[Phone]`, `[Url]`, `[Compare]`, `[CreditCard]`, `[DataType]`, and any custom class inheriting from `ValidationAttribute`.
+
+### Error Details
+
+Each `ValidationError` carries the field name and message:
+
+```csharp
+result.Errors.OfType<ValidationError>().ToList().ForEach(e =>
+    Console.WriteLine($"{e.FieldName}: {e.Message}"));
+// → Name: The Name field is required.
+// → Price: The field Price must be between 0.01 and 1.7976931348623157E+308.
+```
 
 ---
 

@@ -33,9 +33,13 @@ The functional programming foundation of REslava.Result. Learn each piece step b
     Discriminated unions for multiple possible outcomes.
     [](advanced-patterns.md#oneof-discriminated-unions)
 
--   :material-check-all: __Validation__  
-    Declarative validation rules framework.
-    [](advanced-patterns.md#validation-framework)
+-   :material-check-all: __Validation Rules__
+    Declarative rule-based validation that accumulates all failures.
+    [](validation-rules)
+
+-   :material-tag-check: __Validation Attributes__
+    `[Validate]` source generator — DataAnnotations → `Result<T>` automatically.
+    [](validation-attributes)
 
 -   :material-alert: __Domain Errors__  
     Built‑in `NotFoundError`, `ValidationError`, `ConflictError`, etc.
