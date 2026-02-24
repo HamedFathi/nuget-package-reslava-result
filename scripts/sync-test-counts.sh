@@ -51,7 +51,7 @@ run_tests() {
 
   # Check for any failures
   local failed_count
-  failed_count=$(echo "$summaries" | grep -oP 'Failed:\s+\K[0-9]+' | awk '{s+=$1} END{print s+0}')
+  failed_count=$(echo "$summaries" | grep -oE 'Failed:[[:space:]]+[0-9]+' | sed 's/Failed:[[:space:]]*//' | awk '{s+=$1} END{print s+0}')
 
   if [[ "$failed_count" -gt 0 ]]; then
     echo "ERROR: $failed_count test(s) failed. Fix failures before updating docs."
@@ -64,15 +64,15 @@ run_tests() {
   local core_lines core_per_tfm tfm_count
   core_lines=$(echo "$summaries" | grep 'REslava\.Result\.Tests\.dll' || true)
   tfm_count=$(echo "$core_lines" | wc -l | tr -d ' ')
-  core_per_tfm=$(echo "$core_lines" | head -1 | grep -oP 'Passed:\s+\K[0-9]+')
+  core_per_tfm=$(echo "$core_lines" | head -1 | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//')
 
   # Generator tests
   local generator
-  generator=$(echo "$summaries" | grep 'SourceGenerators\.Tests\.dll' | grep -oP 'Passed:\s+\K[0-9]+')
+  generator=$(echo "$summaries" | grep 'SourceGenerators\.Tests\.dll' | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//')
 
   # Analyzer tests
   local analyzer
-  analyzer=$(echo "$summaries" | grep 'Analyzers\.Tests\.dll' | grep -oP 'Passed:\s+\K[0-9]+')
+  analyzer=$(echo "$summaries" | grep 'Analyzers\.Tests\.dll' | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//')
 
   rm -f "$TMPFILE"
 
@@ -193,12 +193,12 @@ if [[ "$DRY_RUN" == true ]]; then
   echo "  Actual total: $TOTAL_FMT  (core=$CORE_PER_TFM x $TFM_COUNT + gen=$GENERATOR + analyzer=$ANALYZER)"
   echo ""
   echo "Matches that would be updated:"
-  grep -nP 'tests-[0-9]+%20passing' "$REPO_ROOT/README.md" | head -5 | sed 's/^/  README.md:/'
-  grep -nP '[0-9,]+ Tests Passing' "$REPO_ROOT/README.md" | head -5 | sed 's/^/  README.md:/'
-  grep -nP 'Source Generator Tests\*\*: [0-9]+ tests' "$REPO_ROOT/README.md" | sed 's/^/  README.md:/'
-  grep -nP 'Analyzer Tests\*\*: [0-9]+ tests' "$REPO_ROOT/README.md" | sed 's/^/  README.md:/'
-  grep -nP '[0-9,]+ tests per TFM' "$REPO_ROOT/README.md" | sed 's/^/  README.md:/'
-  grep -nP 'tests passing across net' "$REPO_ROOT/CHANGELOG.md" | head -1 | sed 's/^/  CHANGELOG.md:/'
+  grep -nE 'tests-[0-9]+%20passing' "$REPO_ROOT/README.md" | head -5 | sed 's/^/  README.md:/'
+  grep -nE '[0-9,]+ Tests Passing' "$REPO_ROOT/README.md" | head -5 | sed 's/^/  README.md:/'
+  grep -nE 'Source Generator Tests\*\*: [0-9]+ tests' "$REPO_ROOT/README.md" | sed 's/^/  README.md:/'
+  grep -nE 'Analyzer Tests\*\*: [0-9]+ tests' "$REPO_ROOT/README.md" | sed 's/^/  README.md:/'
+  grep -nE '[0-9,]+ tests per TFM' "$REPO_ROOT/README.md" | sed 's/^/  README.md:/'
+  grep -nE 'tests passing across net' "$REPO_ROOT/CHANGELOG.md" | head -1 | sed 's/^/  CHANGELOG.md:/'
   echo ""
   echo "No files were modified."
 else

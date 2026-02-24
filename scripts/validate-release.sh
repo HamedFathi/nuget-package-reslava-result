@@ -53,7 +53,7 @@ done
 
 # Auto-read version from Directory.Build.props if not provided
 if [[ -z "$VERSION" ]]; then
-  VERSION=$(grep -oP '<Version>\K[^<]+' "$REPO_ROOT/Directory.Build.props" | head -1 || true)
+  VERSION=$(sed -n 's/.*<Version>\([^<]*\).*/\1/p' "$REPO_ROOT/Directory.Build.props" | head -1 || true)
   if [[ -n "$VERSION" ]]; then
     echo "No version specified — using version from Directory.Build.props: $VERSION"
   fi
@@ -81,7 +81,7 @@ fmt() { echo "$1" | sed ':a;s/\B[0-9]\{3\}\>$/,&/;ta'; }
 
 echo -e "${BOLD}1. Version in Directory.Build.props${RESET}"
 
-PROPS_VERSION=$(grep -oP '<Version>\K[^<]+' "$REPO_ROOT/Directory.Build.props" | head -1 || true)
+PROPS_VERSION=$(sed -n 's/.*<Version>\([^<]*\).*/\1/p' "$REPO_ROOT/Directory.Build.props" | head -1 || true)
 if [[ "$PROPS_VERSION" == "$VERSION" ]]; then
   pass "Directory.Build.props: <Version>${PROPS_VERSION}</Version>"
 else
@@ -149,8 +149,8 @@ else
   dotnet test "$REPO_ROOT" --configuration Release --verbosity minimal 2>&1 \
     | tr -d '\r' > "$TMPFILE" || true
 
-  FAILED_COUNT=$(grep -oP 'Failed:\s+\K[0-9]+' "$TMPFILE" | awk '{s+=$1} END{print s+0}')
-  PASSED_COUNT=$(grep -oP 'Passed:\s+\K[0-9]+' "$TMPFILE" | awk '{s+=$1} END{print s+0}')
+  FAILED_COUNT=$(grep -oE 'Failed:[[:space:]]+[0-9]+' "$TMPFILE" | sed 's/Failed:[[:space:]]*//' | awk '{s+=$1} END{print s+0}')
+  PASSED_COUNT=$(grep -oE 'Passed:[[:space:]]+[0-9]+' "$TMPFILE" | sed 's/Passed:[[:space:]]*//' | awk '{s+=$1} END{print s+0}')
 
   if [[ "$FAILED_COUNT" -gt 0 ]]; then
     fail "$FAILED_COUNT test(s) failed — fix all failures before tagging"
@@ -161,9 +161,9 @@ else
     # Cache counts for check 9
     CORE_LINES=$(grep -E '^Passed!' "$TMPFILE" | grep 'REslava\.Result\.Tests\.dll' || true)
     TFM_COUNT=$(echo "$CORE_LINES" | grep -c '.' || echo 0)
-    CORE_PER_TFM=$(echo "$CORE_LINES" | head -1 | grep -oP 'Passed:\s+\K[0-9]+' || true)
-    GENERATOR=$(grep -E '^Passed!' "$TMPFILE" | grep 'SourceGenerators\.Tests\.dll' | grep -oP 'Passed:\s+\K[0-9]+' || true)
-    ANALYZER=$(grep -E '^Passed!' "$TMPFILE" | grep 'Analyzers\.Tests\.dll' | grep -oP 'Passed:\s+\K[0-9]+' || true)
+    CORE_PER_TFM=$(echo "$CORE_LINES" | head -1 | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//' || true)
+    GENERATOR=$(grep -E '^Passed!' "$TMPFILE" | grep 'SourceGenerators\.Tests\.dll' | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//' || true)
+    ANALYZER=$(grep -E '^Passed!' "$TMPFILE" | grep 'Analyzers\.Tests\.dll' | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//' || true)
 
     if [[ -n "$CORE_PER_TFM" && -n "$GENERATOR" && -n "$ANALYZER" && "$TFM_COUNT" -gt 0 ]]; then
       CORE_TOTAL=$(( CORE_PER_TFM * TFM_COUNT ))
@@ -230,7 +230,7 @@ if [[ -f "$CACHE_FILE" ]]; then
   ACTUAL_TOTAL_FMT=$(fmt "$TOTAL")
 
   # README.md badge
-  README_BADGE=$(grep -oP 'tests-\K[0-9]+(?=%20passing)' "$REPO_ROOT/README.md" | head -1 || true)
+  README_BADGE=$(grep -oE 'tests-[0-9]+%20passing' "$REPO_ROOT/README.md" | head -1 | sed 's/tests-//;s/%20passing//' || true)
   if [[ "$README_BADGE" == "$TOTAL" ]]; then
     pass "README.md badge: tests-${TOTAL}%20passing ✓"
   else
@@ -242,14 +242,14 @@ if [[ -f "$CACHE_FILE" ]]; then
   if echo "$CHANGELOG_LINE" | grep -q "$ACTUAL_TOTAL_FMT"; then
     pass "CHANGELOG.md latest Stats: ${ACTUAL_TOTAL_FMT} tests ✓"
   else
-    CHANGELOG_COUNT=$(echo "$CHANGELOG_LINE" | grep -oP '[0-9,]+(?= tests passing)' | head -1 || true)
+    CHANGELOG_COUNT=$(echo "$CHANGELOG_LINE" | grep -oE '[0-9,]+ tests passing' | head -1 | sed 's/ tests passing//' || true)
     fail "CHANGELOG.md Stats shows '${CHANGELOG_COUNT}' tests, expected '${ACTUAL_TOTAL_FMT}'"
     warn "Run ./scripts/sync-test-counts.sh to fix"
   fi
 
   # GITHUB_RELEASE release notes count
   if [[ -f "$RELEASE_FILE" ]]; then
-    RELEASE_COUNT=$(grep -oP '[0-9,]+(?= tests passing)' "$RELEASE_FILE" | head -1 || true)
+    RELEASE_COUNT=$(grep -oE '[0-9,]+ tests passing' "$RELEASE_FILE" | head -1 | sed 's/ tests passing//' || true)
     if [[ "$RELEASE_COUNT" == "$ACTUAL_TOTAL_FMT" ]]; then
       pass "GITHUB_RELEASE_v${VERSION}.md: ${ACTUAL_TOTAL_FMT} tests ✓"
     else
