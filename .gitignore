@@ -130,3 +130,6 @@ ENV/
 # MkDocs
 site/
 .cache/
+
+# Benchmarks (raw BDN output — commit only processed results to mkdocs/)
+benchmarks/BenchmarkDotNet.Artifacts/
