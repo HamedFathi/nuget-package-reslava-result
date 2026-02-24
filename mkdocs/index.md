@@ -13,7 +13,7 @@ hide:
 [![GitHub Stars](https://img.shields.io/github/stars/reslava/REslava.Result)](https://github.com/reslava/REslava.Result/stargazers) 
 [![NuGet Downloads](https://img.shields.io/nuget/dt/REslava.Result)](https://www.nuget.org/packages/REslava.Result)
 ![Test Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
-![Test Suite](https://img.shields.io/badge/tests-2843%20passing-brightgreen)
+![Test Suite](https://img.shields.io/badge/tests-2862%20passing-brightgreen)
 </div>
 
 **:material-api: The only .NET library that blends functional error handling with compile‑time API generation.**
@@ -32,12 +32,16 @@ hide:
     Functional programming foundation: Result, composition, async, Maybe, OneOf, validation, and more.
     [](core-concepts)
 
--   :material-api: __ASP.NET Integration__  
+-   :material-api: __ASP.NET Integration__
     Minimal API, MVC, SmartEndpoints, OpenAPI, authorization, and problem details.
     [](aspnet)
     {: .is-featured }
 
--   :material-puzzle: __Architecture & Design__  
+-   :material-shield-check: __Safety Analyzers__
+    6 Roslyn diagnostics + 3 code fixes — catch `Result<T>` and `OneOf` mistakes at compile time.
+    [](safety-analyzers)
+
+-   :material-puzzle: __Architecture & Design__
     How the library is built – SOLID, package structure, and the source generator pipeline.
     [](architecture)
 
@@ -45,8 +49,8 @@ hide:
     Code examples: Fast APIs, Console and quick code examples.
     [](code-examples/)
 
--   :material-test-tube: __Testing & Quality__  
-    2,843+ tests, CI/CD, real‑world impact, and production benefits.
+-   :material-test-tube: __Testing & Quality__
+    2,862+ tests, CI/CD, real‑world impact, and production benefits.
     [](testing)
 
 -   :material-book-open-variant: __Reference__  

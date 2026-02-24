@@ -70,14 +70,16 @@ MAPPING = {
     "uml-v1.25.0-core": "architecture/solid",
     "uml-v1.25.0-generators": "architecture/solid",
 
+    # Safety Analyzers
+    "safety-analyzers": "safety-analyzers",
+    "roslyn-analyzers": "safety-analyzers",
+
     # Testing & Quality
     "testing": "testing",
     "test-suite": "testing",
     "ci-cd": "testing",
     "real-world-impact": "testing",
     "production-benefits": "testing",
-    "safety-analyzers": "testing",
-    "roslyn-analyzers": "testing",
 
     # Reference
     "reference": "reference",    

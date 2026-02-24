@@ -528,6 +528,31 @@ var results = userIds
     .Traverse(id => GetUserAsync(id)); // Async version of Sequence
 ```
 
+### 🚫 Tap on Failure — `TapOnFailure`
+
+Execute a side-effect **only when the result has failed** — logging, metrics, alerting. The result passes through unchanged:
+
+```csharp
+Result<User> result = await GetUserAsync(id)
+    .TapOnFailure(error => _logger.LogWarning("GetUser failed: {Msg}", error.Message));
+
+// Async side-effect
+Result<Order> order = await CreateOrderAsync(request)
+    .TapOnFailureAsync(async error => await _metrics.IncrementAsync("order.failed"));
+
+// Non-generic Result
+Result operation = await DeleteUserAsync(id)
+    .TapOnFailure(error => _audit.RecordFailure("delete_user", error));
+```
+
+Combine with `Tap()` for full success/failure observability in one chain:
+
+```csharp
+Result<Order> order = await CreateOrderAsync(request)
+    .Tap(o => _logger.LogInformation("Order {Id} created", o.Id))
+    .TapOnFailure(e => _logger.LogError("Order creation failed: {Msg}", e.Message));
+```
+
 ### 🔀 Conditional Factories — `OkIf` / `FailIf`
 
 Create results directly from boolean conditions — no if/else boilerplate:
@@ -1500,6 +1525,14 @@ Uses the same two-phase error mapping as OneOfToIResult:
 
 ### 📝 Problem Details Integration
 **RFC 7807 Compliance**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `StatusCode` | `int` | HTTP status code for this error type |
+| `Title` | `string?` | Short human-readable summary (RFC 7807 `title`) |
+| `Type` | `string?` | RFC 7807 `type` URI identifying the error class |
+| `IncludeTags` | `bool` | Include the error's `.Tags` dict in `ProblemDetails.Extensions` (default: `false`) |
+
 ```csharp
 [MapToProblemDetails(StatusCode = 404, Title = "User Not Found")]
 public class UserNotFoundError : Error
@@ -1518,6 +1551,32 @@ public class UserNotFoundError : Error
     "title": "User Not Found",
     "status": 404,
     "userId": 123
+}
+```
+
+Use `Type` and `IncludeTags` for richer RFC 7807 responses:
+
+```csharp
+[MapToProblemDetails(
+    StatusCode = 404,
+    Title = "User Not Found",
+    Type = "https://api.example.com/errors/user-not-found",  // RFC 7807 type URI
+    IncludeTags = true)]  // adds Tags dict to ProblemDetails.Extensions
+public class UserNotFoundError : Error
+{
+    public UserNotFoundError(int userId) : base($"User {userId} not found")
+        => this.WithTag("UserId", userId).WithTag("Resource", "User");
+}
+
+// Response with Type + IncludeTags:
+{
+    "type": "https://api.example.com/errors/user-not-found",
+    "title": "User Not Found",
+    "status": 404,
+    "extensions": {
+        "UserId": 42,
+        "Resource": "User"
+    }
 }
 ```
 

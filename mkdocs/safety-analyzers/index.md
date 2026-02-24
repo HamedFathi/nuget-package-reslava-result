@@ -1,0 +1,41 @@
+---
+hide:
+  - navigation
+---
+
+# Safety Analyzers
+
+Catch `Result<T>` and `OneOf` mistakes **at compile time** — 6 diagnostics and 3 code fixes.
+Install once, protect your whole codebase.
+
+```bash
+dotnet add package REslava.Result.Analyzers
+```
+
+<div class="grid cards" markdown>
+
+-   :material-alert: __RESL1001 — Unsafe .Value__
+    `[Warning + Code Fix]` Detects `.Value` access without an `IsSuccess` guard.
+    [](analyzers/#resl1001-unsafe-value-access)
+
+-   :material-trash-can-outline: __RESL1002 — Discarded Result__
+    `[Warning]` Warns when a `Result<T>` return value is silently ignored.
+    [](analyzers/#resl1002-discarded-result-return-value)
+
+-   :material-swap-horizontal: __RESL1003 — Prefer Match__
+    `[Info]` Suggests `.Match()` over manual `if`/`else` when both branches use the result.
+    [](analyzers/#resl1003-prefer-match-over-if-check)
+
+-   :material-timer-off: __RESL1004 — Async Not Awaited__
+    `[Warning + Code Fix]` Detects `Task<Result<T>>` assigned without `await`.
+    [](analyzers/#resl1004-taskresultt-not-awaited)
+
+-   :material-lightbulb-on: __RESL1005 — Suggest Domain Error__
+    `[Info]` Suggests domain-specific error types over generic `new Error("...")`.
+    [](analyzers/#resl1005-suggest-domain-error)
+
+-   :material-shield-off: __RESL2001 — Unsafe OneOf.AsT*__
+    `[Warning + Code Fix]` Detects `.AsT1/.AsT2` access without an `.IsT1/.IsT2` guard.
+    [](analyzers/#resl2001-unsafe-oneofast-access)
+
+</div>

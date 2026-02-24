@@ -17,6 +17,10 @@ The functional programming foundation of REslava.Result. Learn each piece step b
     Chain operations with `Bind`, `Map`, `Tap`, `Compose`.
     [](reslava.result-core-library/#functional-composition)
 
+-   :material-cancel: __Tap on Failure__
+    `TapOnFailure` — side-effects on failure only: logging, metrics, alerting without changing the result.
+    [](reslava.result-core-library/#tap-on-failure-taponFailure)
+
 -   :material-timer-sand: __Async Patterns__
     Async variants, `WhenAll`, `Retry`, `Timeout`.
     [](reslava.result-core-library/#async-patterns-whenall-retry-timeout)
