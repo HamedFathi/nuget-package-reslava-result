@@ -36,6 +36,7 @@ MAPPING = {
     "oneof": "core-concepts",
     "domain-errors": "core-concepts",
     "error-context": "core-concepts",
+    "error-types": "core-concepts",
     "performance": "core-concepts",
     "advanced-patterns": "core-concepts",
 
@@ -53,6 +54,8 @@ MAPPING = {
     "openapi": "aspnet",
     "authorization": "aspnet",
     "problem-details": "aspnet",
+    "oneof-to-iresult": "aspnet",
+    "one-of-to-iresult": "aspnet",
 
     # Architecture
     "architecture": "architecture",
@@ -64,6 +67,8 @@ MAPPING = {
     "solid-architecture": "architecture/solid",
     "uml-v1.12.1-core": "architecture/solid",
     "uml-v1.12.1-generators": "architecture/solid",
+    "uml-v1.25.0-core": "architecture/solid",
+    "uml-v1.25.0-generators": "architecture/solid",
 
     # Testing & Quality
     "testing": "testing",
@@ -71,6 +76,8 @@ MAPPING = {
     "ci-cd": "testing",
     "real-world-impact": "testing",
     "production-benefits": "testing",
+    "safety-analyzers": "testing",
+    "roslyn-analyzers": "testing",
 
     # Reference
     "reference": "reference",

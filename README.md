@@ -74,6 +74,7 @@ Includes API reference, advanced patterns, and interactive examples.
 
 **🧪 Testing & Quality**
 - [🧪 Testing & Quality Assurance](#-testing--quality-assurance) — 2,843 tests, CI/CD pipeline
+- [🛡️ Safety Analyzers](#️-safety-analyzers) — RESL1001–RESL2001, 5 diagnostics + 3 code fixes
 - [📈 Production Benefits](#-production-benefits) — Enterprise-ready advantages
 - [🌍 Real-World Impact](#-real-world-impact) — Success stories and use cases
 - [🏆 Why Choose REslava.Result?](#-why-choose-reslavaresult) — Unique advantages
@@ -129,13 +130,7 @@ dotnet add package REslava.Result.Analyzers            # Roslyn analyzers — ca
 
 ## 🚀 Quick Start
 
-### Installation
-
-```bash
-dotnet add package REslava.Result                      # Core library
-dotnet add package REslava.Result.SourceGenerators     # ASP.NET source generators
-dotnet add package REslava.Result.Analyzers            # Roslyn safety analyzers
-```
+See [📦 Installation](#-installation) for NuGet setup.
 
 ### Complete Generator Showcase
 
@@ -263,99 +258,11 @@ app.MapGet("/users/oneof/{id}", async (int id) =>
 });
 ```
 
-#### 🛡️ Safety Analyzers — Compile-Time Diagnostics
-
-Catch common Result<T> and OneOf mistakes **at compile time** with 5 diagnostics and 3 code fixes:
-
-```csharp
-// RESL1001 — Unsafe .Value access without guard [Warning + Code Fix]
-var result = GetUser(id);
-var name = result.Value;        // ⚠️ Warning: Access to '.Value' without checking 'IsSuccess'
-                                // 💡 Fix A: Wrap in if (result.IsSuccess) { ... }
-                                // 💡 Fix B: Replace with result.Match(v => v, e => default)
-
-// ✅ Safe alternatives:
-if (result.IsSuccess)
-    var name = result.Value;    // No warning — guarded by IsSuccess
-
-var name = result.Match(        // No warning — pattern matching
-    onSuccess: u => u.Name,
-    onFailure: _ => "Unknown");
-```
-
-```csharp
-// RESL1002 — Discarded Result<T> return value [Warning]
-Save();                         // ⚠️ Warning: Return value of type 'Result<T>' is discarded
-await SaveAsync();              // ⚠️ Warning: errors silently swallowed
-
-// ✅ Safe alternatives:
-var result = Save();            // No warning — assigned
-return Save();                  // No warning — returned
-```
-
-```csharp
-// RESL1003 — Prefer Match() over if-check [Info suggestion]
-if (result.IsSuccess)           // ℹ️ Suggestion: Consider using Match() instead
-{
-    var x = result.Value;
-}
-else
-{
-    var e = result.Errors;
-}
-
-// ✅ Cleaner with Match():
-var x = result.Match(v => v, e => HandleErrors(e));
-```
-
-```csharp
-// RESL1004 — Task<Result<T>> assigned without await [Warning + Code Fix]
-async Task M()
-{
-    var result = GetFromDb(id);     // ⚠️ Warning: 'GetFromDb' returns Task<Result<T>> but is not awaited
-                                    // 💡 Fix: Add 'await'
-}
-
-// ✅ Safe alternatives:
-var result = await GetFromDb(id);   // No warning — properly awaited
-Task<Result<User>> task = GetFromDb(id); // No warning — explicit Task type (intentional)
-```
-
-```csharp
-// RESL2001 — Unsafe OneOf.AsT* access without IsT* check [Warning + Code Fix]
-var oneOf = GetResult();        // OneOf<User, NotFound, ValidationError>
-var user = oneOf.AsT1;          // ⚠️ Warning: Access to '.AsT1' without checking '.IsT1'
-                                // 💡 Fix: Replace with oneOf.Match(t1 => t1, t2 => throw ..., t3 => throw ...)
-
-// ✅ Safe alternatives:
-if (oneOf.IsT1)
-    var user = oneOf.AsT1;      // No warning — guarded
-
-var user = oneOf.Match(         // No warning — exhaustive
-    user => user,
-    notFound => throw ...,
-    error => throw ...);
-```
-
-```bash
-dotnet add package REslava.Result.Analyzers
-```
-
 ---
 
 ## 🧪 Quick Start Scenarios
 
-### Installation
-```bash
-# Core functional programming library
-dotnet add package REslava.Result
-
-# ASP.NET integration + OneOf extensions
-dotnet add package REslava.Result.SourceGenerators
-
-# Roslyn safety analyzers (compile-time diagnostics)
-dotnet add package REslava.Result.Analyzers
-```
+See [📦 Installation](#-installation) for NuGet setup.
 
 ### Scenario 1: Functional Programming Foundation
 ```csharp
@@ -434,7 +341,7 @@ public IResult GetUser(int id) =>
 |--------------------------|-------------------|---------------------------|
 | **Web API** | [🌐 ASP.NET Integration](#-aspnet-integration) | Auto-conversion, error mapping, OneOf extensions |
 | **Library/Service** | [📐 Core Library](#-reslavaresult-core-library) | Result pattern, validation, functional programming |
-| **Custom Generator** | [📖 Custom Generator Guide](docs/how-to-create-custom-generator.md) | Build your own source generators |
+| **Custom Generator** | [⚙️ How Generators Work](#-how-generators-work) | Build your own source generators |
 | **Advanced App** | [🧠 Advanced Patterns](#-advanced-patterns) | Maybe, OneOf, validation rules |
 | **Testing** | [🧪 Testing & Quality](#-testing--quality-assurance) | 2,825+ tests, CI/CD, test strategies |
 | **Curious About Magic** | [📐 Complete Architecture](#-complete-architecture) | How generators work, SOLID design |
@@ -499,18 +406,7 @@ public async Task<Result<User>> CreateUser(CreateUserRequest request) =>
 
 ## 🎉 Ready to Transform Your Error Handling?
 
-**📖 [Start with Getting Started Guide](docs/getting-started.md)**
-
----
-
-<div align="center">
-
-**⭐ Star this REslava.Result repository if you find it useful!**
-
-Made with ❤️ by [Rafa Eslava](https://github.com/reslava) for developers community
-
-[Report Bug](https://github.com/reslava/nuget-package-reslava-result/issues) • [Request Feature](https://github.com/reslava/nuget-package-reslava-result/issues) • [Discussions](https://github.com/reslava/nuget-package-reslava-result/discussions)
-</div>
+Get started with [📦 Installation](#-installation) and [🚀 Quick Start](#-quick-start).
 
 ---
 
@@ -730,6 +626,73 @@ var results = users
 // Traverse operations
 var results = userIds
     .Traverse(id => GetUserAsync(id)); // Async version of Sequence
+```
+
+### 🔀 Conditional Factories — `OkIf` / `FailIf`
+
+Create results directly from boolean conditions — no if/else boilerplate:
+
+```csharp
+// Result (no value)
+Result r1 = Result.OkIf(age >= 18, "Must be 18 or older");
+Result r2 = Result.FailIf(user.IsSuspended, new ValidationError("Account suspended"));
+
+// Result<T> — value on success
+Result<User> r3 = Result<User>.OkIf(user != null, user!, "User not found");
+Result<User> r4 = Result<User>.FailIf(user.Age < 18, new ValidationError("Age", "Must be 18+"), user);
+
+// Lazy evaluation — condition and/or value computed only when needed
+Result<User> r5 = Result<User>.OkIf(
+    () => _db.IsUserActive(id),         // predicate evaluated lazily
+    () => _db.LoadUser(id),             // value only loaded when needed
+    "User not found");
+
+// Async versions
+Result result = await Result.OkIfAsync(() => _api.CheckExistsAsync(id), "Not found");
+Result<User> result = await Result<User>.OkIfAsync(
+    () => _api.CheckExistsAsync(id),
+    () => _api.LoadUserAsync(id),
+    "User not found");
+```
+
+### 🛡️ Exception Wrapping — `Try` / `TryAsync`
+
+Safely execute code that may throw — exceptions become `ExceptionError` in a failed `Result<T>`:
+
+```csharp
+// Sync — wraps any thrown exception
+Result<int> parsed = Result<int>.Try(() => int.Parse(input));
+Result<User> user  = Result<User>.Try(() => GetUser(id));
+
+// Custom error handler — map exception to a domain error
+Result<User> result = Result<User>.Try(
+    () => JsonSerializer.Deserialize<User>(json),
+    ex => new ValidationError("body", $"Invalid JSON: {ex.Message}"));
+
+// Async
+Result<User> result = await Result<User>.TryAsync(
+    async () => await _api.FetchUserAsync(id));
+
+// Async with custom handler
+Result<User> result = await Result<User>.TryAsync(
+    async () => await _repo.GetAsync(id),
+    ex => new NotFoundError($"User {id} not found"));
+```
+
+### ⏳ CancellationToken Support
+
+All `*Async` methods accept `CancellationToken cancellationToken = default`:
+
+```csharp
+// Pass through from your endpoint/controller
+Result<User> result = await Result<User>.TryAsync(
+    async () => await _repo.GetAsync(id),
+    cancellationToken: ct);
+
+// Bind / Map / Tap async chains also accept ct
+Result<UserDto> dto = await result
+    .BindAsync(u => _mapper.MapAsync(u, ct))
+    .TapAsync(d => _cache.SetAsync(d, ct));
 ```
 
 ### ✅ Best Practices
@@ -1586,20 +1549,19 @@ return GetUser(id).ToIResult(); // 🆕 Automatic HTTP mapping!
 |------------------|---------------|---------------------|
 | **Web API** | [🌐 ASP.NET Integration](#-the-transformation-70-90-less-code) | Auto-conversion, OneOf extensions, error mapping |
 | **Library/Service** | [📐 Core Library](#-reslavaresult-core-library) | Result pattern, validation, error handling |
-| **Custom Generator** | [📖 Custom Generator Guide](docs/how-to-create-custom-generator.md) | Build your own source generators |
+| **Custom Generator** | [⚙️ How Generators Work](#-how-generators-work) | Build your own source generators |
 | **Advanced App** | [🧠 Advanced Patterns](#-advanced-patterns) | Maybe, OneOf, validation rules |
 | **Testing** | [🧪 Testing & Quality](#-testing--quality-assurance) | 2,825+ tests, CI/CD, test strategies |
 | **Curious About Magic** | [📐 Complete Architecture](#-complete-architecture) | How generators work, SOLID design |
 
 ### 📚 **Complete Reference**
 
-- **📖 [Getting Started Guide](docs/getting-started.md)** - Learn the basics
-- **🌐 [ASP.NET Integration](docs/aspnet-integration.md)** - HTTP mapping details
-- **🚀 [OneOf Extensions](docs/oneof-extensions.md)** - 🆕 External library support
-- **⚡ [Source Generator](docs/source-generator.md)** - Smart auto-detection magic
-- **🧠 [Functional Programming](docs/functional-programming.md)** - Complete ROP methodology
-- **📖 [Custom Generator Guide](docs/how-to-create-custom-generator.md)** - 🆕 Build your own generators
-- **📚 [API Reference](docs/api/)** - Complete technical documentation
+- **📦 [Installation](#-installation)** - NuGet setup, supported TFMs, prerequisites
+- **🚀 [Quick Start](#-quick-start)** - Complete generator showcase
+- **🌐 [ASP.NET Integration](#-aspnet-integration)** - HTTP mapping, Minimal API, MVC
+- **📐 [Core Library](#-reslavaresult-core-library)** - Result<T>, Maybe<T>, OneOf, error handling
+- **⚙️ [How Generators Work](#-how-generators-work)** - Source generator internals
+- **📚 [API Reference](https://reslava.github.io/nuget-package-reslava-result/reference/api/index.html)** - Complete technical documentation
 
 ### 🎯 **Hands-On Samples**
 
@@ -1756,6 +1718,91 @@ Passed!  - Failed: 0, Passed: 896 - REslava.Result.Tests.dll (net9.0)
 Passed!  - Failed: 0, Passed: 896 - REslava.Result.Tests.dll (net10.0)
 Passed!  - Failed: 0, Passed:  56 - REslava.Result.SourceGenerators.Tests.dll (net10.0)
 Passed!  - Failed: 0, Passed:  54 - REslava.Result.Analyzers.Tests.dll (net10.0)
+```
+
+---
+
+## 🛡️ Safety Analyzers
+
+Catch common `Result<T>` and `OneOf` mistakes **at compile time** — 5 diagnostics and 3 code fixes included in `REslava.Result.Analyzers`.
+
+```bash
+dotnet add package REslava.Result.Analyzers
+```
+
+### RESL1001 — Unsafe `.Value` Access `[Warning + Code Fix]`
+
+```csharp
+var result = GetUser(id);
+var name = result.Value;        // ⚠️ RESL1001: Access to '.Value' without checking 'IsSuccess'
+                                // 💡 Fix A: Wrap in if (result.IsSuccess) { ... }
+                                // 💡 Fix B: Replace with result.Match(v => v, e => default)
+
+// ✅ Safe alternatives:
+if (result.IsSuccess)
+    var name = result.Value;    // No warning — guarded by IsSuccess
+
+var name = result.Match(        // No warning — pattern matching
+    onSuccess: u => u.Name,
+    onFailure: _ => "Unknown");
+```
+
+### RESL1002 — Discarded `Result<T>` Return Value `[Warning]`
+
+```csharp
+Save();                         // ⚠️ RESL1002: Return value of type 'Result<T>' is discarded
+await SaveAsync();              // ⚠️ Warning: errors silently swallowed
+
+// ✅ Safe alternatives:
+var result = Save();            // No warning — assigned
+return Save();                  // No warning — returned
+```
+
+### RESL1003 — Prefer `Match()` Over If-Check `[Info]`
+
+```csharp
+if (result.IsSuccess)           // ℹ️ RESL1003: Consider using Match() instead
+{
+    var x = result.Value;
+}
+else
+{
+    var e = result.Errors;
+}
+
+// ✅ Cleaner with Match():
+var x = result.Match(v => v, e => HandleErrors(e));
+```
+
+### RESL1004 — `Task<Result<T>>` Not Awaited `[Warning + Code Fix]`
+
+```csharp
+async Task M()
+{
+    var result = GetFromDb(id); // ⚠️ RESL1004: 'GetFromDb' returns Task<Result<T>> but is not awaited
+                                // 💡 Fix: Add 'await'
+}
+
+// ✅ Safe:
+var result = await GetFromDb(id);                    // No warning — properly awaited
+Task<Result<User>> task = GetFromDb(id);             // No warning — explicit Task type (intentional)
+```
+
+### RESL2001 — Unsafe `OneOf.AsT*` Access `[Warning + Code Fix]`
+
+```csharp
+var oneOf = GetResult();        // OneOf<User, NotFound, ValidationError>
+var user = oneOf.AsT1;          // ⚠️ RESL2001: Access to '.AsT1' without checking '.IsT1'
+                                // 💡 Fix: Replace with oneOf.Match(...)
+
+// ✅ Safe alternatives:
+if (oneOf.IsT1)
+    var user = oneOf.AsT1;      // No warning — guarded
+
+var user = oneOf.Match(         // No warning — exhaustive pattern match
+    user => user,
+    notFound => throw new NotFoundException(),
+    error => throw new ValidationException());
 ```
 
 ---
@@ -1944,3 +1991,13 @@ See the full list of contributors in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ---
 
+<div align="center">
+
+**⭐ Star this REslava.Result repository if you find it useful!**
+
+Made with ❤️ by [Rafa Eslava](https://github.com/reslava) for developers community
+
+[Report Bug](https://github.com/reslava/nuget-package-reslava-result/issues) • [Request Feature](https://github.com/reslava/nuget-package-reslava-result/issues) • [Discussions](https://github.com/reslava/nuget-package-reslava-result/discussions)
+</div>
+
+---

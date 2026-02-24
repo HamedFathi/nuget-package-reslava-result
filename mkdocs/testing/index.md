@@ -21,8 +21,12 @@ hide:
     How teams use REslava.Result in production.
     [](real-world-impact.md)
 
--   :material-chart-areaspline: __Production Benefits__  
+-   :material-chart-areaspline: __Production Benefits__
     Performance, AOT compatibility, and zero dependencies.
     [](production-benefits.md)
+
+-   :material-shield-check: __Safety Analyzers__
+    RESL1001–RESL2001: 5 Roslyn diagnostics and 3 code fixes for compile-time safety.
+    [](safety-analyzers.md)
 
 </div>
