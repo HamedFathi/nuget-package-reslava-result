@@ -55,6 +55,7 @@
     <Compile Include="SmartEndpoints\SmartEndpoints_AuthorizationTests.cs" />
     <Compile Include="SmartEndpoints\SmartEndpoints_FiltersAndCachingTests.cs" />
     <Compile Include="SmartEndpoints\SmartEndpoints_AutoValidationTests.cs" />
+    <Compile Include="SmartEndpoints\SmartEndpoints_CancellationTokenTests.cs" />
     <Compile Include="Validate\ValidateGeneratorTests.cs" />
   </ItemGroup>
 

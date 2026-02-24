@@ -116,7 +116,8 @@ namespace REslava.Result.SourceGenerators.Generators.SmartEndpoints.Models
         Route,
         Body,
         Header,
-        Service
+        Service,
+        CancellationToken
     }
 
     /// <summary>

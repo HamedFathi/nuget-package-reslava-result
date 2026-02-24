@@ -58,6 +58,7 @@ namespace REslava.Result.SourceGenerators.Generators.SmartEndpoints.CodeGenerati
             }
             builder.AppendLine("using System;");
             builder.AppendLine("using System.Threading.Tasks;");
+            builder.AppendLine("using System.Threading;");
             builder.AppendLine("using Generated.ResultExtensions;");
             builder.AppendLine("using Generated.OneOfExtensions;");
             var anyValidation = controllers.Any(c =>
@@ -133,7 +134,10 @@ namespace REslava.Result.SourceGenerators.Generators.SmartEndpoints.CodeGenerati
             var relativeRoute = ComputeRelativeRoute(endpoint.Route, endpoint.RoutePrefix);
 
             // Build parameter list (method params + DI service)
-            var methodParams = string.Join(", ", endpoint.Parameters.Select(p => $"{p.Type} {p.Name}"));
+            var methodParams = string.Join(", ", endpoint.Parameters.Select(p =>
+                p.Source == ParameterSource.CancellationToken
+                    ? $"CancellationToken {p.Name}"
+                    : $"{p.Type} {p.Name}"));
             var serviceParam = $"{endpoint.Namespace}.{endpoint.ClassName} service";
             var fullParamList = string.IsNullOrEmpty(methodParams)
                 ? serviceParam
