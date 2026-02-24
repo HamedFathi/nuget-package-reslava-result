@@ -49,20 +49,25 @@ Includes API reference, advanced patterns, and interactive examples.
 
 **🚀 Getting Started**
 - [📦 Installation](#-installation) — NuGet setup, supported TFMs, prerequisites
-- [🚀 Quick Start](#-quick-start) — Installation and complete generator showcase
+- [🚀 Quick Start](#-quick-start) — Zero-boilerplate generator showcase
 - [🧪 Quick Start Scenarios](#-quick-start-scenarios) — Hands-on tutorials
 - [📚 Choose Your Path](#-choose-your-path) — Find exactly what you need
 - [🎯 The Transformation](#-the-transformation-70-90-less-code) — 70-90% less boilerplate
 - [🎉 Ready to Transform?](#-ready-to-transform-your-error-handling) — Jump right in
 
 **📘 Core Concepts**
-- [📐 REslava.Result Core Library](#-reslavaresult-core-library) — Functional programming foundation
+- [📐 REslava.Result Core Library](#-reslavaresult-core-library) — Result<T>, composition, async, LINQ, OkIf/FailIf, Try/TryAsync
+- [⚠️ Error Types](#️-error-types) — Domain errors, custom CRTP errors, rich tag context
 - [✅ Validation Rules](#-validation-rules) — Declarative rule-based validation
-- [🏷️ Validation Attributes](#️-validation-attributes) — `[Validate]` source generator (v1.24.0)
-- [🧠 Advanced Patterns](#-advanced-patterns) — Maybe, OneOf, LINQ, functional composition
+- [🏷️ Validation Attributes](#️-validation-attributes) — `[Validate]` source generator
+- [🎲 Maybe\<T>](#-maybet) — Safe null handling with optionals
+- [🔀 OneOf Unions](#-oneof-unions) — Discriminated unions with exhaustive matching
+- [🧠 Advanced Patterns](#-advanced-patterns) — Functional composition, performance
 
 **🌐 ASP.NET Integration**
-- [🚀 ASP.NET Integration](#-aspnet-integration) — Minimal API (ToIResult) + MVC (ToActionResult)
+- [🚀 SmartEndpoints](#-smartendpoints) — Zero-boilerplate Minimal APIs with auth, filters, caching
+- [🔀 OneOf → IResult](#-oneof--iresult) — HTTP mapping for discriminated unions
+- [🚀 ASP.NET Integration](#-aspnet-integration) — ToIResult, ToActionResult, Problem Details, MVC
 
 **🏛️ Architecture & Design**
 - [📐 Complete Architecture](#-complete-architecture) — How generators work internally
@@ -132,131 +137,32 @@ dotnet add package REslava.Result.Analyzers            # Roslyn analyzers — ca
 
 See [📦 Installation](#-installation) for NuGet setup.
 
-### Complete Generator Showcase
-
-#### ⚡ SmartEndpoints - Zero-Boilerplate Fast APIs
-Generate complete Minimal APIs from controllers with automatic HTTP mapping!
+Decorate a controller class — the source generator builds complete Minimal API endpoints automatically:
 
 ```csharp
 [AutoGenerateEndpoints(RoutePrefix = "/api/users")]
-public class UserController {
+public class UserController
+{
     private readonly UserService _service;
     public UserController(UserService service) => _service = service;
 
-    // 🚀 DI + async → Automatic REST API with dependency injection!
     public async Task<OneOf<ValidationError, NotFoundError, User>>
         GetUser(int id) => await _service.GetUserByIdAsync(id);
 
     public async Task<OneOf<ValidationError, ConflictError, User>>
         CreateUser(CreateUserRequest request) => await _service.CreateAsync(request);
 
-    public async Task<Result<List<User>>> GetUsers()
-        => await _service.GetAllAsync();
+    public async Task<Result<List<User>>> GetUsers() => await _service.GetAllAsync();
 }
 ```
 
-**🎉 Generated Minimal API (Zero Manual Code!)**
-- ✅ `POST /api/users` → 201/400/404/409 (OneOf4 auto-mapping!)
-- ✅ `GET /api/users/{id}` → 200/404 (OneOf2 auto-mapping!)
-- ✅ **Full OpenAPI metadata** — `.Produces<T>(200)`, `.Produces(404)`, `.WithSummary()`, `.WithTags()` auto-generated from return types
-- ✅ **Error handling** automatically configured
-- ✅ **HTTP status mapping** automatically applied
-- ✅ **Route grouping** via `MapGroup` with automatic tag generation
+**Generated automatically — zero manual code:**
+- `GET /api/users/{id}` → 200 / 400 / 404 (HTTP status from `OneOf` error types)
+- `POST /api/users` → 201 / 400 / 409
+- `GET /api/users` → 200
+- Full OpenAPI metadata — `.Produces<T>()`, `.WithSummary()`, `.WithTags()`, `.WithName()`
 
-**🔥 Development Speed: 10x Faster**
-- **No manual route setup** - automatic from method names
-- **No manual error handling** - automatic from return types
-- **No manual status codes** - automatic from error types
-- **No manual API docs** - OpenAPI + Scalar UI automatically generated
-- **Self-explanatory code** - business logic only
-
-#### 🔄 OneOf Extensions - Intelligent HTTP Mapping
-Automatic error detection and HTTP status mapping for OneOf types:
-
-```csharp
-// Error Types → HTTP Status Codes
-ValidationError → 400 Bad Request
-UserNotFoundError → 404 Not Found  
-ConflictError → 409 Conflict
-UnauthorizedError → 401 Unauthorized
-ForbiddenError → 403 Forbidden
-ServerError → 500 Internal Server Error
-```
-
-**Supported Patterns:**
-- **OneOf2ToIResult<T1,T2>** - Two-type error handling
-- **OneOf3ToIResult<T1,T2,T3>** - Three-type error handling  
-- **🆕 OneOf4ToIResult<T1,T2,T3,T4>** - Four-type error handling (NEW v1.12.0!)
-- **SmartEndpoints Integration** - Uses extensions automatically in generated APIs
-
-#### 🚀 Enhanced SmartEndpoints + OpenAPI Metadata (NEW!)
-
-**Feature**: Full OpenAPI metadata auto-generated at compile time from return types
-**Benefits**: Scalar/Swagger UI shows typed responses, status codes, summaries, and tags — zero manual configuration
-**Use Case**: Production-ready APIs with complete documentation from day one
-
-**🔥 What Makes SmartEndpoints Revolutionary:**
-
-```csharp
-// ✅ YOU WRITE: Pure business logic (5 lines)
-[AutoGenerateEndpoints(RoutePrefix = "/api/orders")]
-public class SmartOrderController {
-    public async Task<OneOf<UserNotFoundError, InsufficientStockError, ValidationError, OrderResponse>>
-        CreateOrder(CreateOrderRequest request) => await _service.CreateOrderAsync(request);
-}
-
-// 🎉 GENERATOR PRODUCES: Complete endpoint with full OpenAPI metadata
-var smartOrderGroup = endpoints.MapGroup("/api/orders")
-    .WithTags("Smart Order");
-
-smartOrderGroup.MapPost("/", async (CreateOrderRequest request, SmartOrderController service) =>
-{
-    var result = await service.CreateOrder(request);
-    return result.ToIResult();
-})
-    .WithName("SmartOrder_CreateOrder")
-    .WithSummary("Create order")
-    .Produces<OrderResponse>(200)
-    .Produces(400)   // ← ValidationError
-    .Produces(404)   // ← UserNotFoundError
-    .Produces(409);  // ← InsufficientStockError
-```
-
-**🎯 Everything Auto-Generated from Return Types:**
-- **Method name** → HTTP method + `.WithName()` (`CreateOrder` → `POST` + `SmartOrder_CreateOrder`)
-- **Class name** → `.WithTags()` + `MapGroup()` (`SmartOrderController` → `"Smart Order"`)
-- **PascalCase** → `.WithSummary()` (`CreateOrder` → `"Create order"`)
-- **Success type** → `.Produces<T>(200)` (`OrderResponse` → typed 200 response)
-- **Error types** → `.Produces(statusCode)` (`UserNotFoundError` → 404, `InsufficientStockError` → 409)
-- **Parameters** → Route/body binding (`int id` → `/{id}`, `request` → JSON body)
-
-**⚡ Zero Boilerplate Benefits:**
-- **No manual route configuration** - inferred from class/method names
-- **No manual error handling** - automatic from OneOf types
-- **No manual status codes** - automatic from error type names
-- **No manual OpenAPI metadata** - `.Produces()`, `.WithSummary()`, `.WithTags()` all auto-generated
-- **No manual endpoint names** - globally unique names from controller + method
-- **No manual ProblemDetails** - automatic RFC 7807 compliance
-
-#### 🎯 ResultToIResult Extensions
-Convert Result<T> types to proper HTTP responses:
-
-```csharp
-public Result<User> GetUser(int id) { /* ... */ }
-return GetUser(id).ToIResult(); // Automatic HTTP mapping
-
-
-app.MapGet("/users/{id}", async (int id, IUserService service) =>
-{
-    return await service.GetUserAsync(id); // Auto-converts to HTTP response!
-});
-
-// 🆕 v1.10.0: OneOf extensions also work!
-app.MapGet("/users/oneof/{id}", async (int id) =>
-{
-    return GetOneOfUser(id); // Auto-converts OneOf<T1,T2,T3> too!
-});
-```
+For complete feature documentation see [🚀 SmartEndpoints](#-smartendpoints), [🌐 ASP.NET Integration](#-aspnet-integration), and the sections below.
 
 ---
 
@@ -712,6 +618,144 @@ Result<UserDto> dto = await result
 
 ---
 
+## ⚠️ Error Types
+
+All errors inherit from `Reason<TReason>` (CRTP base) and implement `IError`. Domain errors automatically set an `HttpStatusCode` tag that drives HTTP mapping in `ToIResult()` and `ToActionResult()`.
+
+### Error Hierarchy
+
+```
+Reason<TReason> (abstract, immutable, CRTP)
+├── Error                    — generic error, no HTTP tag
+├── ValidationError          — HTTP 422 Unprocessable Entity
+├── NotFoundError            — HTTP 404 Not Found
+├── ConflictError            — HTTP 409 Conflict
+├── UnauthorizedError        — HTTP 401 Unauthorized
+├── ForbiddenError           — HTTP 403 Forbidden
+├── ExceptionError           — wraps .NET exceptions
+└── ConversionError          — implicit conversion failures
+Success                      — used with .WithSuccess()
+```
+
+### Domain Errors
+
+Built-in errors for the most common HTTP scenarios (v1.20.0+):
+
+| Type | HTTP | Constructor overloads | Key tags |
+|---|---|---|---|
+| `ValidationError` | 422 | `(message)` \| `(fieldName, message)` | `FieldName`, `HttpStatusCode` |
+| `NotFoundError` | 404 | `(message)` \| `(entityName, id)` | `EntityName`, `EntityId`, `HttpStatusCode` |
+| `ConflictError` | 409 | `(message)` \| `(entityName, field, value)` | `EntityName`, `ConflictField`, `ConflictValue`, `HttpStatusCode` |
+| `UnauthorizedError` | 401 | `()` \| `(message)` | `HttpStatusCode` |
+| `ForbiddenError` | 403 | `()` \| `(message)` \| `(action, resource)` | `Action`, `Resource`, `HttpStatusCode` |
+
+```csharp
+// ValidationError — with or without field name
+new ValidationError("Email is required")
+new ValidationError("email", "Must be a valid email address")   // FieldName = "email"
+
+// NotFoundError — resource-style message auto-formatted
+new NotFoundError("User not found")
+new NotFoundError("User", userId)           // "User with id '42' was not found"
+
+// ConflictError — conflict details auto-formatted
+new ConflictError("A user with this email already exists")
+new ConflictError("User", "email", email)   // "User with email 'x@y.com' already exists"
+
+// UnauthorizedError / ForbiddenError
+new UnauthorizedError()                         // "Authentication required"
+new UnauthorizedError("Token has expired")
+new ForbiddenError()                            // "Access denied"
+new ForbiddenError("Delete", "Order")           // "Access denied: insufficient permissions to Delete Order"
+```
+
+### Generic Errors
+
+| Type | Constructor | Use case |
+|---|---|---|
+| `Error` | `(message)` | Generic domain error without HTTP tag |
+| `ExceptionError` | `(exception)` \| `(message, exception)` | Wraps .NET exceptions (set by `Try`/`TryAsync`) |
+| `ConversionError` | `(reason)` | Created automatically by implicit conversion failures |
+
+```csharp
+new Error("Something went wrong")
+new ExceptionError(ex)                     // message from ex.Message, tags: ExceptionType, StackTrace
+new ExceptionError("Custom message", ex)   // custom message, same tags
+```
+
+### Custom Error Types
+
+Extend `Reason<TYourError>` with the CRTP pattern:
+
+```csharp
+public class InsufficientStockError : Reason<InsufficientStockError>, IError
+{
+    public int ProductId { get; }
+    public int Requested { get; }
+    public int Available { get; }
+
+    public InsufficientStockError(int productId, int requested, int available)
+        : base(
+            $"Insufficient stock for product {productId}: requested {requested}, available {available}",
+            ImmutableDictionary<string, object>.Empty
+                .Add("HttpStatusCode", 409)
+                .Add("ProductId", productId)
+                .Add("Requested", requested)
+                .Add("Available", available))
+    {
+        ProductId = productId;
+        Requested = requested;
+        Available = available;
+    }
+
+    private InsufficientStockError(string message, ImmutableDictionary<string, object> tags,
+        int productId, int requested, int available)
+        : base(message, tags)
+    {
+        ProductId = productId; Requested = requested; Available = available;
+    }
+
+    protected override InsufficientStockError CreateNew(
+        string message, ImmutableDictionary<string, object> tags)
+        => new(message, tags, ProductId, Requested, Available);
+}
+
+// Usage
+Result<Order>.Fail(new InsufficientStockError(productId: 42, requested: 10, available: 3));
+```
+
+### Rich Error Context — Tags & Fluent Chaining
+
+Every error type supports immutable tag chaining via `WithTag()`:
+
+```csharp
+// Chain additional context onto any error
+var error = new ValidationError("email", "Invalid format")
+    .WithTag("AttemptedValue", userInput)
+    .WithTag("RequestId", requestId)
+    .WithTag("Timestamp", DateTime.UtcNow);
+
+// Tags surface in ProblemDetails.Extensions (via ToIResult/ToActionResult)
+// and are accessible on the error object:
+var statusCode = (int)error.Tags["HttpStatusCode"];  // 422
+var field = error.Tags["FieldName"];                  // "email"
+```
+
+### `Success` — Success Reasons
+
+Used with `.WithSuccess()` to attach informational messages to successful results:
+
+```csharp
+var result = Result<User>.Ok(user)
+    .WithSuccess("User created successfully")
+    .WithTag("UserId", user.Id);
+
+result.Successes // IEnumerable<ISuccess>
+result.Successes.First().Message // "User created successfully"
+```
+
+---
+
 ## ✅ Validation Rules
 
 The built-in validation framework lets you compose declarative rules that accumulate all failures and return `Result<T>`.
@@ -845,29 +889,15 @@ result.Errors.OfType<ValidationError>().ToList().ForEach(e =>
 
 ---
 
-## 🧠 Advanced Patterns
+## 🎲 Maybe\<T>
 
-**Take your functional programming skills to the next level with these powerful patterns:**
+Null-safe optional values — eliminate null reference exceptions with a composable type:
 
-### 🎯 When to Use Each Pattern
-
-| Pattern | Best For | When to Avoid |
-|---------|----------|---------------|
-| **Maybe\<T>** | Optional values, cache lookups, nullable operations | When you need error details |
-| **OneOf\<T1,T2>** | Error/success alternatives, binary states | When you have >2 outcomes |
-| **OneOf\<T1,T2,T3>** | Complex API responses, three-way state | When you have >3 outcomes |
-| **Result + LINQ** | Complex data pipelines with query syntax | Simple single-step operations |
-| **Pipeline integration** | Mixed Result+OneOf architectures | Single-pattern projects |
-
-### 🎲 Maybe<T> - Safe Null Handling
-**Eliminate null reference exceptions permanently:**
 ```csharp
 // ❌ Traditional null checking
 string email = user?.Email?.ToLower();
 if (string.IsNullOrEmpty(email))
-{
     email = "no-reply@example.com";
-}
 
 // ✅ Maybe<T> functional approach
 Maybe<User> maybeUser = GetUserFromCache(id);
@@ -876,78 +906,106 @@ string email = maybeUser
     .Filter(e => !string.IsNullOrWhiteSpace(e))
     .Map(e => e.ToLower())
     .ValueOrDefault("no-reply@example.com");
+```
 
-// Chaining operations safely
-var result = maybeUser
-    .Filter(u => u.IsActive)
+### Operations
+
+```csharp
+Maybe<User> maybe = GetUserFromCache(id);
+
+// Transform the value if present
+Maybe<string> name = maybe.Select(u => u.Name);
+
+// Filter — becomes None if predicate is false
+Maybe<User> active = maybe.Filter(u => u.IsActive);
+
+// Chain safely through nested optionals
+var theme = maybe
     .Select(u => u.Profile)
     .Select(p => p.Settings)
     .Select(s => s.Theme)
     .ValueOrDefault("default-theme");
+
+// Extract value
+User user = maybe.Value;                        // throws if None
+User user = maybe.ValueOrDefault(fallback);     // safe
+bool has = maybe.HasValue;                      // true/false
+
+// Convert to Result for error pipeline integration
+Result<User> result = maybe.ToResult(new NotFoundError("User", id));
 ```
 
-### 🔀 OneOf - Discriminated Unions
-**Express multiple possible outcomes with type safety:**
+### When to Use `Maybe<T>`
+
+- Cache lookups that may miss
+- Optional configuration values
+- Database queries that return null for "not found" (when no error context is needed)
+- Anywhere `T?` causes null-safety issues in functional pipelines
+
+---
+
+## 🔀 OneOf Unions
+
+Express multiple possible return types with exhaustive pattern matching — no inheritance, no casting:
+
 ```csharp
-// Internal OneOf implementation
-OneOf<ValidationError, NotFoundError, User> result = ValidateAndCreateUser(request);
+// Declare: method returns one of three types
+public OneOf<ValidationError, NotFoundError, User> GetUser(int id) { ... }
 
-// Pattern matching with exhaustive checking
-return result.Match(
-    case1: validationError => BadRequest(new { errors = validationError.Errors }),
-    case2: notFoundError => NotFound(new { message = notFoundError.Message }),
-    case3: user => CreatedAtAction(nameof(GetUser), new { id = user.Id }, user)
-);
-
-// 🆕 v1.12.0: OneOf4 for complex scenarios
-OneOf<ValidationError, NotFoundError, ConflictError, User> complexResult = 
-    ValidateCreateUserWithConflictCheck(request);
-
-return complexResult.Match(
-    case1: validationError => BadRequest(new { errors = validationError.Errors }),
-    case2: notFoundError => NotFound(new { message = notFoundError.Message }),
-    case3: conflictError => Conflict(new { error = conflictError.Message }),
-    case4: user => CreatedAtAction(nameof(GetUser), new { id = user.Id }, user)
-);
-
-// Conversion to Result for chaining
-var userResult = result.ToResult(); // Convert OneOf to Result
-
-// REslava.Result internal OneOf support (v1.12.0)
-using REslava.Result.AdvancedPatterns.OneOf;
-OneOf<ValidationError, User> internalResult = ValidateUser(request);
-return internalResult.ToIResult(); // Auto-converts to HTTP response!
+// Consume: exhaustive Match (compiler ensures all cases handled)
+return GetUser(id).Match(
+    validationError => Results.UnprocessableEntity(validationError.Message),
+    notFoundError   => Results.NotFound(notFoundError.Message),
+    user            => Results.Ok(user));
 ```
 
-### ✅ Validation Framework
-**Declarative validation with rich error context:**
+### Arities: 2, 3, 4
+
 ```csharp
-// Built-in validation rules
-var validator = Validator.Create<User>()
-    .Rule(u => u.Email, email => email.Contains("@"), "Invalid email format")
-    .Rule(u => u.Name, name => !string.IsNullOrWhiteSpace(name), "Name is required")
-    .Rule(u => u.Age, age => age >= 18, "Must be 18 or older")
-    .Rule(u => u.Email, async email => !await EmailExistsAsync(email), "Email already exists");
+// OneOf<T1, T2> — binary outcome
+OneOf<Error, User> result = TryGetUser(id);
 
-// Execute validation
-var validationResult = await validator.ValidateAsync(user);
+// OneOf<T1, T2, T3> — three-way outcome
+OneOf<ValidationError, NotFoundError, User> result = ValidateAndGet(id);
 
-// Chain with Result operations
-var result = validationResult
-    .Bind(validUser => CreateUserAsync(validUser))
-    .WithSuccess("User created successfully");
-
-// Custom validation rules
-public class UniqueEmailRule : IValidationRule<User>
-{
-    public ValidationResult Validate(User user)
-    {
-        return EmailExistsAsync(user.Email).GetAwaiter().GetResult()
-            ? ValidationResult.Fail("Email already exists")
-            : ValidationResult.Success();
-    }
-}
+// OneOf<T1, T2, T3, T4> — four-way outcome (v1.12.0+)
+OneOf<ValidationError, UnauthorizedError, NotFoundError, Order> result = GetOrder(id);
 ```
+
+### Convert to `Result<T>` or `IResult`
+
+```csharp
+// ToResult — joins all failure cases into Result.Errors
+Result<User> r = GetUser(id).ToResult();
+
+// ToIResult / ToPostResult / etc. — HTTP mapping (see OneOf → IResult)
+return GetUser(id).ToIResult();     // 422 / 404 / 200
+```
+
+### When to Use `OneOf<...>` vs `Result<T>`
+
+| | `Result<T>` | `OneOf<T1,...,T4>` |
+|---|---|---|
+| **Success** | Single value `T` | One of N types |
+| **Failure** | `IEnumerable<IError>` | Typed failure cases |
+| **Pattern match** | `Match(onSuccess, onFailure)` | `Match(case1, case2, ...)` |
+| **HTTP mapping** | `ToIResult()` | `ToIResult()` |
+| **Best for** | Validation pipelines, multiple errors | API responses, typed error discrimination |
+
+---
+
+## 🧠 Advanced Patterns
+
+**Functional composition patterns for complex pipelines:**
+
+### 🎯 When to Use Each Pattern
+
+| Pattern | Best For | When to Avoid |
+|---------|----------|---------------|
+| **Maybe\<T>** | Optional values, cache lookups | When you need error details |
+| **OneOf\<T1,...>** | Typed multi-outcome returns, API responses | When you have >4 outcomes |
+| **Result + LINQ** | Complex data pipelines with query syntax | Simple single-step operations |
+| **Compose / Sequence** | Multi-step pipelines, fan-out/fan-in | Single-step operations |
 
 ### 🔄 Functional Composition
 **Build complex operations from simple functions:**
@@ -980,59 +1038,6 @@ var aggregatedResult = results
     .Tap(users => LogInfo($"Processed {users.Count} users"));
 ```
 
-### 🏷️ Domain Error Hierarchy (v1.20.0)
-**Built-in domain errors with HTTP semantics — no more reinventing error types:**
-```csharp
-// 5 built-in domain error types
-Result<User>.Fail(new NotFoundError("User", userId));          // 404
-Result<User>.Fail(new ValidationError("Email", "Required"));   // 422
-Result<User>.Fail(new ConflictError("User", "email", email));  // 409
-Result<User>.Fail(new UnauthorizedError());                    // 401
-Result<User>.Fail(new ForbiddenError("delete", "admin-panel"));// 403
-
-// Each carries HttpStatusCode tag — auto-mapped by ToIResult()
-var result = await _service.GetUserAsync(id);
-return result.ToIResult(); // NotFoundError → 404, ValidationError → 422
-
-// Pattern matching on error types
-result.Match(
-    onSuccess: user => Ok(user),
-    onFailure: errors => errors.First() switch
-    {
-        NotFoundError nf => NotFound(nf.Message),
-        ValidationError ve => UnprocessableEntity(new { field = ve.FieldName, error = ve.Message }),
-        ConflictError => Conflict(),
-        _ => Problem()
-    });
-
-// Fluent chaining preserved via CRTP
-var error = new NotFoundError("User", 42)
-    .WithTag("RequestId", requestId)
-    .WithMessage("Custom message");  // Returns NotFoundError, not base type
-```
-
-### 🏷️ Rich Error Context
-**Add structured metadata for debugging and monitoring:**
-```csharp
-// Error with tags and metadata
-var error = new NotFoundError("User", userId)
-    .WithTag("RequestId", requestId)
-    .WithTag("Timestamp", DateTime.UtcNow);
-
-// Result with rich context
-var result = Result<User>.Fail(error);
-
-// Extract context for logging
-if (result.IsFailed)
-{
-    var firstError = result.Errors.First();
-    var entity = firstError.Tags.GetValueOrDefault("EntityName");
-    var requestId = firstError.Tags.GetValueOrDefault("RequestId");
-
-    logger.LogWarning("{Entity} not found for request {RequestId}", entity, requestId);
-}
-```
-
 ### 🚀 Performance Patterns
 **Optimize for high-performance scenarios:**
 ```csharp
@@ -1061,6 +1066,294 @@ public ref struct ValidationSpan(ReadOnlySpan<char> input)
     public Result<ReadOnlySpan<char>> AsResult() =>
         IsValid ? Result<ReadOnlySpan<char>>.Ok(input) 
                 : Result<ReadOnlySpan<char>>.Fail("Invalid email");
+}
+```
+
+---
+
+## 🚀 SmartEndpoints
+
+Decorate a plain C# class with `[AutoGenerateEndpoints]` — the source generator produces complete Minimal API endpoints with HTTP mapping, route inference, OpenAPI metadata, authorization, filters, caching, and rate limiting. Zero boilerplate.
+
+**Before SmartEndpoints (manual, ~50 lines):**
+```csharp
+app.MapGet("/api/users/{id}", async (int id, UserService svc) =>
+{
+    var user = await svc.GetByIdAsync(id);
+    if (user is null) return Results.NotFound();
+    return Results.Ok(user);
+}).Produces<User>(200).Produces(404).WithSummary("Get user").WithTags("Users");
+// ... repeat for every endpoint
+```
+
+**With SmartEndpoints (5 lines, same result):**
+```csharp
+[AutoGenerateEndpoints(RoutePrefix = "/api/users")]
+public class UserController
+{
+    public async Task<OneOf<NotFoundError, User>> GetUser(int id)
+        => await _service.GetByIdAsync(id);
+}
+```
+
+### `[AutoGenerateEndpoints]` — Class-Level Attribute
+
+Applied to any plain class (no base class required). Controls route prefix, tags, auth, strategy, caching, and rate limiting for all methods in the class.
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `RoutePrefix` | `string?` | class name | Route prefix, e.g. `"/api/users"` |
+| `Tags` | `string[]?` | class name | OpenAPI tags |
+| `IncludeClassNameInRoute` | `bool` | `true` | Include class name in auto-generated route |
+| `RequiresAuth` | `bool` | `false` | Require authentication for all methods |
+| `Policies` | `string[]?` | — | Authorization policy names |
+| `Roles` | `string[]?` | — | Allowed roles |
+| `Strategy` | `EndpointMappingStrategy` | `Convention` | Which methods to map |
+| `CacheSeconds` | `int` | `0` | GET response cache duration (class default) |
+| `RateLimitPolicy` | `string?` | — | Rate limiting policy name (class default) |
+
+```csharp
+[AutoGenerateEndpoints(
+    RoutePrefix = "/api/products",
+    Tags = new[] { "Products", "Catalog" },
+    RequiresAuth = true,
+    Policies = new[] { "AdminOnly" },
+    Strategy = EndpointMappingStrategy.Convention,
+    CacheSeconds = 60,
+    RateLimitPolicy = "standard")]
+public class ProductController { /* ... */ }
+```
+
+### `[AutoMapEndpoint]` — Method-Level Override
+
+Override or supplement class-level settings per method. Enables explicit routes, custom HTTP methods, method-level auth, and per-method caching/rate limiting. Required when `Strategy = Explicit`.
+
+| Property | Type | Default | Description |
+|---|---|---|---|
+| `route` | `string` | *(required)* | Explicit route template |
+| `HttpMethod` | `string` | `"GET"` | HTTP method: `"GET"`, `"POST"`, `"PUT"`, `"DELETE"`, `"PATCH"` |
+| `Name` | `string?` | auto | Endpoint name for URL generation |
+| `Tags` | `string[]?` | class tags | Override OpenAPI tags |
+| `Summary` | `string?` | from method name | Override `.WithSummary()` |
+| `RequiresAuth` | `bool` | class default | Require auth for this method |
+| `Policies` | `string[]?` | class default | Authorization policies |
+| `Roles` | `string[]?` | class default | Allowed roles |
+| `AllowAnonymous` | `bool` | `false` | Override class `RequiresAuth = true` |
+| `CacheSeconds` | `int` | `0` | GET cache duration (`-1` to disable) |
+| `RateLimitPolicy` | `string?` | class default | Rate limit policy (`"none"` to disable) |
+
+```csharp
+[AutoGenerateEndpoints(RoutePrefix = "/api/orders", RequiresAuth = true)]
+public class OrderController
+{
+    // Convention-mapped (GET /api/orders/{id})
+    public Task<Result<Order>> GetOrder(int id) => ...;
+
+    // Explicit override — custom route + HTTP method
+    [AutoMapEndpoint("/api/orders/{id}/cancel", HttpMethod = "POST",
+        Summary = "Cancel an order", CacheSeconds = -1)]
+    public Task<Result<Order>> CancelOrder(int id) => ...;
+
+    // Per-method anonymous access override
+    [AutoMapEndpoint("/api/orders/public", AllowAnonymous = true)]
+    public Task<Result<List<OrderSummary>>> GetPublicOrders() => ...;
+}
+```
+
+### HTTP Verb Convention
+
+When `Strategy = Convention` (default), method names determine HTTP verb and route:
+
+| Method prefix | HTTP verb | Route (no `id` param) | Route (with `id` param) |
+|---|---|---|---|
+| `Get*` | `GET` | `{prefix}` | `{prefix}/{id}` |
+| `Create*` / `Add*` | `POST` | `{prefix}` | `{prefix}` |
+| `Update*` | `PUT` | `{prefix}` | `{prefix}/{id}` |
+| `Delete*` | `DELETE` | `{prefix}` | `{prefix}/{id}` |
+
+```csharp
+public Task<Result<List<Product>>> GetProducts()          // GET /api/products
+public Task<Result<Product>> GetProduct(int id)           // GET /api/products/{id}
+public Task<Result<Product>> CreateProduct(ProductRequest r) // POST /api/products
+public Task<Result<Product>> UpdateProduct(int id, ...)   // PUT /api/products/{id}
+public Task<Result> DeleteProduct(int id)                 // DELETE /api/products/{id}
+```
+
+### Mapping Strategy
+
+`EndpointMappingStrategy` controls which methods the generator maps:
+
+| Value | Behaviour |
+|---|---|
+| `Convention` | Map methods matching naming conventions (`Get*`, `Create*`, `Add*`, `Update*`, `Delete*`) |
+| `Explicit` | Map only methods decorated with `[AutoMapEndpoint]` |
+| `All` | Map all `public` methods returning `Result<T>` or `OneOf<...>` |
+
+```csharp
+// Convention (default) — naming convention drives mapping
+[AutoGenerateEndpoints(RoutePrefix = "/api/users", Strategy = EndpointMappingStrategy.Convention)]
+
+// Explicit — only [AutoMapEndpoint]-decorated methods are mapped
+[AutoGenerateEndpoints(RoutePrefix = "/api/admin", Strategy = EndpointMappingStrategy.Explicit)]
+
+// All — every public Result<T>/OneOf<...> method is mapped
+[AutoGenerateEndpoints(RoutePrefix = "/api/internal", Strategy = EndpointMappingStrategy.All)]
+```
+
+### OpenAPI Auto-Generation
+
+Every generated endpoint gets full OpenAPI metadata at compile time — nothing to configure:
+
+| Source | Generated metadata |
+|---|---|
+| Method name (`CreateOrder`) | `.WithName("Class_CreateOrder")` + `.WithSummary("Create order")` |
+| Class name (`OrderController`) | `.WithTags("Order")` + `MapGroup("/api/orders")` |
+| Success return type (`Order`) | `.Produces<Order>(200)` or `.Produces<Order>(201)` for POST |
+| `OneOf` error types | `.Produces(statusCode)` per error (e.g. `NotFoundError` → `404`) |
+| `int id` parameter | `/{id}` route segment |
+| Request body parameter | JSON body binding |
+
+### Authorization
+
+Class-level auth applies to all convention-mapped methods. Use `[SmartAllowAnonymous]` or `[AutoMapEndpoint(AllowAnonymous = true)]` to exempt individual methods:
+
+```csharp
+[AutoGenerateEndpoints(RoutePrefix = "/api/orders", RequiresAuth = true,
+    Policies = new[] { "CanReadOrders" })]
+public class OrderController
+{
+    // Inherits RequiresAuth = true + "CanReadOrders" policy
+    public Task<Result<Order>> GetOrder(int id) => ...;
+
+    // [SmartAllowAnonymous] — override class-level auth for public reads
+    [SmartAllowAnonymous]
+    public Task<Result<List<OrderSummary>>> GetOrderSummaries() => ...;
+
+    // [AutoMapEndpoint] — per-method roles override
+    [AutoMapEndpoint("/api/orders", HttpMethod = "POST",
+        Roles = new[] { "Admin", "OrderManager" })]
+    public Task<Result<Order>> CreateOrder(CreateOrderRequest request) => ...;
+}
+```
+
+### Endpoint Filters — `[SmartFilter]`
+
+Apply `IEndpointFilter` implementations to individual methods. Stack multiple filters — applied in declaration order:
+
+```csharp
+[AutoGenerateEndpoints(RoutePrefix = "/api/products")]
+public class ProductController
+{
+    // Single filter
+    [SmartFilter(typeof(LoggingFilter))]
+    public Task<Result<Product>> GetProduct(int id) => ...;
+
+    // Stacked filters — LoggingFilter runs first, then ValidationFilter
+    [SmartFilter(typeof(LoggingFilter))]
+    [SmartFilter(typeof(ValidationFilter<CreateProductRequest>))]
+    public Task<Result<Product>> CreateProduct(CreateProductRequest request) => ...;
+}
+```
+
+### Output Caching & Rate Limiting
+
+Set response cache duration and rate limiting at class level (as defaults) and override per method:
+
+```csharp
+[AutoGenerateEndpoints(
+    RoutePrefix = "/api/catalog",
+    CacheSeconds = 300,          // 5-minute GET cache for all methods
+    RateLimitPolicy = "standard")]  // standard rate limit for all methods
+public class CatalogController
+{
+    // Inherits 5-min cache + standard rate limit
+    public Task<Result<List<Product>>> GetProducts() => ...;
+
+    // Override: shorter cache, stricter rate limit
+    [AutoMapEndpoint("/api/catalog/{id}", CacheSeconds = 60, RateLimitPolicy = "strict")]
+    public Task<Result<Product>> GetProduct(int id) => ...;
+
+    // Opt out: disable cache and rate limiting for this method
+    [AutoMapEndpoint("/api/catalog", HttpMethod = "POST",
+        CacheSeconds = -1, RateLimitPolicy = "none")]
+    public Task<Result<Product>> CreateProduct(CreateProductRequest request) => ...;
+}
+```
+
+---
+
+## 🔀 OneOf → IResult
+
+Convert `OneOf<T1,T2,...>` discriminated unions to `IResult` in a single call — HTTP status codes are inferred from error type names and `HttpStatusCode` tags.
+
+```csharp
+// In Minimal API endpoints
+app.MapGet("/users/{id}", async (int id) =>
+    (await _service.GetUserAsync(id)).ToIResult());
+
+app.MapPost("/users", async (CreateUserRequest req) =>
+    (await _service.CreateAsync(req)).ToPostResult());   // 201 Created on success
+```
+
+### `OneOf<T1,T2>.ToIResult()`
+
+```csharp
+OneOf<NotFoundError, User> result = await _service.GetAsync(id);
+return result.ToIResult();  // 404 or 200
+```
+
+### `OneOf<T1,T2,T3>.ToIResult()`
+
+```csharp
+OneOf<ValidationError, ConflictError, User> result = await _service.CreateAsync(request);
+return result.ToIResult();  // 422 or 409 or 200
+```
+
+### `OneOf<T1,T2,T3,T4>.ToIResult()`
+
+```csharp
+OneOf<ValidationError, UnauthorizedError, NotFoundError, Order> result =
+    await _service.GetOrderAsync(id);
+return result.ToIResult();  // 422 or 401 or 404 or 200
+```
+
+### HTTP Method Variants
+
+Use typed variants for non-GET endpoints to get the correct success status:
+
+| Method | Success status | Typical use |
+|---|---|---|
+| `.ToIResult()` | 200 OK | GET |
+| `.ToPostResult()` | 201 Created | POST |
+| `.ToPutResult()` | 200 OK | PUT / PATCH |
+| `.ToDeleteResult()` | 204 No Content | DELETE |
+
+```csharp
+app.MapPost("/orders",    async (req) => (await _svc.CreateAsync(req)).ToPostResult());
+app.MapPut("/orders/{id}", async (id, req) => (await _svc.UpdateAsync(id, req)).ToPutResult());
+app.MapDelete("/orders/{id}", async (id) => (await _svc.DeleteAsync(id)).ToDeleteResult());
+```
+
+### Error → HTTP Status Mapping
+
+Status codes are resolved in order of precedence:
+
+1. `HttpStatusCode` tag set on the error object at construction (domain errors set this automatically)
+2. Type-name heuristic — `NotFoundError` → 404, `ValidationError` → 422, `ConflictError` → 409, etc.
+3. Default → 400 Bad Request
+
+```csharp
+// Domain errors set HttpStatusCode at construction — no configuration needed
+public class NotFoundError : Reason<NotFoundError>      // → 404
+public class ValidationError : Reason<ValidationError>  // → 422
+public class ConflictError : Reason<ConflictError>      // → 409
+public class UnauthorizedError : Reason<UnauthorizedError>  // → 401
+public class ForbiddenError : Reason<ForbiddenError>    // → 403
+
+// Custom error with explicit tag
+public class PaymentRequiredError : Error
+{
+    public PaymentRequiredError() => this.WithTag(HttpStatusCode.PaymentRequired);
 }
 ```
 
