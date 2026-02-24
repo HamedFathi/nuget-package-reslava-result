@@ -5,14 +5,14 @@ title: REslava.Result API Overview
 This document provides a comprehensive overview of all available API methods in the REslava.Result library, organized by functional categories.
 
 
-| Category | Document | Description |
-|-----------|----------|-------------|
-| **Reasons** | [Reasons](/reference/api-doc/reasons) | All reason types (Success, Error, ExceptionError, ConversionError) and their methods |
-| **Result Methods** | [Result Methods](/reference/api-doc/result-methods) | Core instance methods on Result classes (Map, Tap, Match, Bind, Conversions) |
-| **Result Factories** | [Result Factories](/reference/api-doc/result-factories) | Static factory methods for creating Results (Ok, Fail, Combine, Conditional, Try) |
-| **Result Extensions** | [Result Extensions](/reference/api-doc/result-extensions) | Extension methods for enhanced functionality (LINQ, Validation, Async operations) |
-| **Validation Rules** | [Validation Rules](/reference/api-doc/validation-rules) | Built-in validation rules and custom validation patterns |
-| **Advanced Patterns** | [Advanced Patterns](advanced-patterns) | Maybe, OneOf, and other advanced functional patterns |
+| Document | Description |
+|----------|-------------|
+| [Reasons](reasons) | All reason types (Success, Error, ExceptionError, ConversionError) and their methods |
+| [Result Methods](result-methods) | Core instance methods on Result classes (Map, Tap, Match, Bind, Conversions) |
+| [Result Factories](result-factories) | Static factory methods for creating Results (Ok, Fail, Combine, Conditional, Try) |
+| [Result Extensions](result-extensions) | Extension methods for enhanced functionality (LINQ, Validation, Async operations) |
+| [Validation Rules](validation-rules) | Built-in validation rules and custom validation patterns |
+| [Advanced Patterns](advanced-patterns) | Maybe, OneOf, and other advanced functional patterns |
 
 
 ### Result Types
