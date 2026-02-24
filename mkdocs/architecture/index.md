@@ -17,9 +17,9 @@ Peek under the hood – how REslava.Result is built and how its source generator
     What each NuGet package contains and how they integrate.
     [](package-structure)
 
--   :material-cog: __How Generators Work__  
-    The source generator pipeline – analysis, generation, build integration.
-    [](complete-architecture#source-generators-reslavaresultsourcegenerators)
+-   :material-cog: __How Generators Work__
+    Two-phase generation pipeline, SOLID design, and incremental Roslyn rebuilds.
+    [](how-generators-work)
 
 -   :simple-solid: __SOLID Architecture__  
     SOLID Principles Implementation.

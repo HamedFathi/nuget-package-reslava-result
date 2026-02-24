@@ -463,6 +463,16 @@ Made with ❤️ by [Rafa Eslava](https://github.com/reslava) for developers com
 
 ## 📐 REslava.Result Core Library
 
+### 💡 Why Result Instead of Exceptions?
+
+| | ❌ Exceptions | ✅ Result Pattern |
+|--|---|---|
+| **Visibility** | Hidden in method signatures | Explicit in return type |
+| **Surprises** | Runtime surprises | Compile-time guarantees |
+| **Code** | Complex try-catch blocks | Simple pattern matching |
+| **Testing** | Hard to test error paths | Easy to test both paths |
+| **Composition** | Break the call chain | Chain operations cleanly |
+
 ### 🧠 Functional Programming Foundation
 **Railway-Oriented Programming (ROP)**
 - **Immutable Results**: Thread-safe functional data structures
@@ -669,11 +679,36 @@ var results = userIds
     .Traverse(id => GetUserAsync(id)); // Async version of Sequence
 ```
 
+### ✅ Best Practices
+
+**Do:**
+- Use `Result<T>` for expected business failures (validation, not found, conflict)
+- Create custom error types for your domain (`OrderNotFoundError`, `InsufficientStockError`)
+- Use tags to add structured context: `.WithTag("OrderId", id).WithTag("StatusCode", 422)`
+- Chain operations with `Bind` for sequential steps; `Map` for transforms only
+- Test both success and failure paths in unit tests
+
+**Avoid:**
+- Using `Result<T>` for truly unexpected/exceptional cases — those still warrant exceptions
+- Accessing `.Value` without checking `IsSuccess` first (use `GetValueOrDefault` or `Match`)
+- Deep nesting — break complex pipelines into small named methods
+- Ignoring errors — always handle the failure case in `Match`
+
 ---
 
 ## 🧠 Advanced Patterns
 
 **Take your functional programming skills to the next level with these powerful patterns:**
+
+### 🎯 When to Use Each Pattern
+
+| Pattern | Best For | When to Avoid |
+|---------|----------|---------------|
+| **Maybe\<T>** | Optional values, cache lookups, nullable operations | When you need error details |
+| **OneOf\<T1,T2>** | Error/success alternatives, binary states | When you have >2 outcomes |
+| **OneOf\<T1,T2,T3>** | Complex API responses, three-way state | When you have >3 outcomes |
+| **Result + LINQ** | Complex data pipelines with query syntax | Simple single-step operations |
+| **Pipeline integration** | Mixed Result+OneOf architectures | Single-pattern projects |
 
 ### 🎲 Maybe<T> - Safe Null Handling
 **Eliminate null reference exceptions permanently:**
@@ -1136,6 +1171,37 @@ graph TB
 - **Perfect Coexistence**: OneOf generators work seamlessly together
 - **Zero Compilation Errors**: Clean developer experience guaranteed
 
+### 🗺️ Error → HTTP Status Code Convention
+
+The source generators use convention-based name matching to determine HTTP status codes automatically. No configuration needed for the common cases:
+
+| Error Name Pattern | HTTP Status | Examples |
+|---|---|---|
+| `*NotFound*`, `*DoesNotExist*`, `*Missing*` | **404** | `UserNotFoundError`, `RecordMissingException` |
+| `*Validation*`, `*Invalid*`, `*Malformed*` | **422** | `ValidationError`, `InvalidInputException` |
+| `*Unauthorized*`, `*Unauthenticated*` | **401** | `UnauthorizedError`, `NotAuthenticatedException` |
+| `*Forbidden*`, `*AccessDenied*` | **403** | `ForbiddenError`, `AccessDeniedException` |
+| `*Conflict*`, `*Duplicate*`, `*AlreadyExists*` | **409** | `ConflictError`, `DuplicateResourceException` |
+| `*RateLimit*`, `*Throttle*` | **429** | `RateLimitError`, `ThrottleException` |
+| `*Timeout*`, `*TimedOut*` | **408** | `TimeoutError`, `RequestTimedOutException` |
+| *(default)* | **400** | Any other error type |
+
+For non-convention errors use `IError.Tags["HttpStatusCode"]` or `SmartEndpoints`' `[SmartFilter]` for explicit mapping.
+
+### 🔧 Source Generator Core Library Components
+
+The `REslava.Result.SourceGenerators` project uses a shared Core Library infrastructure that each generator delegates to:
+
+| Component | Purpose |
+|---|---|
+| `CodeBuilder` | Fluent API for emitting well-indented C# code (class/method declarations, XML docs, braces) |
+| `HttpStatusCodeMapper` | Convention-based + custom error-name → HTTP status resolution |
+| `AttributeParser` | Type-safe extraction of attribute arguments (string, bool, int, arrays) |
+| `GeneratorConfigurationBase<T>` | Base class for generator configs: validation + deep cloning |
+| `IncrementalGeneratorBase<T>` | Base for configuration-driven `IIncrementalGenerator` implementations |
+
+Each generator (`ResultToIResultGenerator`, `SmartEndpointsGenerator`, `ValidateGenerator`, etc.) is a thin `[Generator]`-attributed wrapper that delegates to an Orchestrator → AttributeGenerator + CodeGenerator pair.
+
 ---
 
 ## 📦 Package Structure
@@ -1209,6 +1275,49 @@ YourProject/
 2. **Generation Phase**: Creates appropriate extension methods and attributes (ToIResult for Minimal API, ToActionResult for MVC)
 3. **Compilation Phase**: Generated code is compiled into your assembly
 4. **Runtime Phase**: Extensions available for automatic HTTP conversion
+
+---
+
+## 🔧 How Generators Work
+
+REslava.Result.SourceGenerators uses Roslyn's **incremental generator API** (`IIncrementalGenerator`) for zero-overhead, fast-rebuild code generation.
+
+### Two-Phase Pipeline
+
+Every generator follows the same pattern: **Phase 1** emits the attribute definition (available immediately, in the same compilation). **Phase 2** reads the compilation to find code using that attribute and emits the extension methods.
+
+```
+Source files in your project
+    │
+    ▼
+[Generator] class (thin wrapper)
+    │  delegates to
+    ▼
+Orchestrator
+    ├── AttributeGenerator   → RegisterPostInitializationOutput
+    │   └── emits [AutoGenerateEndpoints] etc. (Phase 1 — always runs)
+    │
+    └── ExtensionGenerator   → RegisterSourceOutput
+        └── emits .ToIResult(), .ToActionResult(), .Validate() etc.
+            (Phase 2 — runs only when matching types found)
+```
+
+### SOLID Design (v1.9.4+)
+
+Each generator is split into three focused classes following SRP:
+
+| Class | Responsibility |
+|---|---|
+| `*Generator` (e.g. `ResultToIResultGenerator`) | Entry point — thin `[Generator]` wrapper, delegates to orchestrator |
+| `*Orchestrator` | Coordinates pipeline — registers Phase 1 + Phase 2 |
+| `*AttributeGenerator` | Emits the `[GenerateResultExtensions]` / `[AutoGenerateEndpoints]` etc. attribute |
+| `*ExtensionGenerator` / `*CodeGenerator` | Emits the actual extension methods |
+
+This eliminates duplicate generation (CS0101/CS0579 errors) and makes each piece independently testable.
+
+### Incremental Rebuilds
+
+Using `RegisterSourceOutput` with `SyntaxValueProvider`, generators only re-run when relevant syntax changes. On a clean build, all generators run; on subsequent builds, only the generators whose inputs changed run — keeping build times fast even in large solutions.
 
 ---
 

@@ -13,8 +13,8 @@ Practical C# examples showing REslava.Result in action – Result pattern, funct
     Quick examples.
     [](quick-examples)
 
--   :material-language-csharp: __Deep code examples demos__  
-    Code examples: FastMinimalAPI, FastMvslAPI and Console Demos
+-   :material-language-csharp: __Sample Applications__
+    FastMinimalAPI, FastMvcAPI and Console Demos — full working projects.
     [](samples/examples)
 
 </div>

@@ -17,8 +17,12 @@ Join the project, contribute, and see who made it possible.
     MIT License – use freely in commercial projects.
     [](https://github.com/reslava/nuget-package-reslava-result/blob/main/LICENSE.txt)
 
--   :material-star: __Acknowledgments__  
+-   :material-star: __Acknowledgments__
     Thanks to the community and libraries that inspired us.
     [](acknowledgments.md)
+
+-   :material-account-group: __Contributors__
+    Everyone who has contributed code, ideas, and feedback.
+    [](contributors.md)
 
 </div>
