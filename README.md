@@ -116,16 +116,16 @@ dotnet add package REslava.Result.FluentValidation
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="REslava.Result" Version="1.28.0" />
-  <PackageReference Include="REslava.Result.SourceGenerators" Version="1.28.0" />
-  <PackageReference Include="REslava.Result.Analyzers" Version="1.28.0" />
+  <PackageReference Include="REslava.Result" Version="1.29.0" />
+  <PackageReference Include="REslava.Result.SourceGenerators" Version="1.29.0" />
+  <PackageReference Include="REslava.Result.Analyzers" Version="1.29.0" />
 
   <!--
     OPTIONAL — migration bridge. NOT needed for new projects.
     REslava.Result already includes equivalent validation via [Validate] + Validation DSL.
     Only add this if your team has existing FluentValidation validators you want to keep.
   -->
-  <PackageReference Include="REslava.Result.FluentValidation" Version="1.28.0" />
+  <PackageReference Include="REslava.Result.FluentValidation" Version="1.29.0" />
 </ItemGroup>
 ```
 
@@ -2390,7 +2390,15 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 
 ## 🎯 Roadmap
 
-### v1.28.0 (Current) ✅
+### v1.29.0 (Current) ✅
+- **`IsFailed` → `IsFailure`** ⚠️ *breaking rename* — `IsSuccess` / `IsFailure` is the correct symmetric pair; find-and-replace across call sites
+- **Console samples** — 3 new examples: `14_ValidationDSL`, `15_OneOf5_OneOf6`, `16_AsyncPatterns_Advanced` (covers all v1.27–v1.28 features)
+- **FastMinimalAPI validation showcase** — side-by-side `/api/smart/validation` (DSL vs DataAnnotations) and `/api/smart/fluent-validation` (bridge demo)
+- **FastMvcAPI parity** — explicit `.Validate()` guard + `CancellationToken` in MVC controllers
+- **Feature Reference page** — 109 features across 11 categories in docs
+- 3,339 tests
+
+### v1.28.0 ✅
 - **FluentValidation Bridge** ⚠️ *optional migration bridge* — new `REslava.Result.FluentValidation` package (4th NuGet); `[FluentValidate]` attribute generates `.Validate(IValidator<T>)` + `.ValidateAsync()` extensions; SmartEndpoints auto-injects `IValidator<T>` as a lambda parameter; for teams with existing FV validators only — **new projects do not need this package**
 - **RESL1006 analyzer** — compile error when both `[Validate]` and `[FluentValidate]` appear on the same type (conflicting `.Validate()` signatures)
 - 3,339 tests
@@ -2472,6 +2480,7 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 
 ## 📈 Version History
 
+- **v1.29.0** - `IsFailed` → `IsFailure` rename (breaking), 3 new console samples (ValidationDSL, OneOf5/6, AsyncPatterns), FastMinimalAPI validation showcase, FastMvcAPI parity, Feature Reference page, 3,339 tests
 - **v1.28.0** - FluentValidation Bridge (`REslava.Result.FluentValidation` — *optional migration bridge, new projects don't need it*), `[FluentValidate]` generator, SmartEndpoints `IValidator<T>` auto-injection, RESL1006 dual-attribute analyzer, 26 new tests, 3,339 tests
 - **v1.27.0** - CancellationToken Support in SmartEndpoints, OneOf5/OneOf6 + OneOf4 fixes + chain extensions (ToFourWay↔ToSixWay), Native Validation DSL (19 methods on ValidatorRuleBuilder<T>), DocFX full XML docs, 451 new tests, 3,313 tests
 - **v1.26.0** - RESL1005 domain error suggestion analyzer, SmartEndpoints auto-validation ([Validate] on body param type injects .Validate() into lambda), 19 new tests, 2,862 tests

@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) guideline.
 
+## [1.29.0] - 2026-02-25
+
+### ⚠️ Breaking Changes
+- **`IsFailed` renamed to `IsFailure`** — `IsSuccess` / `IsFailure` is the correct symmetric pair. `IsFailed` was past-tense verb form (semantically incorrect for a boolean property). No alias or `[Obsolete]` shim — update call sites directly.
+
+### ✨ Added
+- **Console samples — 3 new examples** covering v1.27.0–v1.28.0 features:
+  - `14_ValidationDSL.cs` — all 19 native DSL rules with real-world order validator
+  - `15_OneOf5_OneOf6.cs` — 5/6-way unions, chain extensions (up/down conversions), checkout pipeline
+  - `16_AsyncPatterns_Advanced.cs` — WhenAll, Retry (backoff), Timeout, TapOnFailure, OkIf/FailIf, Try/TryAsync
+- **FastMinimalAPI validation showcase** — side-by-side comparison of all three validation approaches:
+  - `/api/smart/validation` — DataAnnotations + `[Validate]` auto-guard vs. native Validation DSL
+  - `/api/smart/fluent-validation` — `[FluentValidate]` migration bridge demo (optional)
+- **FastMvcAPI validation parity** — explicit `request.Validate()` guard + `CancellationToken` in MVC controllers
+- **Feature Reference page** — `mkdocs/reference/features/index.md` — 109 features across 11 categories
+
+### 🔧 Fixed
+- **release.yml** — `REslava.Result.FluentValidation` added to Build and Pack steps (was missing; caused v1.28.0 NuGet package to lack its embedded README)
+
+### Stats
+- 3,339 tests passing across net8.0, net9.0, net10.0 + generator (131) + analyzer (68) + FluentValidation bridge (26)
+
+---
+
 ## [1.28.0] - 2026-02-25
 
 ### ✨ Added
