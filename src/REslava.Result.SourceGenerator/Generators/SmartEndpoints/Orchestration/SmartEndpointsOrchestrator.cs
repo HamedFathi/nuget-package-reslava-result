@@ -233,7 +233,7 @@ namespace REslava.Result.SourceGenerators.SmartEndpoints.Orchestration
                 IsAsync = isAsync,
                 IsResult = isResult,
                 IsOneOf = isOneOf,
-                IsOneOf4 = isOneOf && genericArgs.Count == 4,
+                OneOfArity = isOneOf ? genericArgs.Count : 0,
                 Route = route,
                 RoutePrefix = routePrefix,
                 HttpMethod = httpMethod,

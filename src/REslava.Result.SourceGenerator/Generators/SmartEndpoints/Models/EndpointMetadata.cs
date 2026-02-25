@@ -14,7 +14,15 @@ namespace REslava.Result.SourceGenerators.Generators.SmartEndpoints.Models
         public string HttpMethod { get; set; } = "GET";
         public string ReturnType { get; set; } = string.Empty;
         public bool IsOneOf { get; set; }
-        public bool IsOneOf4 { get; set; }
+
+        /// <summary>
+        /// Number of generic type arguments when IsOneOf is true (0 otherwise).
+        /// Replaces the old bool IsOneOf4 flag to support arities beyond 4.
+        /// </summary>
+        public int OneOfArity { get; set; }
+
+        /// <summary>Backward-compatible alias — true when IsOneOf and arity is exactly 4.</summary>
+        public bool IsOneOf4 => IsOneOf && OneOfArity == 4;
         public bool IsResult { get; set; }
         public bool IsAsync { get; set; }
         public List<ParameterMetadata> Parameters { get; set; } = new();

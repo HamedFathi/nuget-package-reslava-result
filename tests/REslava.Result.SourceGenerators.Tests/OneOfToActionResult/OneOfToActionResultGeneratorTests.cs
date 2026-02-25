@@ -151,6 +151,76 @@ namespace TestNamespace
 
     #endregion
 
+    #region OneOf5 Tests
+
+    [TestMethod]
+    public void OneOf5_Should_Generate_ActionResult_Extensions()
+    {
+        var source = CreateOneOf5Source();
+        var output = RunGenerator(new OneOf5ToActionResultGenerator(), source, includeOneOfRef: true);
+
+        Assert.IsTrue(output.Contains("OneOf5ActionResultExtensions"), "Should generate OneOf5ActionResultExtensions class");
+        Assert.IsTrue(output.Contains("ToActionResult<T1, T2, T3, T4, T5>"), "Should generate 5-param extension method");
+    }
+
+    [TestMethod]
+    public void OneOf5_Should_Generate_Attributes()
+    {
+        var source = CreateOneOf5Source();
+        var output = RunGenerator(new OneOf5ToActionResultGenerator(), source, includeOneOfRef: true);
+
+        Assert.IsTrue(output.Contains("GenerateOneOf5ActionResultExtensionsAttribute"), "Should generate OneOf5 attribute");
+    }
+
+    [TestMethod]
+    public void OneOf5_Should_Not_Generate_Without_Usage()
+    {
+        var source = @"
+namespace TestNamespace
+{
+    public class TestClass { public void TestMethod() { } }
+}";
+        var output = RunGenerator(new OneOf5ToActionResultGenerator(), source, includeOneOfRef: false);
+        Assert.IsTrue(string.IsNullOrEmpty(output), "Should not generate without OneOf5 usage");
+    }
+
+    #endregion
+
+    #region OneOf6 Tests
+
+    [TestMethod]
+    public void OneOf6_Should_Generate_ActionResult_Extensions()
+    {
+        var source = CreateOneOf6Source();
+        var output = RunGenerator(new OneOf6ToActionResultGenerator(), source, includeOneOfRef: true);
+
+        Assert.IsTrue(output.Contains("OneOf6ActionResultExtensions"), "Should generate OneOf6ActionResultExtensions class");
+        Assert.IsTrue(output.Contains("ToActionResult<T1, T2, T3, T4, T5, T6>"), "Should generate 6-param extension method");
+    }
+
+    [TestMethod]
+    public void OneOf6_Should_Generate_Attributes()
+    {
+        var source = CreateOneOf6Source();
+        var output = RunGenerator(new OneOf6ToActionResultGenerator(), source, includeOneOfRef: true);
+
+        Assert.IsTrue(output.Contains("GenerateOneOf6ActionResultExtensionsAttribute"), "Should generate OneOf6 attribute");
+    }
+
+    [TestMethod]
+    public void OneOf6_Should_Not_Generate_Without_Usage()
+    {
+        var source = @"
+namespace TestNamespace
+{
+    public class TestClass { public void TestMethod() { } }
+}";
+        var output = RunGenerator(new OneOf6ToActionResultGenerator(), source, includeOneOfRef: false);
+        Assert.IsTrue(string.IsNullOrEmpty(output), "Should not generate without OneOf6 usage");
+    }
+
+    #endregion
+
     #region Helpers
 
     private const string ErrorTypeStubs = @"
@@ -175,6 +245,10 @@ public class ServerError : Error
 {
     public ServerError(string message) : base(message) { }
 }
+public class UserNotFoundError : Error
+{
+    public UserNotFoundError(string message) : base(message) { }
+}
 public class User
 {
     public int Id { get; set; }
@@ -190,6 +264,12 @@ public class User
 
     private static string CreateOneOf4Source() =>
         CreateOneOfSource(4, "ValidationError", "NotFoundError", "ConflictError", "ServerError");
+
+    private static string CreateOneOf5Source() =>
+        CreateOneOfSource(5, "ValidationError", "NotFoundError", "ConflictError", "ServerError", "User");
+
+    private static string CreateOneOf6Source() =>
+        CreateOneOfSource(6, "ValidationError", "NotFoundError", "ConflictError", "ServerError", "UserNotFoundError", "User");
 
     private static string CreateOneOfSource(int arity, params string[] typeArgs)
     {

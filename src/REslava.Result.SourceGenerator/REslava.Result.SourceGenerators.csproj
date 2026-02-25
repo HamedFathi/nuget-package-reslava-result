@@ -111,18 +111,22 @@
     <Compile Include="Generators\ResultToActionResult\Attributes\GenerateActionResultExtensionsAttributeGenerator.cs" />
     <Compile Include="Generators\ResultToActionResult\CodeGeneration\ResultToActionResultExtensionGenerator.cs" />
 
-    <!-- OneOfToActionResult Generators - MVC IActionResult (OneOf2, OneOf3, OneOf4) -->
+    <!-- OneOfToActionResult Generators - MVC IActionResult (OneOf2, OneOf3, OneOf4, OneOf5, OneOf6) -->
     <Compile Include="Generators\OneOfToActionResult\OneOf2ToActionResultGenerator.cs" />
     <Compile Include="Generators\OneOfToActionResult\OneOf3ToActionResultGenerator.cs" />
     <Compile Include="Generators\OneOfToActionResult\OneOf4ToActionResultGenerator.cs" />
+    <Compile Include="Generators\OneOfToActionResult\OneOf5ToActionResultGenerator.cs" />
+    <Compile Include="Generators\OneOfToActionResult\OneOf6ToActionResultGenerator.cs" />
     <Compile Include="Generators\OneOfToActionResult\Orchestration\OneOfToActionResultOrchestrator.cs" />
     <Compile Include="Generators\OneOfToActionResult\Attributes\OneOfActionResultExtensionsAttributeGenerator.cs" />
     <Compile Include="Generators\OneOfToActionResult\CodeGeneration\OneOfToActionResultExtensionGenerator.cs" />
 
-    <!-- OneOfToIResult Generators - Consolidated (OneOf2, OneOf3, OneOf4) -->
+    <!-- OneOfToIResult Generators - Consolidated (OneOf2, OneOf3, OneOf4, OneOf5, OneOf6) -->
     <Compile Include="Generators\OneOfToIResult\OneOf2ToIResultGenerator.cs" />
     <Compile Include="Generators\OneOfToIResult\OneOf3ToIResultGenerator.cs" />
     <Compile Include="Generators\OneOfToIResult\OneOf4ToIResultGenerator.cs" />
+    <Compile Include="Generators\OneOfToIResult\OneOf5ToIResultGenerator.cs" />
+    <Compile Include="Generators\OneOfToIResult\OneOf6ToIResultGenerator.cs" />
     <Compile Include="Generators\OneOfToIResult\Orchestration\OneOfToIResultOrchestrator.cs" />
     <Compile Include="Generators\OneOfToIResult\Attributes\OneOfExtensionsAttributeGenerator.cs" />
     <Compile Include="Generators\OneOfToIResult\Attributes\MapToProblemDetailsAttributeGenerator.cs" />

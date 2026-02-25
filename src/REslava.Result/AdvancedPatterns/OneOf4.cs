@@ -315,27 +315,28 @@ namespace REslava.Result.AdvancedPatterns
         /// </summary>
         /// <typeparam name="TNewT2">The new T2 type.</typeparam>
         /// <param name="mapper">The function to apply to the T2 value.</param>
-        /// <returns>A new OneOf with the mapped T2 value or the original T1/T3.</returns>
+        /// <returns>A new OneOf with the mapped T2 value or the original T1/T3/T4.</returns>
         /// <exception cref="ArgumentNullException">Thrown when mapper is null.</exception>
         /// <remarks>
         /// MapT2 allows you to transform the T2 value without unwrapping the OneOf.
-        /// If the OneOf contains T1 or T3, the mapper function is not called and those values are propagated.
+        /// If the OneOf contains T1, T3, or T4, the mapper function is not called and those values are propagated.
         /// </remarks>
         /// <example>
         /// <code>
-        /// OneOf&lt;Error, Success, Warning&gt; result = ProcessData();
-        /// OneOf&lt;Error, ProcessedSuccess, Warning&gt; processed = result.MapT2(s => s.WithTimestamp());
+        /// OneOf&lt;Error, Success, Warning, Info&gt; result = ProcessData();
+        /// OneOf&lt;Error, ProcessedSuccess, Warning, Info&gt; processed = result.MapT2(s => s.WithTimestamp());
         /// </code>
         /// </example>
-        public OneOf<T1, TNewT2, T3> MapT2<TNewT2>(Func<T2, TNewT2> mapper)
+        public OneOf<T1, TNewT2, T3, T4> MapT2<TNewT2>(Func<T2, TNewT2> mapper)
         {
             if (mapper == null) throw new ArgumentNullException(nameof(mapper));
 
             return _index switch
             {
-                0 => OneOf<T1, TNewT2, T3>.FromT1(_value1),
-                1 => OneOf<T1, TNewT2, T3>.FromT2(mapper(_value2)),
-                2 => OneOf<T1, TNewT2, T3>.FromT3(_value3),
+                0 => OneOf<T1, TNewT2, T3, T4>.FromT1(_value1),
+                1 => OneOf<T1, TNewT2, T3, T4>.FromT2(mapper(_value2)),
+                2 => OneOf<T1, TNewT2, T3, T4>.FromT3(_value3),
+                3 => OneOf<T1, TNewT2, T3, T4>.FromT4(_value4),
                 _ => throw new InvalidOperationException("Invalid OneOf state")
             };
         }
@@ -345,27 +346,28 @@ namespace REslava.Result.AdvancedPatterns
         /// </summary>
         /// <typeparam name="TNewT3">The new T3 type.</typeparam>
         /// <param name="mapper">The function to apply to the T3 value.</param>
-        /// <returns>A new OneOf with the mapped T3 value or the original T1/T2.</returns>
+        /// <returns>A new OneOf with the mapped T3 value or the original T1/T2/T4.</returns>
         /// <exception cref="ArgumentNullException">Thrown when mapper is null.</exception>
         /// <remarks>
         /// MapT3 allows you to transform the T3 value without unwrapping the OneOf.
-        /// If the OneOf contains T1 or T2, the mapper function is not called and those values are propagated.
+        /// If the OneOf contains T1, T2, or T4, the mapper function is not called and those values are propagated.
         /// </remarks>
         /// <example>
         /// <code>
-        /// OneOf&lt;Error, Success, Warning&gt; result = ProcessData();
-        /// OneOf&lt;Error, Success, ProcessedWarning&gt; processed = result.MapT3(w => w.WithSeverity("High"));
+        /// OneOf&lt;Error, Success, Warning, Info&gt; result = ProcessData();
+        /// OneOf&lt;Error, Success, ProcessedWarning, Info&gt; processed = result.MapT3(w => w.WithSeverity("High"));
         /// </code>
         /// </example>
-        public OneOf<T1, T2, TNewT3> MapT3<TNewT3>(Func<T3, TNewT3> mapper)
+        public OneOf<T1, T2, TNewT3, T4> MapT3<TNewT3>(Func<T3, TNewT3> mapper)
         {
             if (mapper == null) throw new ArgumentNullException(nameof(mapper));
 
             return _index switch
             {
-                0 => OneOf<T1, T2, TNewT3>.FromT1(_value1),
-                1 => OneOf<T1, T2, TNewT3>.FromT2(_value2),
-                2 => OneOf<T1, T2, TNewT3>.FromT3(mapper(_value3)),
+                0 => OneOf<T1, T2, TNewT3, T4>.FromT1(_value1),
+                1 => OneOf<T1, T2, TNewT3, T4>.FromT2(_value2),
+                2 => OneOf<T1, T2, TNewT3, T4>.FromT3(mapper(_value3)),
+                3 => OneOf<T1, T2, TNewT3, T4>.FromT4(_value4),
                 _ => throw new InvalidOperationException("Invalid OneOf state")
             };
         }
@@ -375,7 +377,7 @@ namespace REslava.Result.AdvancedPatterns
         /// </summary>
         /// <typeparam name="TNewT2">The new T2 type.</typeparam>
         /// <param name="binder">The function that takes T2 and returns a OneOf.</param>
-        /// <returns>The result of the binder function or the original T1/T3.</returns>
+        /// <returns>The result of the binder function or the original T1/T3/T4.</returns>
         /// <exception cref="ArgumentNullException">Thrown when binder is null.</exception>
         /// <remarks>
         /// BindT2 (also known as flatMap or chain) allows you to chain operations that return OneOf.
@@ -383,19 +385,20 @@ namespace REslava.Result.AdvancedPatterns
         /// </remarks>
         /// <example>
         /// <code>
-        /// OneOf&lt;Error, Success, Warning&gt; result = GetInitialResult();
-        /// OneOf&lt;Error, ProcessedData, Warning&gt; final = result.BindT2(success => ProcessSuccess(success));
+        /// OneOf&lt;Error, Success, Warning, Info&gt; result = GetInitialResult();
+        /// OneOf&lt;Error, ProcessedData, Warning, Info&gt; final = result.BindT2(success => ProcessSuccess(success));
         /// </code>
         /// </example>
-        public OneOf<T1, TNewT2, T3> BindT2<TNewT2>(Func<T2, OneOf<T1, TNewT2, T3>> binder)
+        public OneOf<T1, TNewT2, T3, T4> BindT2<TNewT2>(Func<T2, OneOf<T1, TNewT2, T3, T4>> binder)
         {
             if (binder == null) throw new ArgumentNullException(nameof(binder));
 
             return _index switch
             {
-                0 => OneOf<T1, TNewT2, T3>.FromT1(_value1),
+                0 => OneOf<T1, TNewT2, T3, T4>.FromT1(_value1),
                 1 => binder(_value2),
-                2 => OneOf<T1, TNewT2, T3>.FromT3(_value3),
+                2 => OneOf<T1, TNewT2, T3, T4>.FromT3(_value3),
+                3 => OneOf<T1, TNewT2, T3, T4>.FromT4(_value4),
                 _ => throw new InvalidOperationException("Invalid OneOf state")
             };
         }
@@ -405,7 +408,7 @@ namespace REslava.Result.AdvancedPatterns
         /// </summary>
         /// <typeparam name="TNewT3">The new T3 type.</typeparam>
         /// <param name="binder">The function that takes T3 and returns a OneOf.</param>
-        /// <returns>The result of the binder function or the original T1/T2.</returns>
+        /// <returns>The result of the binder function or the original T1/T2/T4.</returns>
         /// <exception cref="ArgumentNullException">Thrown when binder is null.</exception>
         /// <remarks>
         /// BindT3 (also known as flatMap or chain) allows you to chain operations that return OneOf.
@@ -413,19 +416,20 @@ namespace REslava.Result.AdvancedPatterns
         /// </remarks>
         /// <example>
         /// <code>
-        /// OneOf&lt;Error, Success, Warning&gt; result = GetInitialResult();
-        /// OneOf&lt;Error, Success, ProcessedWarning&gt; final = result.BindT3(warning => HandleWarning(warning));
+        /// OneOf&lt;Error, Success, Warning, Info&gt; result = GetInitialResult();
+        /// OneOf&lt;Error, Success, ProcessedWarning, Info&gt; final = result.BindT3(warning => HandleWarning(warning));
         /// </code>
         /// </example>
-        public OneOf<T1, T2, TNewT3> BindT3<TNewT3>(Func<T3, OneOf<T1, T2, TNewT3>> binder)
+        public OneOf<T1, T2, TNewT3, T4> BindT3<TNewT3>(Func<T3, OneOf<T1, T2, TNewT3, T4>> binder)
         {
             if (binder == null) throw new ArgumentNullException(nameof(binder));
 
             return _index switch
             {
-                0 => OneOf<T1, T2, TNewT3>.FromT1(_value1),
-                1 => OneOf<T1, T2, TNewT3>.FromT2(_value2),
+                0 => OneOf<T1, T2, TNewT3, T4>.FromT1(_value1),
+                1 => OneOf<T1, T2, TNewT3, T4>.FromT2(_value2),
                 2 => binder(_value3),
+                3 => OneOf<T1, T2, TNewT3, T4>.FromT4(_value4),
                 _ => throw new InvalidOperationException("Invalid OneOf state")
             };
         }
@@ -448,9 +452,10 @@ namespace REslava.Result.AdvancedPatterns
         {
             return _index switch
             {
-                0 => $"OneOf<{typeof(T1).Name}, {typeof(T2).Name}, {typeof(T3).Name}>(T1: {_value1})",
-                1 => $"OneOf<{typeof(T1).Name}, {typeof(T2).Name}, {typeof(T3).Name}>(T2: {_value2})",
-                2 => $"OneOf<{typeof(T1).Name}, {typeof(T2).Name}, {typeof(T3).Name}>(T3: {_value3})",
+                0 => $"OneOf<{typeof(T1).Name}, {typeof(T2).Name}, {typeof(T3).Name}, {typeof(T4).Name}>(T1: {_value1})",
+                1 => $"OneOf<{typeof(T1).Name}, {typeof(T2).Name}, {typeof(T3).Name}, {typeof(T4).Name}>(T2: {_value2})",
+                2 => $"OneOf<{typeof(T1).Name}, {typeof(T2).Name}, {typeof(T3).Name}, {typeof(T4).Name}>(T3: {_value3})",
+                3 => $"OneOf<{typeof(T1).Name}, {typeof(T2).Name}, {typeof(T3).Name}, {typeof(T4).Name}>(T4: {_value4})",
                 _ => "OneOf<Invalid>"
             };
         }

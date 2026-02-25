@@ -19,17 +19,17 @@ namespace REslava.Result.SourceGenerators.Tests
                 ClassName = "TestController",
                 ReturnType = "REslava.Result.AdvancedPatterns.OneOf<ValidationError, NotFoundError, ConflictError, ServerError>",
                 IsOneOf = true,
-                IsOneOf4 = true,
+                OneOfArity = 4,
                 IsResult = false,
-                GenericTypeArguments = new List<string> 
-                { 
-                    "ValidationError", "NotFoundError", "ConflictError", "ServerError" 
+                GenericTypeArguments = new List<string>
+                {
+                    "ValidationError", "NotFoundError", "ConflictError", "ServerError"
                 }
             };
 
             // Act & Assert
             Assert.IsNotNull(endpoint, "Should create endpoint metadata");
-            Assert.IsTrue(endpoint.IsOneOf4, "Should set IsOneOf4 flag");
+            Assert.IsTrue(endpoint.IsOneOf4, "Should resolve IsOneOf4 computed property");
             Assert.AreEqual(4, endpoint.GenericTypeArguments.Count, "Should have 4 generic type arguments");
         }
 
@@ -54,10 +54,11 @@ namespace REslava.Result.SourceGenerators.Tests
             var endpoint = new EndpointMetadata();
 
             // Act
-            endpoint.IsOneOf4 = true;
+            endpoint.IsOneOf = true;
+            endpoint.OneOfArity = 4;
 
             // Assert
-            Assert.IsTrue(endpoint.IsOneOf4, "Should set IsOneOf4 flag");
+            Assert.IsTrue(endpoint.IsOneOf4, "Should resolve IsOneOf4 computed property");
         }
     }
 }
