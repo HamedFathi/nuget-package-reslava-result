@@ -27,14 +27,14 @@ theme:
     repo: fontawesome/brands/github
   logo: assets/logo.png
 plugins:
-- social:       
+- social:
     debug: false
     debug_grid: true
     debug_grid_step: 64
     debug_color: black
     cards_layout_dir: layouts
-    cards_layout: custom    
-    cards_dir: assets/images/social   
+    cards_layout: custom
+    cards_dir: assets/images/social
 - tags
 - git-revision-date-localized:
     type: date
@@ -48,31 +48,31 @@ plugins:
 nav:
 - Home: index.md
 - Getting Started:
-  - REslava.Result - Getting Started: getting-started/index.md
+  - Quick Start: getting-started/index.md
   - Choose Your Path: getting-started/choose-your-path.md
   - Installation: getting-started/installation.md
   - Quick Start Scenarios: getting-started/quick-start-scenarios.md
   - Quick Start: getting-started/quick-start.md
   - 'The Transformation: 70-90% Less Code': getting-started/the-transformation-70-90-less-code.md
 - Core Concepts:
-  - Overview: core-concepts/index.md
+  - Fundamentals: core-concepts/index.md
   - Advanced Patterns: core-concepts/advanced-patterns.md
-  - Error Types: core-concepts/error-types.md
+  - ️ Error Types: core-concepts/error-types.md
   - Maybe: core-concepts/maybe.md
   - OneOf Unions: core-concepts/oneof-unions.md
   - REslava.Result Core Library: core-concepts/reslava.result-core-library.md
-  - Validation Attributes: core-concepts/validation-attributes.md
+  - ️ Validation Attributes: core-concepts/validation-attributes.md
   - Validation Rules: core-concepts/validation-rules.md
 - ASP.NET:
-  - Overview: aspnet/index.md
+  - ASP.NET: aspnet/index.md
   - ASP.NET Integration: aspnet/asp.net-integration.md
   - OneOf to IResult: aspnet/oneof-to-iresult.md
   - SmartEndpoints: aspnet/smartendpoints.md
 - Safety Analyzers:
-  - Overview: safety-analyzers/index.md
-  - Safety Analyzers: safety-analyzers/safety-analyzers.md
+  - Code Safety: safety-analyzers/index.md
+  - ️ Safety Analyzers: safety-analyzers/safety-analyzers.md
 - Architecture:
-  - Overview: architecture/index.md
+  - Architecture: architecture/index.md
   - Solid:
     - SOLID Architecture - REslava.Result.SourceGenerators v1.9.4+: architecture/solid/solid-architecture.md
     - REslava.Result — Core Type Hierarchy (v1.12.1): architecture/solid/uml-v1.12.1-core.md
@@ -83,22 +83,22 @@ nav:
   - How Generators Work: architecture/how-generators-work.md
   - Package Structure: architecture/package-structure.md
 - Code Examples:
-  - Overview: code-examples/index.md
+  - Code Examples: code-examples/index.md
   - Samples:
     - REslava.Result Samples: code-examples/samples/examples.md
   - Quick Examples: code-examples/quick-examples.md
 - Testing:
-  - TITLE: testing/index.md
+  - Test Suite: testing/index.md
   - Production Benefits: testing/production-benefits.md
   - Real-World Impact: testing/real-world-impact.md
   - Testing & Quality Assurance: testing/testing--quality-assurance.md
   - Why Choose REslava.Result?: testing/why-choose-reslava.result.md
 - Reference:
-  - Overview: reference/index.md
+  - Reference: reference/index.md
   - Api Doc:
-    - REslava.Result API Overview: reference/api-doc/index.md
+    - API Docs: reference/api-doc/index.md
     - Advanced Patterns:
-      - Advanced Patterns - Complete Guide: reference/api-doc/advanced-patterns/index.md
+      - Deep Patterns: reference/api-doc/advanced-patterns/index.md
       - Integration Extensions API Reference: reference/api-doc/advanced-patterns/integration-extensions.md
       - Maybe\<T> API Reference: reference/api-doc/advanced-patterns/maybe.md
       - OneOf\<T1, T2, T3> API Reference: reference/api-doc/advanced-patterns/oneof3.md
@@ -109,11 +109,11 @@ nav:
     - Result Methods API Reference: reference/api-doc/result-methods.md
     - Validation Rules API Reference: reference/api-doc/validation-rules.md
   - Features:
-    - Features reference by category: reference/features/index.md
+    - All Features: reference/features/index.md
   - Roadmap: reference/roadmap.md
   - Version History: reference/version-history.md
 - Community:
-  - Overview: community/index.md
+  - Community: community/index.md
   - Acknowledgments: community/acknowledgments.md
   - Contributing: community/contributing.md
   - Contributors: community/contributors.md

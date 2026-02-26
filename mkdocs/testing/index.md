@@ -14,18 +14,18 @@ tagline: The test suite your code deserves.
 
 -   :material-test-tube: __Test Suite__  
     Breakdown of core, generator, and analyzer tests.
-    [](testing--quality-assurance.md#comprehensive-test-suite)
+    [](testing--quality-assurance#comprehensive-test-suite)
 
 -   :material-cloud-check: __CI/CD__  
     Automated testing, coverage, and release pipeline.
-    [](testing--quality-assurance.md#cicd-pipeline)
+    [](testing--quality-assurance#cicd-pipeline)
 
 -   :material-office-building: __Real‑World Impact__  
     How teams use REslava.Result in production.
-    [](real-world-impact.md)
+    [](real-world-impact)
 
 -   :material-chart-areaspline: __Production Benefits__
     Performance, AOT compatibility, and zero dependencies.
-    [](production-benefits.md)
+    [](production-benefits)
 
 </div>

@@ -22,10 +22,10 @@ Join the project, contribute, and see who made it possible.
 
 -   :material-star: __Acknowledgments__
     Thanks to the community and libraries that inspired us.
-    [](acknowledgments.md)
+    [](acknowledgments)
 
 -   :material-account-group: __Contributors__
     Everyone who has contributed code, ideas, and feedback.
-    [](contributors.md)
+    [](contributors)
 
 </div>

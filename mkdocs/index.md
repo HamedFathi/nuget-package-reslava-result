@@ -1,7 +1,7 @@
 ---
 hide:
   - navigation
-title: REslava.Result
+title: No exceptions. No nulls. 
 description: Result<T> + OneOf + Maybe<T> + SmartEndpoints. Handle errors, auto-generate APIs, compose async pipelines. One package.
 tagline: Railway-oriented .NET made simple.
 ---
@@ -50,7 +50,7 @@ tagline: Railway-oriented .NET made simple.
 
 -   :material-language-csharp: __Code examples__  
     Code examples: Fast APIs, Console and quick code examples.
-    [](code-examples/)
+    [](code-examples)
 
 -   :material-test-tube: __Testing & Quality__
     3,339+ tests, CI/CD, real‑world impact, and production benefits.

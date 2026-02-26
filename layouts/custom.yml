@@ -9,10 +9,24 @@ layers:
   - background:
       image: layouts/logo.png
     size: { width: 200, height: 200 }
-    offset: { x: 970, y: 64 }
+    offset: { x: 970, y: 44 }
     origin: start top
 
-  # Title (Inter 38pt, dark slate)
+  # REslava.Result (dark slate)
+  - typography:
+      content: "REslava.Result"     
+      font:
+        family: Roboto
+        style: Bold
+      align: start top      
+      color: "#1F2937"      
+      line: 
+        height: 1
+        amount: 1
+    size: { width: 1000, height: 155 }
+    offset: { x: 60, y: 90 }
+
+  # Title (dark slate)
   - typography:
       content: "{{ page.meta.title or page.title}}"     
       font:
@@ -22,9 +36,23 @@ layers:
       color: "#1F2937"      
       line: 
         height: 1
+        amount: 2
+    size: { width: 1140, height: 180 }
+    offset: { x: 60, y: 248 }
+
+  # Tagline
+  - typography:
+      content: "{{ page.meta.tagline or 'Railway-oriented .NET made simple.' }}"
+      font:
+        family: Roboto
+        style: Bold
+      line: 
+        height: 1
         amount: 1
-    size: { width: 900, height: 140 }
-    offset: { x: 60, y: 138 }
+      color: "#0088BB"
+      align: start top
+    size: { width: 1120, height: 70 }
+    offset: { x: 64, y: 420 }
 
   # Description (Inter 14pt, gray)
   - typography:
@@ -35,10 +63,10 @@ layers:
       line: 
         height: 1.2
         amount: 4
-      color: "#4B5563"
+      color: "#3B4553"
       align: start top
     size: { width: 1120, height: 280 }
-    offset: { x: 64, y: 420 }
+    offset: { x: 64, y: 500 }
 
 # Required tags for social media
 tags:

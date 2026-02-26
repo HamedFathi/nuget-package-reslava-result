@@ -14,12 +14,12 @@ Plug REslava.Result into your web stack – Minimal API, MVC, and everything in 
 
 -   :material-lightbulb-on: __SmartEndpoints__
     Zero‑boilerplate Minimal API generation — routes, HTTP verbs, OpenAPI, auth, filters, caching.
-    [](smartendpoints/)
+    [](smartendpoints)
     {: .is-featured }
 
 -   :material-swap-horizontal: __OneOf to IResult__
     Convert `OneOf<T1,...>` to HTTP responses in one call — status codes from error types.
-    [](oneof-to-iresult/)
+    [](oneof-to-iresult)
 
 -   :material-code-json: __Minimal API__
     `Result.ToIResult()`, HTTP method variants (`ToPostResult`, `ToPutResult`, `ToDeleteResult`).

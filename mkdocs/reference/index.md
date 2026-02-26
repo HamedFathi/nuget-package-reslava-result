@@ -22,7 +22,7 @@ Quick access to API documentation, version history, roadmap, and deep-dive guide
 
 -   :material-feature-search: __Feature Reference__
     All features implemented classified by category.
-    [](features/)    
+    [](features)    
 
 -   :material-history: __Version History__
     Full changelog from v1.9.4 to present — every feature, fix, and breaking change.
