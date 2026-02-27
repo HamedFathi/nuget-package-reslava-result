@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) guideline.
 
+## [1.30.0] - 2026-02-27
+
+### ✨ Added
+- **`Result.Catch<TException>()`** / **`CatchAsync<TException>()`** — inline typed exception handler in the railway pipeline; if the result contains an `ExceptionError` wrapping `TException`, replaces it with the error returned by the handler (in-place, preserving position in the reasons list); `Task<Result<T>>` extension also catches `TException` thrown directly from the source task
+- **`Result.WithActivity(Activity?)`** — Tap-style extension that enriches an existing OTel `Activity` span with result outcome metadata: `result.outcome` (`"success"` / `"failure"`), `result.error.type`, `result.error.message`, `result.error.count` (when > 1 error); sets `ActivityStatusCode.Ok` / `ActivityStatusCode.Error`; null-safe (no-op when activity is null); no new NuGet dependency — uses BCL `System.Diagnostics.Activity`
+
+### Stats
+- 3,432 tests passing across net8.0, net9.0, net10.0 (1,069×3) + generator (131) + analyzer (68) + FluentValidation bridge (26)
+
+---
+
 ## [1.29.0] - 2026-02-25
 
 ### ⚠️ Breaking Changes

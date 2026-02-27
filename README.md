@@ -116,16 +116,16 @@ dotnet add package REslava.Result.FluentValidation
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="REslava.Result" Version="1.29.0" />
-  <PackageReference Include="REslava.Result.SourceGenerators" Version="1.29.0" />
-  <PackageReference Include="REslava.Result.Analyzers" Version="1.29.0" />
+  <PackageReference Include="REslava.Result" Version="1.30.0" />
+  <PackageReference Include="REslava.Result.SourceGenerators" Version="1.30.0" />
+  <PackageReference Include="REslava.Result.Analyzers" Version="1.30.0" />
 
   <!--
     OPTIONAL — migration bridge. NOT needed for new projects.
     REslava.Result already includes equivalent validation via [Validate] + Validation DSL.
     Only add this if your team has existing FluentValidation validators you want to keep.
   -->
-  <PackageReference Include="REslava.Result.FluentValidation" Version="1.29.0" />
+  <PackageReference Include="REslava.Result.FluentValidation" Version="1.30.0" />
 </ItemGroup>
 ```
 
@@ -1361,6 +1361,25 @@ public class CatalogController
 }
 ```
 
+### Attribute Precedence Cheat Sheet
+
+When class-level and method-level attributes overlap, the rule is always **method wins over class**. The table below shows the full resolution order for each configurable feature.
+
+| Feature | Highest priority → Lowest priority | Opt-out value |
+|---|---|---|
+| **Auth: allow anonymous** | `[SmartAllowAnonymous]` → `[AutoMapEndpoint(AllowAnonymous = true)]` → *(not set)* | — |
+| **Auth: require auth** | `[AutoMapEndpoint(RequiresAuth/Policies/Roles)]` → class `RequiresAuth/Policies/Roles` | `[SmartAllowAnonymous]` |
+| **Output cache** | `[AutoMapEndpoint(CacheSeconds = N)]` → class `CacheSeconds` → no cache | `-1` (method-level disables even if class sets it) |
+| **Rate limiting** | `[AutoMapEndpoint(RateLimitPolicy = "X")]` → class `RateLimitPolicy` → no limiting | `"none"` (method-level disables even if class sets it) |
+| **Endpoint filters** | `[SmartFilter]` on the method only — no class-level inheritance | remove the attribute |
+| **OpenAPI summary** | XML `<summary>` doc → `[AutoMapEndpoint(Summary)]` → PascalCase inference | — |
+| **Route / HTTP method** | `[AutoMapEndpoint(Route, HttpMethod)]` → naming convention (`Get*`, `Create*`, …) | — |
+
+**Key rules to remember:**
+- `[SmartAllowAnonymous]` is atomic — it wins over everything, no other auth check applies to that method.
+- `-1` and `"none"` are explicit opt-outs, not zero values. `CacheSeconds = 0` means "use class default"; `CacheSeconds = -1` means "disable cache for this method."
+- Filters never inherit from the class — every method that needs a filter must declare it explicitly.
+
 ### Auto-Validation
 
 Decorate a request type with `[Validate]` (from `REslava.Result.SourceGenerators`) and SmartEndpoints injects the validation call automatically — no extra code in the controller method needed:
@@ -2390,7 +2409,13 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 
 ## 🎯 Roadmap
 
-### v1.29.0 (Current) ✅
+### v1.30.0 (Current) ✅
+- **`Result.Catch<TException>()`** / **`CatchAsync<TException>()`** — inline typed exception handler in the railway; converts an `ExceptionError` wrapping `TException` to any `IError`; `Task<Result<T>>` extension also catches direct throws from the source task
+- **`Result.WithActivity(Activity?)`** — enriches an existing OTel `Activity` span with outcome tags (`result.outcome`, `result.error.type`, `result.error.message`); Tap-style (returns result unchanged), null-safe, no new NuGet dependency
+- 111 features across 11 categories
+- 3,432 tests
+
+### v1.29.0 ✅
 - **`IsFailed` → `IsFailure`** ⚠️ *breaking rename* — `IsSuccess` / `IsFailure` is the correct symmetric pair; find-and-replace across call sites
 - **Console samples** — 3 new examples: `14_ValidationDSL`, `15_OneOf5_OneOf6`, `16_AsyncPatterns_Advanced` (covers all v1.27–v1.28 features)
 - **FastMinimalAPI validation showcase** — side-by-side `/api/smart/validation` (DSL vs DataAnnotations) and `/api/smart/fluent-validation` (bridge demo)
@@ -2480,6 +2505,7 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 
 ## 📈 Version History
 
+- **v1.30.0** - `Result.Catch<TException>` inline exception handling in pipelines, `Result.WithActivity` OTel Activity enrichment, 111 features, 3,432 tests
 - **v1.29.0** - `IsFailed` → `IsFailure` rename (breaking), 3 new console samples (ValidationDSL, OneOf5/6, AsyncPatterns), FastMinimalAPI validation showcase, FastMvcAPI parity, Feature Reference page, 3,339 tests
 - **v1.28.0** - FluentValidation Bridge (`REslava.Result.FluentValidation` — *optional migration bridge, new projects don't need it*), `[FluentValidate]` generator, SmartEndpoints `IValidator<T>` auto-injection, RESL1006 dual-attribute analyzer, 26 new tests, 3,339 tests
 - **v1.27.0** - CancellationToken Support in SmartEndpoints, OneOf5/OneOf6 + OneOf4 fixes + chain extensions (ToFourWay↔ToSixWay), Native Validation DSL (19 methods on ValidatorRuleBuilder<T>), DocFX full XML docs, 451 new tests, 3,313 tests
