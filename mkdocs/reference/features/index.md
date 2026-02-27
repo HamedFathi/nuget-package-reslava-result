@@ -26,9 +26,11 @@ tagline: Know exactly what you're getting.
 | `WithSuccess()` / `WithError()` / `WithTag()` | Fluent builders | v1.0.0 | `## ⚠️ Error Types` — `### Rich Error Context` |
 | `Result.OkIf()` / `FailIf()` | Conditional factory (lazy + async overloads) | v1.20.0 | `## 📐 REslava.Result Core Library` — `### Conditional Factories` |
 | `Result.Try()` / `TryAsync()` | Exception-safe factory (wraps try-catch) | v1.20.0 | `## 📐 REslava.Result Core Library` — `### Exception Wrapping` |
-| `Result.Catch<TException>()` / `CatchAsync<TException>()` | Inline typed exception handling in pipelines — converts `ExceptionError` wrapping `TException` to a different `IError`; Task extension also catches direct throws | v1.29.0 | `## 📐 REslava.Result Core Library` |
-| `Result.WithActivity(Activity?)` | Enriches an existing OTel Activity span with outcome tags (`result.outcome`, `result.error.type`, etc.) and status — side-effect (Tap-style), null-safe | v1.30.0 | `## 📐 REslava.Result Core Library` |
-| `Result.WithLogger(ILogger, string)` / `LogOnFailure(ILogger, string)` | Tap-style ILogger integration — Debug on success, Warning on domain failure, Error on ExceptionError; structured log properties; Task extensions with CancellationToken | v1.31.0 | `## 📐 REslava.Result Core Library` |
+| `Result.Catch<TException>()` / `CatchAsync<TException>()` | Inline typed exception handling in pipelines — converts `ExceptionError` wrapping `TException` to a different `IError`; Task extension also catches direct throws | v1.29.0 | `## 📐 REslava.Result Core Library` — `### 🪤 Inline Exception Handling` |
+| `Result.WithActivity(Activity?)` | Enriches an existing OTel Activity span with outcome tags (`result.outcome`, `result.error.type`, etc.) and status — side-effect (Tap-style), null-safe | v1.30.0 | `## 📐 REslava.Result Core Library` — `### 📡 OpenTelemetry Integration` |
+| `Result.WithLogger(ILogger, string)` / `LogOnFailure(ILogger, string)` | Tap-style ILogger integration — Debug on success, Warning on domain failure, Error on ExceptionError; structured log properties; Task extensions with CancellationToken | v1.31.0 | `## 📐 REslava.Result Core Library` — `### 📝 Structured Logging` |
+| `Result.Recover()` / `RecoverAsync()` | Recovery from any failure — transforms failure into a new `Result<T>` (success or failure); error list passed to recovery func; both `Result` and `Result<T>`; Task extensions with CancellationToken | v1.31.0 | `## 📐 REslava.Result Core Library` — `### 🔄 Railway Recovery` |
+| `Result.Filter()` / `FilterAsync()` | Converts success to failure when predicate fails; `Func<T, IError>` error factory enables value-dependent contextual messages; 3 sync overloads (factory / static IError / string); async predicate variant; Task extensions | v1.31.0 | `## 📐 REslava.Result Core Library` — `### 🔍 Predicate Filtering` |
 | `Result.Combine()` / `Merge()` | Aggregate multiple results | v1.20.0 | `## 📐 REslava.Result Core Library` — `### Complete Method Catalog` |
 | `Result.WhenAll()` | Run concurrent async Results, aggregate errors | v1.18.0 | `## REslava.Result Core Library` — `### Async Patterns` |
 | `Result.Retry()` | Retry with delay + exponential backoff | v1.18.0 | `## REslava.Result Core Library` — `### Async Patterns` |
@@ -180,12 +182,12 @@ tagline: Know exactly what you're getting.
 
 ## Summary
 
-!!! new "**v1.31.0** — 112 features across 11 categories."
+!!! new "**v1.31.0** — 114 features across 11 categories."
 
 
 | Category | Total Features |
 |----------|---------------|
-| Core Library | 29 |
+| Core Library | 31 |
 | Error Types | 12 |
 | SmartEndpoints | 18 |
 | Result/OneOf → IResult | 14 |
@@ -196,7 +198,7 @@ tagline: Know exactly what you're getting.
 | OneOf (incl. OneOf5/6 + chains) | 8 |
 | Validation DSL | 1 |
 | FluentValidation Bridge | 2 |
-| **Total** | **112** |
+| **Total** | **114** |
 
 ---
 

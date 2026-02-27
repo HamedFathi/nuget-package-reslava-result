@@ -116,16 +116,16 @@ dotnet add package REslava.Result.FluentValidation
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="REslava.Result" Version="1.30.0" />
-  <PackageReference Include="REslava.Result.SourceGenerators" Version="1.30.0" />
-  <PackageReference Include="REslava.Result.Analyzers" Version="1.30.0" />
+  <PackageReference Include="REslava.Result" Version="1.31.0" />
+  <PackageReference Include="REslava.Result.SourceGenerators" Version="1.31.0" />
+  <PackageReference Include="REslava.Result.Analyzers" Version="1.31.0" />
 
   <!--
     OPTIONAL — migration bridge. NOT needed for new projects.
     REslava.Result already includes equivalent validation via [Validate] + Validation DSL.
     Only add this if your team has existing FluentValidation validators you want to keep.
   -->
-  <PackageReference Include="REslava.Result.FluentValidation" Version="1.30.0" />
+  <PackageReference Include="REslava.Result.FluentValidation" Version="1.31.0" />
 </ItemGroup>
 ```
 
@@ -632,6 +632,142 @@ Result<UserDto> dto = await result
     .BindAsync(u => _mapper.MapAsync(u, ct))
     .TapAsync(d => _cache.SetAsync(d, ct));
 ```
+
+### 🪤 Inline Exception Handling — `Catch<TException>` / `CatchAsync<TException>`
+
+When a pipeline step may throw a specific exception type, `Catch` converts the `ExceptionError` wrapping that exception into a domain error — without breaking the pipeline:
+
+```csharp
+// Convert HttpRequestException to a domain NotFoundError
+Result<User> user = await Result<User>.TryAsync(() => _api.FetchUserAsync(id))
+    .Catch<HttpRequestException>(ex => new NotFoundError("User", id));
+
+// Convert DbException to ConflictError
+Result<Order> order = await Result<Order>.TryAsync(() => _db.InsertOrderAsync(dto))
+    .Catch<DbException>(ex => new ConflictError("Order", ex.Message));
+
+// Async handler
+Result<User> result = await Result<User>.TryAsync(() => _api.FetchUserAsync(id))
+    .CatchAsync<HttpRequestException>(async ex =>
+    {
+        await _telemetry.TrackExceptionAsync(ex);
+        return new NotFoundError("User", id);
+    });
+```
+
+The `ExceptionError` is replaced **in-place** — preserving its position in the error list. Other errors are untouched. If there is no matching exception error, or the result is successful, it passes through unchanged.
+
+---
+
+### 📡 OpenTelemetry Integration — `WithActivity`
+
+Enriches an existing `Activity` span with result outcome metadata — Tap-style, returns the result unchanged:
+
+```csharp
+using var activity = ActivitySource.StartActivity("GetUser");
+
+Result<User> user = await _userService.GetAsync(id)
+    .WithActivity(activity);    // or Activity.Current
+```
+
+Tags set on the activity:
+
+| Tag | Value |
+|-----|-------|
+| `result.outcome` | `"success"` or `"failure"` |
+| `result.error.type` | First error type name (on failure) |
+| `result.error.message` | First error message (on failure) |
+| `result.error.count` | Error count (only when > 1) |
+
+Activity status is set to `ActivityStatusCode.Ok` on success, `ActivityStatusCode.Error` on failure. Null-safe — no-op when `activity` is `null`. No extra NuGet dependency — uses BCL `System.Diagnostics.Activity`.
+
+---
+
+### 📝 Structured Logging — `WithLogger` / `LogOnFailure`
+
+Tap-style ILogger integration — log result outcomes without breaking the pipeline:
+
+```csharp
+// Log every result: Debug on success, Warning/Error on failure
+Result<User> user = await _userService.GetAsync(id)
+    .WithLogger(_logger, "GetUser");
+
+// Log only failures — success is silent
+Result<Order> order = await _orderService.CreateAsync(dto)
+    .LogOnFailure(_logger, "CreateOrder");
+
+// Composable in pipelines
+Result<UserDto> dto = await _userService.GetAsync(id)
+    .WithLogger(_logger, "GetUser")
+    .MapAsync(u => _mapper.Map(u));
+```
+
+Log levels per outcome:
+
+| Outcome | Level | When |
+|---------|-------|------|
+| Success | `Debug` | `IsSuccess` |
+| Domain failure | `Warning` | `IsFailure`, no `ExceptionError` |
+| Exception failure | `Error` | `IsFailure`, contains `ExceptionError` |
+
+Structured log properties on every failure entry: `{OperationName}`, `{ErrorType}`, `{ErrorMessage}`, `{ErrorCount}` (when > 1 error). `Task<Result<T>>` extensions accept `CancellationToken`.
+
+---
+
+### 🔄 Railway Recovery — `Recover` / `RecoverAsync`
+
+The counterpart to `Bind`: where `Bind` chains on the success path, `Recover` chains on the failure path. Transform any failure into a new `Result` — which can itself succeed or fail:
+
+```csharp
+// Fallback to cache if the primary DB call fails
+Result<User> user = await _userRepo.GetAsync(id)
+    .Recover(errors => _cache.Get(id));
+
+// Async fallback — secondary data source
+Result<User> user = await _userRepo.GetAsync(id)
+    .RecoverAsync(errors => _fallbackApi.GetUserAsync(id));
+
+// Context-aware: skip recovery on ForbiddenError
+Result<Document> doc = await FetchDocument(id)
+    .Recover(errors => errors.Any(e => e is ForbiddenError)
+        ? Result<Document>.Fail(errors)
+        : _localCache.Get(id));
+
+// Non-generic Result — command recovery
+Result result = await DeleteUser(id)
+    .Recover(errors => ArchiveUser(id));
+```
+
+The recovery func receives the full `ImmutableList<IError>` — enabling context-aware branching. Pass-through on success. Distinct from `Catch<TException>`: `Catch` targets only `ExceptionError` wrapping a specific exception type and always returns a failure; `Recover` handles any failure and can return success.
+
+---
+
+### 🔍 Predicate Filtering — `Filter` / `FilterAsync`
+
+Convert a successful result to a failure when a predicate on the value is not met. The error factory receives the value — enabling contextual error messages that embed actual data:
+
+```csharp
+// Value-dependent error — the primary Filter use case
+Result<User> activeUser = userResult
+    .Filter(u => u.IsActive, u => new Error($"User '{u.Name}' is not active."));
+
+// Static error — convenience overload
+Result<Order> pending = orderResult
+    .Filter(o => o.Status == OrderStatus.Pending, new ConflictError("Order", "status"));
+
+// String message — convenience overload
+Result<Product> inStock = productResult
+    .Filter(p => p.Stock > 0, "Product is out of stock.");
+
+// Async predicate (e.g. external validation service)
+Result<Order> valid = await orderResult
+    .FilterAsync(async o => await _validator.IsValidAsync(o),
+                 o => new ValidationError("Order", o.Id.ToString(), "failed validation"));
+```
+
+Distinct from `Ensure`: `Ensure` takes a static `Error` fixed at the call site. `Filter` takes `Func<T, IError>` — the error is built from the value itself, enabling messages like `"User 'John' is not active"`. Predicate exceptions are wrapped in `ExceptionError`. Pass-through on failure.
+
+---
 
 ### ✅ Best Practices
 
@@ -2409,7 +2545,14 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 
 ## 🎯 Roadmap
 
-### v1.30.0 (Current) ✅
+### v1.31.0 (Current) ✅
+- **`Result.WithLogger(ILogger, string)`** / **`LogOnFailure(ILogger, string)`** — Tap-style ILogger integration; Debug on success, Warning on domain failure, Error on ExceptionError; structured log properties (`result.outcome`, `result.error.type`, `result.error.message`); Task extensions with CancellationToken
+- **`Result.Recover()`** / **`RecoverAsync()`** — railway recovery; transforms any failure into a new `Result<T>` (success or failure) via a fallback func; error list passed to recovery func for context-aware branching; both `Result` and `Result<T>`; Task extensions
+- **`Result.Filter()`** / **`FilterAsync()`** — convert success to failure when a predicate fails; `Func<T, IError>` error factory enables value-dependent contextual messages; 3 sync overloads (factory / static IError / string); async predicate variant; Task extensions
+- 114 features across 11 categories
+- 3,591 tests
+
+### v1.30.0 ✅
 - **`Result.Catch<TException>()`** / **`CatchAsync<TException>()`** — inline typed exception handler in the railway; converts an `ExceptionError` wrapping `TException` to any `IError`; `Task<Result<T>>` extension also catches direct throws from the source task
 - **`Result.WithActivity(Activity?)`** — enriches an existing OTel `Activity` span with outcome tags (`result.outcome`, `result.error.type`, `result.error.message`); Tap-style (returns result unchanged), null-safe, no new NuGet dependency
 - 111 features across 11 categories
@@ -2505,6 +2648,7 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 
 ## 📈 Version History
 
+- **v1.31.0** - `Result.WithLogger`/`LogOnFailure` ILogger integration, `Result.Recover`/`RecoverAsync` railway recovery, `Result.Filter`/`FilterAsync` predicate-based success filtering, 114 features, 3,591 tests
 - **v1.30.0** - `Result.Catch<TException>` inline exception handling in pipelines, `Result.WithActivity` OTel Activity enrichment, 111 features, 3,432 tests
 - **v1.29.0** - `IsFailed` → `IsFailure` rename (breaking), 3 new console samples (ValidationDSL, OneOf5/6, AsyncPatterns), FastMinimalAPI validation showcase, FastMvcAPI parity, Feature Reference page, 3,339 tests
 - **v1.28.0** - FluentValidation Bridge (`REslava.Result.FluentValidation` — *optional migration bridge, new projects don't need it*), `[FluentValidate]` generator, SmartEndpoints `IValidator<T>` auto-injection, RESL1006 dual-attribute analyzer, 26 new tests, 3,339 tests

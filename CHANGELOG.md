@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) guideline.
 
+## [1.31.0] - 2026-02-28
+
+### ✨ Added
+- **`Result.WithLogger(ILogger, string)`** / **`LogOnFailure(ILogger, string)`** — Tap-style ILogger integration; logs Debug on success, Warning on domain failure (non-`ExceptionError`), Error on `ExceptionError`; structured log properties: `result.outcome`, `result.error.type`, `result.error.message`; `Task<Result<T>>` and `Task<Result>` extensions with `CancellationToken`
+- **`Result.Recover()`** / **`RecoverAsync()`** — railway recovery; transforms any failure into a new `Result<T>` (success or failure) via `Func<ImmutableList<IError>, Result<T>>`; error list passed to recovery func enables context-aware branching (e.g. skip recovery on `ForbiddenError`); non-generic `Result` variant included; `Task<Result<T>>` extensions with `CancellationToken`
+- **`Result.Filter()`** / **`FilterAsync()`** — converts success to failure when a predicate fails; `Func<T, IError>` error factory enables value-dependent contextual messages (e.g. `"User 'John' is not active"`); 3 sync overloads: factory / static `IError` / string message; async predicate variant (`Func<T, Task<bool>>`); `Task<Result<T>>` extensions; predicate exceptions wrapped in `ExceptionError`
+
+### Stats
+- 3,591 tests passing across net8.0, net9.0, net10.0 (1,122×3) + generator (131) + analyzer (68) + FluentValidation bridge (26)
+
+---
+
 ## [1.30.0] - 2026-02-27
 
 ### ✨ Added
