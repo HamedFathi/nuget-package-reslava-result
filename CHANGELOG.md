@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) guideline.
 
+## [1.32.0] - 2026-02-28
+
+### ✨ Added
+- **`Result.Validate(r1, r2, ..., mapper)`** — applicative validation; runs 2/3/4 independent `Result<T>` validations simultaneously; accumulates ALL errors without short-circuiting; maps heterogeneous success values to `Result<TResult>` via typed mapper func; mapper is only invoked when all inputs succeed
+- **`Result<T>.Deconstruct()`** — C# 8+ tuple unpacking; `var (value, errors) = result` (2-component) and `var (isSuccess, value, errors) = result` (3-component) for `Result<T>`; `var (isSuccess, errors) = result` for non-generic `Result`; value is `default` when `IsFailure`
+- **`Maybe<T>` ↔ `Result<T>` interop** — `maybe.ToResult(Func<IError>)`, `maybe.ToResult(IError)`, `maybe.ToResult(string)` bridge `None` to typed failure; `result.ToMaybe()` converts success to `Some(value)` and failure to `None` (error info intentionally discarded)
+
+### Stats
+- 3,696 tests passing across net8.0, net9.0, net10.0 (1,157×3) + generator (131) + analyzer (68) + FluentValidation bridge (26)
+
+---
+
 ## [1.31.0] - 2026-02-28
 
 ### ✨ Added

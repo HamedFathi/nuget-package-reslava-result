@@ -12,7 +12,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/reslava/REslava.Result)](https://github.com/reslava/REslava.Result/stargazers) 
 [![NuGet Downloads](https://img.shields.io/nuget/dt/REslava.Result)](https://www.nuget.org/packages/REslava.Result)
 ![Test Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
-![Test Suite](https://img.shields.io/badge/tests-3591%20passing-brightgreen)
+![Test Suite](https://img.shields.io/badge/tests-3696%20passing-brightgreen)
 
 </div>
 
@@ -116,16 +116,16 @@ dotnet add package REslava.Result.FluentValidation
 
 ```xml
 <ItemGroup>
-  <PackageReference Include="REslava.Result" Version="1.31.0" />
-  <PackageReference Include="REslava.Result.SourceGenerators" Version="1.31.0" />
-  <PackageReference Include="REslava.Result.Analyzers" Version="1.31.0" />
+  <PackageReference Include="REslava.Result" Version="1.32.0" />
+  <PackageReference Include="REslava.Result.SourceGenerators" Version="1.32.0" />
+  <PackageReference Include="REslava.Result.Analyzers" Version="1.32.0" />
 
   <!--
     OPTIONAL — migration bridge. NOT needed for new projects.
     REslava.Result already includes equivalent validation via [Validate] + Validation DSL.
     Only add this if your team has existing FluentValidation validators you want to keep.
   -->
-  <PackageReference Include="REslava.Result.FluentValidation" Version="1.31.0" />
+  <PackageReference Include="REslava.Result.FluentValidation" Version="1.32.0" />
 </ItemGroup>
 ```
 
@@ -766,6 +766,62 @@ Result<Order> valid = await orderResult
 ```
 
 Distinct from `Ensure`: `Ensure` takes a static `Error` fixed at the call site. `Filter` takes `Func<T, IError>` — the error is built from the value itself, enabling messages like `"User 'John' is not active"`. Predicate exceptions are wrapped in `ExceptionError`. Pass-through on failure.
+
+---
+
+### ✅ Applicative Validation — `Result.Validate`
+
+Run multiple independent validations and accumulate **all** errors at once. Distinct from `Bind` (which short-circuits on first failure) and `Combine` (same-type collection, no mapper):
+
+```csharp
+// All three validations run regardless of individual failure — ALL errors surface
+Result<CreateOrderDto> dto = Result.Validate(
+    ValidateName(request.Name),       // Result<string>
+    ValidateEmail(request.Email),     // Result<string>
+    ValidateAge(request.Age),         // Result<int>
+    (name, email, age) => new CreateOrderDto(name, email, age));
+
+// If Name and Age fail, dto.Errors contains BOTH errors simultaneously
+// If all succeed, dto.Value = new CreateOrderDto(...)
+```
+
+2-way and 4-way overloads follow the same pattern. Mapper is only invoked when all inputs succeed.
+
+---
+
+### 🔓 Tuple Unpacking — `Result<T>.Deconstruct`
+
+C# 8+ deconstruction support for concise result handling:
+
+```csharp
+// 2-component: value is default when IsFailure
+var (value, errors) = GetUser(id);
+if (errors.Count == 0) Console.WriteLine(value!.Name);
+
+// 3-component: full unpack
+var (isSuccess, value, errors) = GetUser(id);
+if (isSuccess) Console.WriteLine(value!.Name);
+
+// Non-generic Result
+var (isSuccess, errors) = DoSomething();
+```
+
+---
+
+### 🔁 `Maybe<T>` ↔ `Result<T>` Interop
+
+Bridge between the two optional-value types in the library:
+
+```csharp
+// Maybe → Result (None becomes a typed failure)
+Maybe<User> maybe = repository.FindUser(id);
+Result<User> result = maybe.ToResult(() => new NotFoundError("User", id)); // lazy factory
+Result<User> result = maybe.ToResult(new NotFoundError("User", id));      // static error
+Result<User> result = maybe.ToResult("User not found");                    // string overload
+
+// Result → Maybe (error info is discarded — use when absence, not error detail, is needed)
+Maybe<User> maybe = result.ToMaybe(); // Some(user) on success, None on failure
+```
 
 ---
 
@@ -2545,7 +2601,14 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 
 ## 🎯 Roadmap
 
-### v1.31.0 (Current) ✅
+### v1.32.0 (Current) ✅
+- **`Result.Validate(r1, r2, ..., mapper)`** — applicative validation; runs 2/3/4 independent `Result<T>` validations simultaneously, accumulates ALL errors (no short-circuit), maps heterogeneous success values via typed mapper func to `Result<TResult>`
+- **`Result<T>.Deconstruct()`** — C# 8+ tuple syntax; `var (value, errors) = result` and `var (isSuccess, value, errors) = result` for `Result<T>`; `var (isSuccess, errors) = result` for non-generic `Result`
+- **`Maybe<T>` ↔ `Result<T>` interop** — `maybe.ToResult(errorFactory/error/string)` bridges `None` to typed failure; `result.ToMaybe()` discards errors and returns `Some(value)` or `None`
+- 117 features across 11 categories
+- 3,696 tests
+
+### v1.31.0 ✅
 - **`Result.WithLogger(ILogger, string)`** / **`LogOnFailure(ILogger, string)`** — Tap-style ILogger integration; Debug on success, Warning on domain failure, Error on ExceptionError; structured log properties (`result.outcome`, `result.error.type`, `result.error.message`); Task extensions with CancellationToken
 - **`Result.Recover()`** / **`RecoverAsync()`** — railway recovery; transforms any failure into a new `Result<T>` (success or failure) via a fallback func; error list passed to recovery func for context-aware branching; both `Result` and `Result<T>`; Task extensions
 - **`Result.Filter()`** / **`FilterAsync()`** — convert success to failure when a predicate fails; `Func<T, IError>` error factory enables value-dependent contextual messages; 3 sync overloads (factory / static IError / string); async predicate variant; Task extensions
@@ -2648,6 +2711,7 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 
 ## 📈 Version History
 
+- **v1.32.0** - `Result.Validate` applicative validation (2/3/4-way), `Result<T>.Deconstruct()` tuple unpacking, `Maybe<T>`↔`Result<T>` interop, 117 features, 3,696 tests
 - **v1.31.0** - `Result.WithLogger`/`LogOnFailure` ILogger integration, `Result.Recover`/`RecoverAsync` railway recovery, `Result.Filter`/`FilterAsync` predicate-based success filtering, 114 features, 3,591 tests
 - **v1.30.0** - `Result.Catch<TException>` inline exception handling in pipelines, `Result.WithActivity` OTel Activity enrichment, 111 features, 3,432 tests
 - **v1.29.0** - `IsFailed` → `IsFailure` rename (breaking), 3 new console samples (ValidationDSL, OneOf5/6, AsyncPatterns), FastMinimalAPI validation showcase, FastMvcAPI parity, Feature Reference page, 3,339 tests
