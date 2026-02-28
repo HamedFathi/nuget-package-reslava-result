@@ -31,6 +31,7 @@ tagline: Know exactly what you're getting.
 | `Result.WithLogger(ILogger, string)` / `LogOnFailure(ILogger, string)` | Tap-style ILogger integration — Debug on success, Warning on domain failure, Error on ExceptionError; structured log properties; Task extensions with CancellationToken | v1.31.0 | `## 📐 REslava.Result Core Library` — `### 📝 Structured Logging` |
 | `Result.Recover()` / `RecoverAsync()` | Recovery from any failure — transforms failure into a new `Result<T>` (success or failure); error list passed to recovery func; both `Result` and `Result<T>`; Task extensions with CancellationToken | v1.31.0 | `## 📐 REslava.Result Core Library` — `### 🔄 Railway Recovery` |
 | `Result.Filter()` / `FilterAsync()` | Converts success to failure when predicate fails; `Func<T, IError>` error factory enables value-dependent contextual messages; 3 sync overloads (factory / static IError / string); async predicate variant; Task extensions | v1.31.0 | `## 📐 REslava.Result Core Library` — `### 🔍 Predicate Filtering` |
+| `Result.Validate()` | Applicative validation — runs 2/3/4 independent `Result<T>` validations simultaneously, accumulates ALL errors, maps heterogeneous success values to `Result<TResult>` via mapper func | v1.32.0 | — |
 | `Result.Combine()` / `Merge()` | Aggregate multiple results | v1.20.0 | `## 📐 REslava.Result Core Library` — `### Complete Method Catalog` |
 | `Result.WhenAll()` | Run concurrent async Results, aggregate errors | v1.18.0 | `## REslava.Result Core Library` — `### Async Patterns` |
 | `Result.Retry()` | Retry with delay + exponential backoff | v1.18.0 | `## REslava.Result Core Library` — `### Async Patterns` |
@@ -182,12 +183,12 @@ tagline: Know exactly what you're getting.
 
 ## Summary
 
-!!! new "**v1.31.0** — 114 features across 11 categories."
+!!! new "**v1.32.0** — 115 features across 11 categories."
 
 
 | Category | Total Features |
 |----------|---------------|
-| Core Library | 31 |
+| Core Library | 32 |
 | Error Types | 12 |
 | SmartEndpoints | 18 |
 | Result/OneOf → IResult | 14 |
@@ -198,7 +199,7 @@ tagline: Know exactly what you're getting.
 | OneOf (incl. OneOf5/6 + chains) | 8 |
 | Validation DSL | 1 |
 | FluentValidation Bridge | 2 |
-| **Total** | **114** |
+| **Total** | **115** |
 
 ---
 
