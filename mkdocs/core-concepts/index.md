@@ -60,8 +60,8 @@ The functional programming foundation of REslava.Result. Learn each piece step b
     `[Validate]` source generator — DataAnnotations → `Result<T>` automatically.
     [](validation-attributes/)
 
--   :simple-fluentvalidation: __FluentValidation Bridge__
-    `[FluentValidate]` — keep existing FluentValidation validators, get `Result<T>` + SmartEndpoints auto-injection.
+-   ![FluentValidation](https://avatars.githubusercontent.com/u/61082709?s=16&v=4) __FluentValidation Bridge__
+    `[FluentValidation]` — keep existing FluentValidation validators, get `Result<T>` + SmartEndpoints auto-injection.
     [](../aspnet/smartendpoints/#fluentvalidation-bridge)
 
 -   :material-speedometer: __Performance__
