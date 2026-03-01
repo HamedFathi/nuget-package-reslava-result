@@ -201,26 +201,27 @@ Includes API reference, advanced patterns, and interactive examples.
     - [20.2.2. ✅ **Production-Ready**](#2022--production-ready)
     - [20.2.3. ✅ **Developer Experience**](#2023--developer-experience)
 - [21. 🎯 Roadmap](#21--roadmap)
-  - [21.1. v1.32.0 (Current) ✅](#211-v1320-current-)
-  - [21.2. v1.31.0 ✅](#212-v1310-)
-  - [21.3. v1.30.0 ✅](#213-v1300-)
-  - [21.4. v1.29.0 ✅](#214-v1290-)
-  - [21.5. v1.28.0 ✅](#215-v1280-)
-  - [21.6. v1.27.0 ✅](#216-v1270-)
-  - [21.7. v1.26.0 ✅](#217-v1260-)
-  - [21.8. v1.25.0 ✅](#218-v1250-)
-  - [21.9. v1.24.0 ✅](#219-v1240-)
-  - [21.10. v1.23.0 ✅](#2110-v1230-)
-  - [21.11. v1.22.0 ✅](#2111-v1220-)
-  - [21.12. v1.21.0 ✅](#2112-v1210-)
-  - [21.13. v1.20.0 ✅](#2113-v1200-)
-  - [21.14. v1.19.0 ✅](#2114-v1190-)
-  - [21.15. v1.18.0 ✅](#2115-v1180-)
-  - [21.16. v1.17.0 ✅](#2116-v1170-)
-  - [21.17. v1.16.0 ✅](#2117-v1160-)
-  - [21.18. v1.15.0 ✅](#2118-v1150-)
-  - [21.19. v1.14.x ✅](#2119-v114x-)
-  - [21.20. v1.13.0 ✅](#2120-v1130-)
+  - [21.1. v1.33.0 (Current) ✅](#211-v1330-current-)
+  - [21.2. v1.32.0 ✅](#212-v1320-)
+  - [21.3. v1.31.0 ✅](#213-v1310-)
+  - [21.4. v1.30.0 ✅](#214-v1300-)
+  - [21.5. v1.29.0 ✅](#215-v1290-)
+  - [21.6. v1.28.0 ✅](#216-v1280-)
+  - [21.7. v1.27.0 ✅](#217-v1270-)
+  - [21.8. v1.26.0 ✅](#218-v1260-)
+  - [21.9. v1.25.0 ✅](#219-v1250-)
+  - [21.10. v1.24.0 ✅](#2110-v1240-)
+  - [21.11. v1.23.0 ✅](#2111-v1230-)
+  - [21.12. v1.22.0 ✅](#2112-v1220-)
+  - [21.13. v1.21.0 ✅](#2113-v1210-)
+  - [21.14. v1.20.0 ✅](#2114-v1200-)
+  - [21.15. v1.19.0 ✅](#2115-v1190-)
+  - [21.16. v1.18.0 ✅](#2116-v1180-)
+  - [21.17. v1.17.0 ✅](#2117-v1170-)
+  - [21.18. v1.16.0 ✅](#2118-v1160-)
+  - [21.19. v1.15.0 ✅](#2119-v1150-)
+  - [21.20. v1.14.x ✅](#2120-v114x-)
+  - [21.21. v1.13.0 ✅](#2121-v1130-)
 - [22. 📈 Version History](#22--version-history)
 - [23. 🤝 Contributing](#23--contributing)
 - [24. 📄 License](#24--license)
@@ -2791,13 +2792,13 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 - 114 features across 11 categories
 - 3,591 tests
 
-### 21.3. v1.30.0 ✅
+### 21.4. v1.30.0 ✅
 - **`Result.Catch<TException>()`** / **`CatchAsync<TException>()`** — inline typed exception handler in the railway; converts an `ExceptionError` wrapping `TException` to any `IError`; `Task<Result<T>>` extension also catches direct throws from the source task
 - **`Result.WithActivity(Activity?)`** — enriches an existing OTel `Activity` span with outcome tags (`result.outcome`, `result.error.type`, `result.error.message`); Tap-style (returns result unchanged), null-safe, no new NuGet dependency
 - 111 features across 11 categories
 - 3,432 tests
 
-### 21.4. v1.29.0 ✅
+### 21.5. v1.29.0 ✅
 - **`IsFailed` → `IsFailure`** ⚠️ *breaking rename* — `IsSuccess` / `IsFailure` is the correct symmetric pair; find-and-replace across call sites
 - **Console samples** — 3 new examples: `14_ValidationDSL`, `15_OneOf5_OneOf6`, `16_AsyncPatterns_Advanced` (covers all v1.27–v1.28 features)
 - **FastMinimalAPI validation showcase** — side-by-side `/api/smart/validation` (DSL vs DataAnnotations) and `/api/smart/fluent-validation` (bridge demo)
@@ -2805,12 +2806,12 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 - **Feature Reference page** — 109 features across 11 categories in docs
 - 3,339 tests
 
-### 21.5. v1.28.0 ✅
+### 21.6. v1.28.0 ✅
 - **FluentValidation Bridge** ⚠️ *optional migration bridge* — new `REslava.Result.FluentValidation` package (4th NuGet); `[FluentValidate]` attribute generates `.Validate(IValidator<T>)` + `.ValidateAsync()` extensions; SmartEndpoints auto-injects `IValidator<T>` as a lambda parameter; for teams with existing FV validators only — **new projects do not need this package**
 - **RESL1006 analyzer** — compile error when both `[Validate]` and `[FluentValidate]` appear on the same type (conflicting `.Validate()` signatures)
 - 3,339 tests
 
-### 21.6. v1.27.0 ✅
+### 21.7. v1.27.0 ✅
 - **CancellationToken Support in SmartEndpoints** — generated lambdas detect `CancellationToken` in service method signatures and inject it as an endpoint parameter; backward-compatible
 - **OneOf5 / OneOf6** — `OneOf<T1..T5>` and `OneOf<T1..T6>` structs with full `Match`, `Switch`, `MapT*`, `BindT*`, equality, and implicit conversions; OneOf4 bug fixes
 - **OneOf chain extensions** — `ToFourWay`, `ToFiveWay`, `ToSixWay` and corresponding down-conversions across the full 2↔3↔4↔5↔6 arity chain
@@ -2818,67 +2819,67 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 - **DocFX API Reference** — all public types, members, and XML docs fully surfaced at `/reference/api/`
 - 3,313 tests
 
-### 21.7. v1.26.0 ✅
+### 21.8. v1.26.0 ✅
 - **RESL1005 analyzer** — Info-level diagnostic suggests domain error types (`NotFoundError`, `ConflictError`, etc.) when `new Error("...")` message implies an HTTP error category; 14 new tests
 - **SmartEndpoints Auto-Validation** — `[Validate]` on a body parameter type auto-injects `.Validate()` into the generated lambda; returns 422 early on failure; 5 new tests
 - 2,862 tests
 
-### 21.8. v1.25.0 ✅
+### 21.9. v1.25.0 ✅
 - **Documentation Website** — MkDocs Material site auto-generated from README.md; 8 nav sections, dark/light, search, social cards
 - **DocFX API Reference landing page** — Bootstrap namespace cards, Core Types grid, quick-links to docs/GitHub/NuGet
 - **CI optimization** — path allowlist (src/tests only); docs commits no longer trigger test suite
 - 2,843 tests (unchanged)
 
-### 21.9. v1.24.0 ✅
+### 21.10. v1.24.0 ✅
 - **`[Validate]` Source Generator** — decorate any record/class to get `.Validate()` returning `Result<T>`; delegates to `Validator.TryValidateObject` (all 20+ `DataAnnotations` types supported); field errors surface as `ValidationError` with `FieldName`; composable with `.Bind()` / `.ToIResult()` / `.ToActionResult()`
 - 7 new generator tests, 2,843 total tests
 
-### 21.10. v1.23.0 ✅
+### 21.11. v1.23.0 ✅
 - **SmartEndpoints: Endpoint Filters** — `[SmartFilter(typeof(T))]` attribute generates `.AddEndpointFilter<T>()`, stackable (AllowMultiple = true)
 - **SmartEndpoints: Output Caching** — `CacheSeconds` property on `[AutoGenerateEndpoints]` and `[AutoMapEndpoint]`; class-level default, method-level override, `-1` to opt out; only applied to GET
 - **SmartEndpoints: Rate Limiting** — `RateLimitPolicy` property on both attribute levels; `"none"` to opt out; inherits class default
 - **FastMinimalAPI Demo: SmartCatalogController** — showcases all three features with `LoggingEndpointFilter`
 - 11 new source generator tests, 2,836 total tests
 
-### 21.11. v1.22.0 ✅
+### 21.12. v1.22.0 ✅
 - **OneOf<>.ToActionResult() — MVC One-Liners** — source-generated `IActionResult` extension methods for `OneOf<T1,...,T4>` in MVC controllers, domain errors auto-map via `IError.Tags["HttpStatusCode"]`
 - **OneOfToIResult: Tag-Based Error Mapping Fix** — `MapErrorToHttpResult` checks `IError.Tags["HttpStatusCode"]` first before falling back to type-name heuristics
 - **SmartEndpoints: Accurate OpenAPI Error Docs** — `ValidationError` → 422 (was 400), `Result<T>` endpoints declare 400/404/409/422
 - 12 new source generator tests, 2,825 total tests
 
-### 21.12. v1.21.0 ✅
+### 21.13. v1.21.0 ✅
 - **Result<T>.ToActionResult() — ASP.NET MVC Support** — source-generated `IActionResult` extension methods for MVC controllers, convention-based HTTP mapping with explicit overload escape hatch
 - **FastMvcAPI Demo App** — MVC equivalent of FastMinimalAPI demo (Users, Products, Orders) on port 5001
 - 9 new source generator tests
 
-### 21.13. v1.20.0 ✅
+### 21.14. v1.20.0 ✅
 - **Structured Error Hierarchy** — 5 built-in domain errors (`NotFoundError`, `ValidationError`, `ConflictError`, `UnauthorizedError`, `ForbiddenError`) with HTTP status code tags and CRTP fluent chaining
 - **ResultToIResult: Domain Error-Aware HTTP Mapping** — reads `HttpStatusCode` tag for accurate status codes (was always 400)
 - **Test Coverage Hardening** — 150 new tests covering OkIf/FailIf, Try, Combine, Tap, LINQ Task extensions
 - **Internal Quality** — cached computed properties, ExceptionError namespace fix, Result\<T\> constructor encapsulation, ToString() override, dead code cleanup, convention-based SmartEndpoints route prefix
 
-### 21.14. v1.19.0 ✅
+### 21.15. v1.19.0 ✅
 - **RESL1004 — Async Result Not Awaited** — detects `Task<Result<T>>` assigned without `await` + code fix
 - **CancellationToken Support Throughout** — `CancellationToken cancellationToken = default` on all async methods (source-compatible)
 - 5 diagnostics + 3 code fixes
 
-### 21.15. v1.18.0 ✅
+### 21.16. v1.18.0 ✅
 - **Task-Based Async Patterns** — `Result.WhenAll()` (typed tuples), `Result.Retry()` (exponential backoff), `.Timeout()` extension
 
-### 21.16. v1.17.0 ✅
+### 21.17. v1.17.0 ✅
 - **JSON Serialization Support (System.Text.Json)** — `JsonConverter` for `Result<T>`, `OneOf<T1..T4>`, `Maybe<T>`
 
-### 21.17. v1.16.0 ✅
+### 21.18. v1.16.0 ✅
 - Tailored NuGet README for each of the 3 packages
 
-### 21.18. v1.15.0 ✅
+### 21.19. v1.15.0 ✅
 - Repository cleanup: removed unused Node.js toolchain, stale samples, incomplete templates
 
-### 21.19. v1.14.x ✅
+### 21.20. v1.14.x ✅
 - **REslava.Result.Analyzers** — RESL1001, RESL1002, RESL1003, RESL2001 + 3 code fixes
 - OneOf generator consolidation (15 files → 7)
 
-### 21.20. v1.13.0 ✅
+### 21.21. v1.13.0 ✅
 - **SmartEndpoints: Authorization & Policy Support** — `RequiresAuth`, `Roles`, `Policies`, `[SmartAllowAnonymous]`
 - **LINQ query comprehension syntax for Result<T>**
 - SmartEndpoints: OpenAPI Metadata Auto-Generation
