@@ -131,6 +131,7 @@ ENV/
 # MkDocs
 site/
 .cache/
+mkdocs-log.md
 # Ignore everything under mkdocs/
 mkdocs/**
 # But keep all subdirectories (so the folder structure remains)
