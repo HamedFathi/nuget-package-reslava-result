@@ -2,12 +2,23 @@
   "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
   "metadata": [
     {
-     "src": [
+      "src": [
         {
           "files": ["src/REslava.Result/REslava.Result.csproj"],
           "src": ".."
         }
-      ],       
+      ],
+      "properties": {
+        "TargetFramework": "net8.0"
+      }
+    },
+    {
+      "src": [
+        {
+          "files": ["src/REslava.Result.Http/REslava.Result.Http.csproj"],
+          "src": ".."
+        }
+      ],
       "properties": {
         "TargetFramework": "net8.0"
       }

@@ -37,6 +37,10 @@ _layout: landing
        class="btn btn-outline-secondary">
       NuGet: Analyzers
     </a>
+    <a href="https://www.nuget.org/packages/REslava.Result.Http/"
+       class="btn btn-outline-secondary">
+      NuGet: Http
+    </a>
   </div>
 </div>
 
@@ -102,6 +106,22 @@ _layout: landing
           <code>System.Text.Json</code> converters for <code>Result&lt;T&gt;</code>,
           <code>Maybe&lt;T&gt;</code>, and error types. Enables seamless serialization
           in web APIs and distributed systems.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100 border-start border-4 border-primary shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">
+          <a href="REslava.Result.Http.html" class="text-decoration-none stretched-link">REslava.Result.Http</a>
+        </h5>
+        <p class="card-text text-muted small">
+          <code>HttpClient</code> extensions that return <code>Result&lt;T&gt;</code>
+          instead of throwing. Maps HTTP 4xx/5xx to typed domain errors
+          (<code>NotFoundError</code>, <code>UnauthorizedError</code>, …) and
+          wraps network failures in <code>ExceptionError</code>.
         </p>
       </div>
     </div>
