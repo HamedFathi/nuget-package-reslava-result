@@ -6,7 +6,7 @@ namespace REslava.Result;
 /// without requiring knowledge of the success value type.
 /// Useful for middleware, logging pipelines, and generic result-handling utilities.
 /// </summary>
-public interface IResultResponse
+public interface IResultBase
 {
     /// <summary>Gets a value indicating whether this result represents a successful outcome.</summary>
     bool IsSuccess { get; }
@@ -25,15 +25,15 @@ public interface IResultResponse
 }
 
 /// <summary>
-/// Generic contract for a typed result — extends <see cref="IResultResponse"/>
+/// Generic contract for a typed result — extends <see cref="IResultBase"/>
 /// with access to the successful value.
 /// </summary>
 /// <typeparam name="TValue">The type of the value carried on success.</typeparam>
-public interface IResultResponse<out TValue> : IResultResponse
+public interface IResultBase<out TValue> : IResultBase
 {
     /// <summary>
     /// Gets the successful value, or <c>null</c> if the result has failed.
-    /// Always check <see cref="IResultResponse.IsSuccess"/> before accessing,
+    /// Always check <see cref="IResultBase.IsSuccess"/> before accessing,
     /// or use <c>GetValueOr()</c> for a null-safe alternative.
     /// </summary>
     TValue? Value { get; }

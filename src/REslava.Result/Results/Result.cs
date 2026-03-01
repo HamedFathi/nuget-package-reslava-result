@@ -5,7 +5,7 @@ namespace REslava.Result;
 /// <summary>
 /// Represents a result that can be either successful or failed.
 /// </summary>
-public partial class Result : IResultResponse
+public partial class Result : IResultBase
 {
     // Lazy-cached filtered collections — safe because Result is immutable
     private ImmutableList<IError>? _errors;
