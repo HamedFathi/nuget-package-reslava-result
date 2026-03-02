@@ -134,6 +134,7 @@ nav:
     - 14.6. 🗺️ Error → HTTP Status Code Convention: architecture/source-generators/error--http-status-code-convention.md
     - 15.2. 🎯 Generated Output Structure: architecture/source-generators/generated-output-structure.md
     - 16.3. Incremental Rebuilds: architecture/source-generators/incremental-rebuilds.md
+    - 16.4. 🗺️ Pipeline Visualization — `[ResultFlow]`: architecture/source-generators/pipeline-visualization--resultflow.md
     - 14.5. 🚀 Smart Auto-Detection (v1.10.0): architecture/source-generators/smart-auto-detection-v1.10.0.md
     - 16.2. SOLID Design (v1.9.4+): architecture/source-generators/solid-design-v1.9.4.md
     - 14.7. 🔧 Source Generator Core Library Components: architecture/source-generators/source-generator-core-library-components.md
@@ -179,26 +180,27 @@ nav:
     - Validation Rules API Reference: reference/api-doc/validation-rules.md
   - Features:
     - All Features: reference/features/index.md
-  - 21.20. v1.13.0 ✅: reference/v1.13.0-.md
-  - 21.19. v1.14.x ✅: reference/v1.14.x-.md
-  - 21.18. v1.15.0 ✅: reference/v1.15.0-.md
-  - 21.17. v1.16.0 ✅: reference/v1.16.0-.md
-  - 21.16. v1.17.0 ✅: reference/v1.17.0-.md
-  - 21.15. v1.18.0 ✅: reference/v1.18.0-.md
-  - 21.14. v1.19.0 ✅: reference/v1.19.0-.md
-  - 21.13. v1.20.0 ✅: reference/v1.20.0-.md
-  - 21.12. v1.21.0 ✅: reference/v1.21.0-.md
-  - 21.11. v1.22.0 ✅: reference/v1.22.0-.md
-  - 21.10. v1.23.0 ✅: reference/v1.23.0-.md
-  - 21.9. v1.24.0 ✅: reference/v1.24.0-.md
-  - 21.8. v1.25.0 ✅: reference/v1.25.0-.md
-  - 21.7. v1.26.0 ✅: reference/v1.26.0-.md
-  - 21.6. v1.27.0 ✅: reference/v1.27.0-.md
-  - 21.5. v1.28.0 ✅: reference/v1.28.0-.md
-  - 21.4. v1.29.0 ✅: reference/v1.29.0-.md
-  - 21.3. v1.30.0 ✅: reference/v1.30.0-.md
-  - 21.2. v1.31.0 ✅: reference/v1.31.0-.md
-  - 21.1. v1.32.0 (Current) ✅: reference/v1.32.0-current-.md
+  - 21.21. v1.13.0 ✅: reference/v1.13.0-.md
+  - 21.20. v1.14.x ✅: reference/v1.14.x-.md
+  - 21.19. v1.15.0 ✅: reference/v1.15.0-.md
+  - 21.18. v1.16.0 ✅: reference/v1.16.0-.md
+  - 21.17. v1.17.0 ✅: reference/v1.17.0-.md
+  - 21.16. v1.18.0 ✅: reference/v1.18.0-.md
+  - 21.15. v1.19.0 ✅: reference/v1.19.0-.md
+  - 21.14. v1.20.0 ✅: reference/v1.20.0-.md
+  - 21.13. v1.21.0 ✅: reference/v1.21.0-.md
+  - 21.12. v1.22.0 ✅: reference/v1.22.0-.md
+  - 21.11. v1.23.0 ✅: reference/v1.23.0-.md
+  - 21.10. v1.24.0 ✅: reference/v1.24.0-.md
+  - 21.9. v1.25.0 ✅: reference/v1.25.0-.md
+  - 21.8. v1.26.0 ✅: reference/v1.26.0-.md
+  - 21.7. v1.27.0 ✅: reference/v1.27.0-.md
+  - 21.6. v1.28.0 ✅: reference/v1.28.0-.md
+  - 21.5. v1.29.0 ✅: reference/v1.29.0-.md
+  - 21.4. v1.30.0 ✅: reference/v1.30.0-.md
+  - 21.3. v1.31.0 ✅: reference/v1.31.0-.md
+  - 21.2. v1.32.0 ✅: reference/v1.32.0-.md
+  - 21.1. v1.33.0 (Current) ✅: reference/v1.33.0-current-.md
   - 22. 📈 Version History: reference/version-history.md
 - Community:
   - Community: community/index.md

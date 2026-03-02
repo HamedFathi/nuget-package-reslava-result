@@ -38,10 +38,15 @@ Includes API reference, advanced patterns, and interactive examples.
 | **JSON serialization (System.Text.Json)** | **✅** | — | — | — |
 | **Async patterns (WhenAll, Retry, Timeout)** | **✅** | — | — | — |
 | **Domain error hierarchy (NotFound, Validation, etc.)** | **✅** | — | Partial | — |
+| **Pipeline visualization (`[ResultFlow]`)** | **✅** | — | — | — |
 | Validation framework | ✅ | Basic | — | ✅ |
 | Zero dependencies | ✅ | ✅ | ✅ | — |
 
 **Unique advantage**: SmartEndpoints auto-generates complete Minimal API endpoints from your business logic — including routing, DI, HTTP status mapping, error handling, full OpenAPI metadata (`.Produces<T>()`, `.WithSummary()`, `.WithTags()`), and authorization (`.RequireAuthorization()`, `.AllowAnonymous()`). No other .NET library does this.
+
+> 🗺️ **See how your `Result<T>` flows — before it runs.**
+> One attribute. Zero runtime overhead. Instant Mermaid diagram of every success path, failure branch, and side effect in your pipeline — auto-generated at compile time.
+> [→ Pipeline Visualization](#164-️-pipeline-visualization--resultflow)
 
 ---
 
@@ -176,6 +181,7 @@ Includes API reference, advanced patterns, and interactive examples.
   - [16.1. Two-Phase Pipeline](#161-two-phase-pipeline)
   - [16.2. SOLID Design (v1.9.4+)](#162-solid-design-v194)
   - [16.3. Incremental Rebuilds](#163-incremental-rebuilds)
+  - [16.4. 🗺️ Pipeline Visualization — `[ResultFlow]`](#164-️-pipeline-visualization--resultflow)
 - [17. 🎯 Quick Examples](#17--quick-examples)
   - [17.1. 📦 **Core Library - Type-Safe Error Handling**](#171--core-library---type-safe-error-handling)
   - [17.2. 🚀 **Source Generator - Zero Boilerplate**](#172--source-generator---zero-boilerplate)
@@ -2506,6 +2512,43 @@ This eliminates duplicate generation (CS0101/CS0579 errors) and makes each piece
 ### 16.3. Incremental Rebuilds
 
 Using `RegisterSourceOutput` with `SyntaxValueProvider`, generators only re-run when relevant syntax changes. On a clean build, all generators run; on subsequent builds, only the generators whose inputs changed run — keeping build times fast even in large solutions.
+
+### 16.4. 🗺️ Pipeline Visualization — `[ResultFlow]`
+
+Annotate any fluent pipeline with `[ResultFlow]` and the source generator automatically produces a **Mermaid diagram constant** — zero runtime overhead, zero maintenance.
+
+```csharp
+[ResultFlow]
+public async Task<Result<UserDto>> RegisterAsync(RegisterCommand cmd)
+{
+    return await CreateUser(cmd)
+        .EnsureAsync(IsEmailValid, new InvalidEmailError())
+        .BindAsync(SaveUser)
+        .TapAsync(SendWelcomeEmail)
+        .MapAsync(ToDto);
+}
+```
+
+After build, `Generated.ResultFlow.UserService_Flows.RegisterAsync` holds the diagram string. Paste it into any [Mermaid renderer](https://mermaid.live) to instantly see the data flow:
+
+```mermaid
+flowchart LR
+    N0_EnsureAsync["EnsureAsync"]:::gatekeeper
+    N0_EnsureAsync -->|pass| N1_BindAsync
+    N0_EnsureAsync -->|fail| F0["Failure"]:::failure
+    N1_BindAsync["BindAsync"]:::transform
+    N1_BindAsync -->|ok| N2_TapAsync
+    N1_BindAsync -->|fail| F1["Failure"]:::failure
+    N2_TapAsync["TapAsync"]:::sideeffect
+    N2_TapAsync --> N3_MapAsync
+    N3_MapAsync["MapAsync"]:::transform
+    classDef gatekeeper fill:#e3e9fa,color:#3f5c9a
+    classDef failure fill:#f8e3e3,color:#b13e3e
+    classDef transform fill:#e3f0e8,color:#2f7a5c
+    classDef sideeffect fill:#fff4d9,color:#b8882c
+```
+
+Each operation is color-coded by semantic role: **lavender** = gatekeepers (Ensure), **mint** = transforms (Bind/Map), **vanilla** = side effects (Tap), **soft pink** = failure paths. The attribute `[ResultFlow]` is generated automatically — no additional package needed.
 
 ---
 

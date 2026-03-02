@@ -196,9 +196,21 @@ tagline: Know exactly what you're getting.
 
 ---
 
+## 10. Source Generators — ResultFlow
+
+| Feature | Short Description | Version | Docs |
+|---------|------------------|---------|------|
+| `[ResultFlow]` attribute | Method-level: marks a method for automatic Mermaid pipeline diagram generation | v1.35.0 | `## 🗺️ Pipeline Visualization` — `### [ResultFlow]` |
+| Fluent chain extraction | Walks `InvocationExpressionSyntax` tree; classifies each call by `NodeKind` (9 kinds) | v1.35.0 | `## 🗺️ Pipeline Visualization` — `### How it works` |
+| Mermaid `flowchart LR` rendering | Converts `NodeKind` semantics to Mermaid nodes; pastel classDef colors, `\|fail\|` edges for Gatekeeper/TransformWithRisk, no outbound edge for Terminal | v1.35.0 | `## 🗺️ Pipeline Visualization` — `### Diagram Example` |
+| `Generated.ResultFlow.{Class}_Flows` | One `public const string {MethodName}` per `[ResultFlow]` method — zero runtime overhead | v1.35.0 | `## 🗺️ Pipeline Visualization` — `### Generated Output` |
+| REF001 diagnostic | Info diagnostic when `[ResultFlow]` method body cannot be parsed as a fluent chain | v1.35.0 | `## 🗺️ Pipeline Visualization` — `### REF001` |
+
+---
+
 ## Summary
 
-!!! new "**v1.33.0** — 123 features across 12 categories."
+!!! new "**v1.35.0** — 128 features across 13 categories."
 
 
 | Category | Total Features |
@@ -215,7 +227,8 @@ tagline: Know exactly what you're getting.
 | Validation DSL | 1 |
 | FluentValidation Bridge | 2 |
 | Http Extensions | 6 |
-| **Total** | **123** |
+| ResultFlow | 5 |
+| **Total** | **128** |
 
 ---
 

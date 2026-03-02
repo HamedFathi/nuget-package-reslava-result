@@ -58,6 +58,7 @@
     <Compile Include="SmartEndpoints\SmartEndpoints_CancellationTokenTests.cs" />
     <Compile Include="SmartEndpoints\SmartEndpoints_OneOf56Tests.cs" />
     <Compile Include="Validate\ValidateGeneratorTests.cs" />
+    <Compile Include="ResultFlow\ResultFlowGeneratorTests.cs" />
   </ItemGroup>
 
   <!-- Temporarily exclude broken test file -->

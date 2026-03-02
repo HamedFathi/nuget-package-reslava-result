@@ -137,6 +137,16 @@
     <Compile Include="Generators\Validate\Orchestration\ValidateOrchestrator.cs" />
     <Compile Include="Generators\Validate\Attributes\ValidateAttributeGenerator.cs" />
     <Compile Include="Generators\Validate\CodeGeneration\ValidateExtensionGenerator.cs" />
+
+    <!-- ResultFlow Generator - [ResultFlow] attribute → Mermaid diagram constants -->
+    <Compile Include="Generators\ResultFlow\ResultFlowGenerator.cs" />
+    <Compile Include="Generators\ResultFlow\Orchestration\ResultFlowOrchestrator.cs" />
+    <Compile Include="Generators\ResultFlow\Attributes\ResultFlowAttributeGenerator.cs" />
+    <Compile Include="Generators\ResultFlow\Models\NodeKind.cs" />
+    <Compile Include="Generators\ResultFlow\Models\PipelineNode.cs" />
+    <Compile Include="Generators\ResultFlow\CodeGeneration\ResultFlowChainExtractor.cs" />
+    <Compile Include="Generators\ResultFlow\CodeGeneration\ResultFlowMermaidRenderer.cs" />
+    <Compile Include="Generators\ResultFlow\CodeGeneration\ResultFlowCodeGenerator.cs" />
   </ItemGroup>
 
 </Project>

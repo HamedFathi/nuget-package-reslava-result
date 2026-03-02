@@ -23,6 +23,11 @@ tagline: Railway-oriented .NET made simple.
 
 **:material-source-repository: [nuget-package-reslava-result GitHub repo](https://github.com/reslava/nuget-package-reslava-result)**
 
+!!! tip "🗺️ See how your `Result<T>` flows — before it runs"
+    One attribute. Zero runtime overhead. Every success path, failure branch, and side effect in your pipeline — **auto-generated as a Mermaid diagram at compile time**.
+
+    [→ Pipeline Visualization](architecture/source-generators/pipeline-visualization--resultflow/){ .md-button }
+
 ---
 
 <div class="grid cards" markdown>
@@ -88,6 +93,7 @@ tagline: Railway-oriented .NET made simple.
     | **Domain error hierarchy (NotFound, Validation, etc.)** | **✅** | — | Partial | — |
     | Validation framework | ✅ | Basic | — | ✅ |
     | **FluentValidation bridge** *(optional, migration only)* | **✅** | — | — | — |
+    | **Pipeline visualization (`[ResultFlow]`)** | **✅** | — | — | — |
     | Zero dependencies (core) | ✅ | ✅ | ✅ | — |
 
 ---
