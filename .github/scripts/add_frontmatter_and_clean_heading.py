@@ -51,7 +51,8 @@ def process_file(filepath):
             break
 
     if heading_text and not metadata.get('title'):
-        metadata['title'] = heading_text
+        # Strip leading section-number prefix, e.g. "7.1. ", "21.3. ", "16.4.1. "
+        metadata['title'] = re.sub(r'^[\d]+(?:\.[\d]+)*\.\s*', '', heading_text)
 
     if heading_line_idx is not None:
         # Remove the heading line
