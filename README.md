@@ -12,7 +12,7 @@ REslava.Result - Railway-Oriented Programming for .NET
 [![GitHub Stars](https://img.shields.io/github/stars/reslava/REslava.Result)](https://github.com/reslava/REslava.Result/stargazers) 
 [![NuGet Downloads](https://img.shields.io/nuget/dt/REslava.Result)](https://www.nuget.org/packages/REslava.Result)
 ![Test Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
-![Test Suite](https://img.shields.io/badge/tests-3795%20passing-brightgreen)
+![Test Suite](https://img.shields.io/badge/tests-3783%20passing-brightgreen)
 
 </div>
 
@@ -3027,7 +3027,7 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 - **REF003 diagnostic** — Warning when `resultflow.json` is malformed, fallback to convention
 - **`REslava.Result.AspNetCore`** — renamed from `REslava.Result.SourceGenerators` ⚠️ *breaking rename*
 - 133 features across 13 categories
-- 3,795 tests
+- 3,783 tests
 
 ### 21.2. v1.35.0 ✅
 - **`[ResultFlow]` source generator** — annotate any fluent `Result<T>` pipeline method → auto-generated Mermaid `flowchart LR` diagram as a `public const string` in `Generated.ResultFlow.{Class}_Flows` at compile time; zero runtime overhead; 9 operation semantics; REF001 info diagnostic for non-fluent methods
@@ -3157,7 +3157,7 @@ public record CreateOrderRequest(string CustomerId, decimal Amount);
 
 ## 22. 📈 Version History
 
-- **v1.36.0** - `REslava.ResultFlow` standalone package (library-agnostic), REF002 + Code Action (insert diagram as comment), convention dictionary for ErrorOr + LanguageExt, `resultflow.json` config, `REslava.Result.AspNetCore` rename, 133 features, 3,795 tests
+- **v1.36.0** - `REslava.ResultFlow` standalone package (library-agnostic), REF002 + Code Action (insert diagram as comment), convention dictionary for ErrorOr + LanguageExt, `resultflow.json` config, `REslava.Result.AspNetCore` rename, 133 features, 3,783 tests
 - **v1.35.0** - `[ResultFlow]` source generator: auto-generate Mermaid pipeline diagrams at compile time, `Generated.ResultFlow.{Class}_Flows` constants, REF001 diagnostic, 128 features, 3,768 tests
 - **v1.34.0** - `IResultResponse<T>` → `IResultBase<T>` breaking rename (correct semantic naming), documentation gaps filled (Http, generator setup, ConversionError), 123 features, 3,756 tests
 - **v1.33.0** - `REslava.Result.Http` 5th NuGet package (HttpClient → typed `Result<T>`), README/TOC/MkDocs restructure, 123 features, 3,756 tests

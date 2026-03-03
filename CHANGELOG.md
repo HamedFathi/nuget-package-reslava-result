@@ -24,7 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 - Acknowledgments: ErrorOr (Amanti Band) and LanguageExt (Paul Louth) added
 
 ### Stats
-- 3,795 tests passing across net8.0, net9.0, net10.0 (1,157×3) + generator (143) + ResultFlow (27) + analyzer (68) + FluentValidation bridge (26) + Http (20×3)
+- 3,783 tests passing across net8.0, net9.0, net10.0 (1,157×3) + generator (143) + ResultFlow (27) + analyzer (68) + FluentValidation bridge (26) + Http (20×3)
 - 133 features across 13 categories
 
 ---

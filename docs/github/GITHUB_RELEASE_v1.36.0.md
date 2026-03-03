@@ -129,5 +129,5 @@ No stub/compatibility package — update the reference directly.
 
 ## Stats
 
-- 3,795 tests passing across net8.0, net9.0, net10.0 (1,157×3) + generator (143) + ResultFlow (27) + analyzer (68) + FluentValidation bridge (26) + Http (20×3)
+- 3,783 tests passing across net8.0, net9.0, net10.0 (1,157×3) + generator (143) + ResultFlow (27) + analyzer (68) + FluentValidation bridge (26) + Http (20×3)
 - 133 features across 13 categories
