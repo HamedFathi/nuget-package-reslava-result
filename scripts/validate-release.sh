@@ -162,7 +162,9 @@ else
     CORE_LINES=$(grep -E '^Passed!' "$TMPFILE" | grep 'REslava\.Result\.Tests\.dll' || true)
     TFM_COUNT=$(echo "$CORE_LINES" | grep -c '.' || echo 0)
     CORE_PER_TFM=$(echo "$CORE_LINES" | head -1 | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//' || true)
-    GENERATOR=$(grep -E '^Passed!' "$TMPFILE" | grep 'SourceGenerators\.Tests\.dll' | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//' || true)
+    GENERATOR=$(grep -E '^Passed!' "$TMPFILE" | grep 'AspNetCore\.Tests\.dll' | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//' || true)
+    RESULTFLOW=$(grep -E '^Passed!' "$TMPFILE" | grep 'ResultFlow\.Tests\.dll' | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//' || true)
+    RESULTFLOW=${RESULTFLOW:-0}
     ANALYZER=$(grep -E '^Passed!' "$TMPFILE" | grep 'Analyzers\.Tests\.dll' | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//' || true)
     FLUENT=$(grep -E '^Passed!' "$TMPFILE" | grep 'FluentValidation\.Tests\.dll' | grep -oE 'Passed:[[:space:]]+[0-9]+' | sed 's/Passed:[[:space:]]*//' || true)
     FLUENT=${FLUENT:-0}
@@ -175,12 +177,13 @@ else
 
     if [[ -n "$CORE_PER_TFM" && -n "$GENERATOR" && -n "$ANALYZER" && "$TFM_COUNT" -gt 0 ]]; then
       CORE_TOTAL=$(( CORE_PER_TFM * TFM_COUNT ))
-      ACTUAL_TOTAL=$(( CORE_TOTAL + GENERATOR + ANALYZER + FLUENT + HTTP_TOTAL ))
+      ACTUAL_TOTAL=$(( CORE_TOTAL + GENERATOR + RESULTFLOW + ANALYZER + FLUENT + HTTP_TOTAL ))
       cat > "$CACHE_FILE" <<EOF
 CORE_PER_TFM=$CORE_PER_TFM
 TFM_COUNT=$TFM_COUNT
 CORE_TOTAL=$CORE_TOTAL
 GENERATOR=$GENERATOR
+RESULTFLOW=$RESULTFLOW
 ANALYZER=$ANALYZER
 FLUENT=$FLUENT
 HTTP_PER_TFM=$HTTP_PER_TFM
