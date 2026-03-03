@@ -23,10 +23,11 @@ tagline: Railway-oriented .NET made simple.
 
 **:material-source-repository: [nuget-package-reslava-result GitHub repo](https://github.com/reslava/nuget-package-reslava-result)**
 
-!!! tip "🗺️ See how your `Result<T>` flows — before it runs"
-    One attribute. Zero runtime overhead. Every success path, failure branch, and side effect in your pipeline — **auto-generated as a Mermaid diagram at compile time**.
+!!! tip "🗺️ See how your `Result<T>` flows — before it runs. Pipeline Visualization."
+    Annotate any fluent pipeline with `[ResultFlow]` and the source generator automatically produces a  **Mermaid diagram constant** — zero runtime overhead, zero maintenance.
+    Every success path, failure branch, and side effect in your pipeline.
 
-    [→ Pipeline Visualization](architecture/source-generators/pipeline-visualization--resultflow/){ .md-button }
+    [→ ResultFlow](resultflow){ .md-button }
 
 ---
 
