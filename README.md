@@ -562,6 +562,7 @@ Built-in convention dictionary — zero configuration for the most popular Resul
 | **REslava.Result** | `Ensure`, `Bind`, `Map`, `Tap`, `TapOnFailure`, `TapBoth`, `Match`, `WithSuccess` (+ Async) |
 | **ErrorOr** | `Then`, `ThenAsync`, `Switch`, `SwitchAsync` |
 | **LanguageExt** | `Filter`, `Do`, `DoAsync`, `DoLeft`, `DoLeftAsync` |
+| **FluentResults** | `Bind`, `Map` |
 
 Any unrecognized method is rendered as a generic operation node — the diagram is still generated.
 
@@ -3216,6 +3217,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Roslyn** team - Powerful source generator framework
 - **[ErrorOr](https://github.com/amantinband/error-or)** by Amanti Band - Convention methods `Then` / `Switch` are recognized in the `[ResultFlow]` built-in dictionary
 - **[LanguageExt](https://github.com/louthy/language-ext)** by Paul Louth - Convention methods `Filter` / `Do` / `DoLeft` are recognized in the `[ResultFlow]` built-in dictionary
+- **[FluentResults](https://github.com/altmann/FluentResults)** by Michael Altmann - Already supported by the existing dictionary entries (`Bind`, `Map`).
 
 ---
 
