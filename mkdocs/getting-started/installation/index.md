@@ -14,18 +14,18 @@ Get REslava.Result into your project — CLI, .csproj, or IDE.
 
 -   :material-console: __NuGet CLI__
     Install via `dotnet add package`.
-    [](nuget-cli)
+    [](installation#nuget-cli)
 
 -   :material-xml: __PackageReference (.csproj)__
     Add directly to your project file.
-    [](packagereference-csproj)
+    [](installation#packagereference-csproj)
 
 -   :material-check-circle: __Supported Frameworks__
     .NET 8, 9, 10 — multi-target ready.
-    [](supported-frameworks)
+    [](installation#supported-frameworks)
 
 -   :material-alert-circle: __Prerequisites__
     What you need before installing.
-    [](prerequisites)
+    [](installation#prerequisites)
 
 </div>

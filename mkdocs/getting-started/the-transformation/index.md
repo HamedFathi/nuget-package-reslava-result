@@ -14,10 +14,10 @@ Side-by-side: traditional Minimal API vs REslava.Result. The difference is strik
 
 -   :material-close-circle: __Before: Traditional Minimal API__
     The old way — verbose, error-prone, and hard to test.
-    [](before-traditional-minimal-api)
+    [](the-transformation-70-90-less-code#before-traditional-minimal-api)
 
 -   :material-check-circle: __After: REslava.Result Magic__
     Clean, composable, and type-safe — with zero boilerplate.
-    [](after-reslava.result-magic)
+    [](the-transformation-70-90-less-code#after-reslava.result-magic)
 
 </div>
