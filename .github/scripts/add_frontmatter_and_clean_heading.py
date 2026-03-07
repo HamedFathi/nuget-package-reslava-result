@@ -1,7 +1,26 @@
 #!/usr/bin/env python3
 """
-Add frontmatter title from the first heading and remove that heading.
-Prevents duplicate page titles when Material theme displays the frontmatter title.
+Process MkDocs markdown files to produce clean page titles and headings.
+
+For each file (except index.md and hand-crafted static content):
+
+1. Frontmatter title
+   - If no 'title' key exists: extract the first heading (# / ## / ###),
+     strip any leading section-number prefix (e.g. "15.3. ") and set it
+     as the frontmatter title.
+   - Always strip bold markers (**...**) from the title value, whether the
+     title was just set or already present from a previous run.
+
+2. Top-level heading removal
+   - If the first heading is plain (no **), remove it from the body to avoid
+     duplicating the page title that the Material theme renders from frontmatter.
+   - Bold headings (e.g. "### **Title**") are kept in the body so their
+     formatting still renders on the page.
+
+3. Sub-heading cleanup
+   - Strip leading section-number prefixes from ### / #### / ##### headings
+     in the body (e.g. "### 15.3. Some Title" → "### Some Title").
+   - Headings inside fenced code blocks are never modified.
 """
 
 import re
@@ -17,6 +36,13 @@ SKIP_DIRS = {
     DOCS_DIR / "reference" / "api-doc",
 }
 
+# Matches a section-number prefix at the start of a string: "15.", "15.3.", "16.4.1.", …
+SECTION_NUMBER_RE = re.compile(r'^[\d]+(?:\.[\d]+)*\.\s*')
+
+# Matches ### / #### / ##### headings that start with a section-number prefix
+SUBHEADING_NUMBER_RE = re.compile(r'^(#{3,5} )(\d+(?:\.\d+)*\.\s+)(.*)')
+
+
 def should_skip(filepath):
     if filepath.name == "index.md":
         return True
@@ -28,33 +54,38 @@ def should_skip(filepath):
             pass
     return False
 
+
+def _is_code_fence(line):
+    stripped = line.strip()
+    return stripped.startswith('```') or stripped.startswith('~~~')
+
+
 def process_file(filepath):
-    """Extract first heading, set as frontmatter title, and remove heading line."""
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
 
-    # Load existing frontmatter if any
     try:
         post = frontmatter.loads(content)
         body = post.content
         metadata = post.metadata
     except Exception:
-        # No valid frontmatter – treat whole file as body
         body = content
         metadata = {}
 
     lines = body.splitlines()
+
+    # ── Pass 1: find the first heading for the frontmatter title ────────────
     heading_line_idx = None
     heading_text = None
-
     in_code_block = False
+
     for i, line in enumerate(lines):
-        stripped = line.strip()
-        if stripped.startswith('```') or stripped.startswith('~~~'):
+        if _is_code_fence(line):
             in_code_block = not in_code_block
             continue
         if in_code_block:
             continue
+        stripped = line.strip()
         if stripped.startswith('# '):
             heading_text = stripped[2:].strip()
             heading_line_idx = i
@@ -69,26 +100,34 @@ def process_file(filepath):
             break
 
     if heading_text and not metadata.get('title'):
-        # Strip leading section-number prefix, e.g. "7.1. ", "21.3. ", "16.4.1. "
-        title = re.sub(r'^[\d]+(?:\.[\d]+)*\.\s*', '', heading_text)
-        metadata['title'] = title
+        metadata['title'] = SECTION_NUMBER_RE.sub('', heading_text)
 
-    # Always strip bold markers from title — covers both newly set and pre-existing values
+    # Always strip bold markers from title (new or pre-existing)
     if metadata.get('title'):
         metadata['title'] = re.sub(r'\*\*(.*?)\*\*', r'\1', metadata['title'])
 
-    if heading_line_idx is not None and not re.search(r'\*\*', heading_text):
-        # Remove plain heading lines only — bold headings (**text**) are kept in the body
+    # Remove plain top-level heading — bold headings are kept so they render
+    if heading_line_idx is not None and not re.search(r'\*\*', heading_text or ''):
         del lines[heading_line_idx]
-        # Also remove any blank lines immediately after? (optional)
-        # while heading_line_idx < len(lines) and lines[heading_line_idx].strip() == '':
-        #     del lines[heading_line_idx]
+
+    # ── Pass 2: strip section-number prefixes from ### / #### / ##### headings
+    in_code_block = False
+    for i, line in enumerate(lines):
+        if _is_code_fence(line):
+            in_code_block = not in_code_block
+            continue
+        if in_code_block:
+            continue
+        m = SUBHEADING_NUMBER_RE.match(line)
+        if m:
+            lines[i] = m.group(1) + m.group(3)
 
     new_body = '\n'.join(lines).strip()
     new_post = frontmatter.Post(new_body, **metadata)
     with open(filepath, 'w', encoding='utf-8') as f:
         f.write(frontmatter.dumps(new_post))
     print(f"✅ Processed: {filepath}")
+
 
 def main():
     if not DOCS_DIR.exists():
@@ -99,6 +138,7 @@ def main():
         if should_skip(md_file):
             continue
         process_file(md_file)
+
 
 if __name__ == "__main__":
     main()

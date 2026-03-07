@@ -18,7 +18,7 @@ Three real-world starting points — pick the one that matches your project.
 
 -   :material-web: __ASP.NET Integration__
     SmartEndpoints, `ToIResult()`, and `Result` in Minimal APIs.
-    [](quick-start-scenarios#scenario-2-asp.net-integration)
+    [](quick-start-scenarios#scenario-2-aspnet-integration)
 
 -   :material-swap-horizontal: __OneOf Extensions__
     Multi-case returns with `OneOf<T1, T2, ...>` and IResult mapping.

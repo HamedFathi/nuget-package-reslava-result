@@ -1,7 +1,7 @@
 ---
 hide:
   - navigation
-title: Quick Start
+title: Getting Started
 description: From zero to your first SmartEndpoint in minutes. No prior functional programming experience needed.
 tagline: Install, return results, ship features.
 ---
