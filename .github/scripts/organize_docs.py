@@ -27,13 +27,13 @@ DOCS_DIR = Path("mkdocs")
 MAPPING = {
     # ── Section-number routing (###-level files from mdsplit -l 3) ──────────
     # Numbers map to the same destinations as the ## section they belong to.
-    # README structure (v1.36.0+):
+    # README structure (v1.38.0+):
     #   2 = Getting Started  3 = ResultFlow  4 = Core Library  5 = Error Types
     #   6 = Validation  7 = Maybe  8 = OneOf  9 = SmartEndpoints  10 = ASP.NET
     #   11 = Architecture  12 = Package Structure  13 = How Generators Work
-    #   14 = Quick Examples  15 = Testing  16 = Safety Analyzers
-    #   17 = Production Benefits  18 = Roadmap  19 = Version History
-    #   20-23 = Community
+    #   14 = Sample Projects  15 = Quick Examples  16 = Testing  17 = Safety Analyzers
+    #   18 = Production Benefits  19 = Performance  20 = Roadmap  21 = Version History
+    #   22-25 = Community
     "2.1.": "getting-started/installation",
     "2.2.": "getting-started",
     "2.3.": "getting-started/quick-start-scenarios",
@@ -57,16 +57,18 @@ MAPPING = {
     "12.3.": "architecture/source-generators",
     "12.":  "architecture",
     "13.":  "architecture/source-generators",
-    "14.":  "code-examples",
-    "15.":  "testing",
-    "16.":  "safety-analyzers",
-    "17.":  "testing",
-    "18.":  "reference",
+    "14.":  "code-examples/samples",
+    "15.":  "code-examples",
+    "16.":  "testing",
+    "17.":  "safety-analyzers",
+    "18.":  "testing",
     "19.":  "reference",
-    "20.":  "community",
-    "21.":  "community",
+    "20.":  "reference",
+    "21.":  "reference",
     "22.":  "community",
     "23.":  "community",
+    "24.":  "community",
+    "25.":  "community",
 
     # ── Content-name routing (##-level wrapper files + legacy flat names) ────
     # Getting Started
@@ -103,7 +105,8 @@ MAPPING = {
 
     # Code examples
     "quick-examples": "code-examples",
-    "sample-apps": "code-examples",
+    "sample-projects": "code-examples/samples",
+    "sample-apps": "code-examples/samples",
     "examples": "code-examples/samples",
 
     # ASP.NET — smartendpoints subfolder

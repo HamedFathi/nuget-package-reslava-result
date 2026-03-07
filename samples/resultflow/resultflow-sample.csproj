@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- Emit generated files to obj/Generated so you can inspect them -->
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- Result library (REslava.Result here — any library works with ResultFlow) -->
+    <ProjectReference Include="..\..\src\REslava.Result\REslava.Result.csproj" />
+    <!-- ResultFlow source generator — library-agnostic, no dependency on REslava.Result -->
+    <ProjectReference Include="..\..\src\REslava.ResultFlow\REslava.ResultFlow.csproj"
+                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+</Project>

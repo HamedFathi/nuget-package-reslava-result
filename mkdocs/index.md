@@ -28,6 +28,15 @@ tagline: Railway-oriented .NET made simple.
 
     [→ ResultFlow](resultflow){ .md-button }
 
+!!! note "📚 New to functional programming? Start with the progressive tutorial series."
+    9 self-contained lessons that teach **functional & railway-oriented programming** step by step — from plain C# exceptions all the way to async pipelines and ASP.NET. Each lesson is a standalone `dotnet run`, no setup required.
+
+    Learn all three packages progressively: **REslava.Result** · **REslava.ResultFlow** · **REslava.Result.AspNetCore**
+
+    YouTube video series — coming soon.
+
+    [→ Tutorial Lessons](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/lessons/){ .md-button }
+
 ---
 
 <div class="grid cards" markdown>
@@ -53,7 +62,11 @@ tagline: Railway-oriented .NET made simple.
     How the library is built – SOLID, package structure, and the source generator pipeline.
     [](architecture)
 
--   :material-language-csharp: __Code examples__  
+-   :material-school: __Tutorial Series__
+    9 progressive lessons — functional & railway-oriented programming from scratch. `REslava.Result` · `REslava.ResultFlow` · `REslava.Result.AspNetCore`. YouTube series coming soon.
+    [](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/lessons/)
+
+-   :material-language-csharp: __Code examples__
     Code examples: Fast APIs, Console and quick code examples.
     [](code-examples)
 

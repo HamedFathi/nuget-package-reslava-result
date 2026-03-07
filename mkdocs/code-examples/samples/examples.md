@@ -12,6 +12,8 @@ title: REslava.Result Samples
 | **[FastMinimalAPI.REslava.Result.Demo](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/FastMinimalAPI.REslava.Result.Demo/)** | .NET 10 Minimal API | Full-featured demo with SmartEndpoints, OneOf, EF Core In-Memory, Scalar UI |
 | **[FastMvcAPI.REslava.Result.Demo](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/FastMvcAPI.REslava.Result.Demo/)** | .NET 10 MVC API | Full-featured demo with SmartEndpoints, OneOf, EF Core In-Memory, Scalar UI |
 | **[REslava.Result.Samples.Console](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/REslava.Result.Samples.Console/)** | .NET 10 Console | Core library examples: Result<T>, Maybe<T>, OneOf, LINQ, Validation |
+| **[Tutorial Lessons](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/lessons/)** | .NET 9 Console | Progressive lesson series — lessons 00–08, from exceptions to ASP.NET |
+| **[ResultFlow Sample](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/resultflow/)** | .NET 9 Console | `[ResultFlow]` diagram generator — 6 pipelines, all node kinds, library-agnostic |
 
 ---
 

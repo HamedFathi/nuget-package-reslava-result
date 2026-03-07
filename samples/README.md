@@ -11,6 +11,8 @@
 | **[FastMinimalAPI.REslava.Result.Demo](FastMinimalAPI.REslava.Result.Demo/)** | .NET 10 Minimal API | Full-featured demo with SmartEndpoints, OneOf, `[Validate]`, DSL, `[FluentValidate]`, EF Core, Scalar UI |
 | **[FastMvcAPI.REslava.Result.Demo](FastMvcAPI.REslava.Result.Demo/)** | .NET 10 MVC API | Full-featured demo with MVC controllers, explicit `.Validate()`, OneOf, CancellationToken, EF Core, Scalar UI |
 | **[REslava.Result.Samples.Console](REslava.Result.Samples.Console/)** | .NET 10 Console | Core library — 16 examples: Result&lt;T&gt;, Maybe&lt;T&gt;, OneOf5/6, Validation DSL, Async patterns |
+| **[Tutorial Lessons](lessons/)** | .NET 9 Console | Progressive lesson series — lessons 00–08, from exceptions to ASP.NET. See [lessons/README.md](lessons/README.md) |
+| **[ResultFlow Sample](resultflow/)** | .NET 9 Console | `[ResultFlow]` diagram generator — 6 pipelines, all node kinds, library-agnostic. See [resultflow/README.md](resultflow/README.md) |
 
 ---
 
