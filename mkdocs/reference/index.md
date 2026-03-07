@@ -22,7 +22,11 @@ Quick access to API documentation, version history, roadmap, and deep-dive guide
 
 -   :material-feature-search: __Feature Reference__
     All features implemented classified by category.
-    [](features)    
+    [](features)
+
+-   :material-speedometer: __Performance Benchmarks__
+    BenchmarkDotNet results — creation cost, railway chains, failure path vs exceptions, and async aggregation. Includes ImmutableList design rationale.
+    [](performance)
 
 -   :material-history: __Version History__
     Full changelog from v1.9.4 to present — every feature, fix, and breaking change.
