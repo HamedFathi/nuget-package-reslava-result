@@ -14,7 +14,7 @@ Deep-dive into how `REslava.Result.SourceGenerators` works — from attribute de
 
 -   :material-code-braces: __Source Generators Package__
     Zero-boilerplate code generation — SmartEndpoints, IResult, ActionResult, and Validate generators.
-    [](source-generators-reslava.result.sourcegenerators)
+    [](source-generators-reslava.result.aspnetcore)
 
 -   :material-cog: __Two-Phase Pipeline__
     How generators run in two phases — attribute registration then source output.
