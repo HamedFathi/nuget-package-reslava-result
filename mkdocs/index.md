@@ -10,13 +10,13 @@ tagline: Railway-oriented .NET made simple.
 <div align="center" markdown>
 ![.NET](https://img.shields.io/badge/.NET-512BD4?logo=dotnet&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-239120?&logo=csharp&logoColor=white)
-![NuGet Version](https://img.shields.io/nuget/v/REslava.Result.SourceGenerators?style=flat&logo=nuget)
+![NuGet Version](https://img.shields.io/nuget/v/REslava.Result.AspNetCore?style=flat&logo=nuget)
 ![License](https://img.shields.io/badge/license-MIT-green)
 [![GitHub contributors](https://img.shields.io/github/contributors/reslava/REslava.Result)](https://GitHub.com/reslava/REslava.Result/graphs/contributors/) 
 [![GitHub Stars](https://img.shields.io/github/stars/reslava/REslava.Result)](https://github.com/reslava/REslava.Result/stargazers) 
 [![NuGet Downloads](https://img.shields.io/nuget/dt/REslava.Result)](https://www.nuget.org/packages/REslava.Result)
 ![Test Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
-![Test Suite](https://img.shields.io/badge/tests-3768%20passing-brightgreen)
+![Test Suite](https://img.shields.io/badge/tests-3960%20passing-brightgreen)
 </div>
 
 **:material-api: The only .NET library that blends functional error handling with compile‑time API generation.**
@@ -77,6 +77,8 @@ tagline: Railway-oriented .NET made simple.
 
 > **Zero‑boilerplate APIs, railway‑oriented programming, and source‑generated ASP.NET integration – all in one package.**
 
+⚡ **[Performance benchmarks](reference/performance/)** — `Ok` creation **9.6× faster** than FluentResults · failure handling **6.8× faster** than exceptions · measured on .NET 9 with BenchmarkDotNet.
+
 !!! example "Feature Comparison"
     | | REslava.Result | FluentResults | ErrorOr | LanguageExt |
     |---|:---:|:---:|:---:|:---:|
@@ -95,6 +97,8 @@ tagline: Railway-oriented .NET made simple.
     | **FluentValidation bridge** *(optional, migration only)* | **✅** | — | — | — |
     | **Pipeline visualization (`[ResultFlow]`)** | **✅** | — | — | — |
     | Zero dependencies (core) | ✅ | ✅ | ✅ | — |
+    | **[`Ok` creation speed](reference/performance/)** | **5.9 ns / 48 B** | 57 ns / 112 B | — | — |
+    | **[Failure path vs exceptions](reference/performance/)** | **6.8× faster** | ~5.8× faster | — | — |
 
 ---
 
