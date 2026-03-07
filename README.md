@@ -551,7 +551,7 @@ Each operation is color-coded by semantic role: **lavender** = gatekeepers (Ensu
 dotnet add package REslava.ResultFlow
 ```
 
-No extra `using` needed — the `[ResultFlow]` attribute is injected automatically.
+Add `using REslava.ResultFlow;` — the attribute type is injected automatically by the generator, no separate assembly reference needed.
 
 ### 3.3. 🛠️ Code Action — Insert Diagram as Comment
 
