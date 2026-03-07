@@ -105,9 +105,10 @@ MAPPING = {
 
     # Code examples
     "quick-examples": "code-examples",
-    "sample-projects": "code-examples/samples",
-    "sample-apps": "code-examples/samples",
-    "examples": "code-examples/samples",
+    "sample-projects": "code-examples/sample-projects",
+    #"sample-projects": "code-examples/samples",
+    #"sample-apps": "code-examples/samples",
+    #"examples": "code-examples/samples",
 
     # ASP.NET — smartendpoints subfolder
     "smartendpoints": "aspnet/smartendpoints",
