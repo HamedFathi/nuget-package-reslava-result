@@ -2735,11 +2735,11 @@ Working code samples — each is a standalone `dotnet run` project.
 
 | Project | Framework | Description |
 |---------|-----------|-------------|
-| **[FastMinimalAPI Demo](samples/FastMinimalAPI.REslava.Result.Demo/README.md)** | .NET 10 Minimal API | SmartEndpoints, OneOf, `[Validate]`, DSL, `[FluentValidate]`, EF Core, Scalar UI |
-| **[FastMvcAPI Demo](samples/FastMvcAPI.REslava.Result.Demo/README.md)** | .NET 10 MVC API | MVC controllers, `ToActionResult()`, `[Validate]`, OneOf, CancellationToken, EF Core |
-| **[Console Samples](samples/REslava.Result.Samples.Console/README.md)** | .NET 10 Console | 16 examples — Result\<T\>, Maybe\<T\>, OneOf5/6, Validation DSL, Async patterns |
-| **[Tutorial Lessons](samples/lessons/README.md)** | .NET 9 Console | 9 progressive lessons — functional & railway-oriented programming from scratch |
-| **[ResultFlow Sample](samples/resultflow/README.md)** | .NET 9 Console | `[ResultFlow]` pipeline diagram generator — 6 pipelines, all node kinds |
+| **[FastMinimalAPI Demo](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/FastMinimalAPI.REslava.Result.Demo)** | .NET 10 Minimal API | SmartEndpoints, OneOf, `[Validate]`, DSL, `[FluentValidate]`, EF Core, Scalar UI |
+| **[FastMvcAPI Demo](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/REslava.Result.Samples.Console)** | .NET 10 MVC API | MVC controllers, `ToActionResult()`, `[Validate]`, OneOf, CancellationToken, EF Core |
+| **[Console Samples](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/FastMvcAPI.REslava.Result.Demo)** | .NET 10 Console | 16 examples — Result\<T\>, Maybe\<T\>, OneOf5/6, Validation DSL, Async patterns |
+| **[Tutorial Lessons](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/lessons)** | .NET 9 Console | 9 progressive lessons — functional & railway-oriented programming from scratch |
+| **[ResultFlow Sample](https://github.com/reslava/nuget-package-reslava-result/tree/main/samples/resultflow)** | .NET 9 Console | `[ResultFlow]` pipeline diagram generator — 6 pipelines, all node kinds |
 
 ```bash
 # Web API (Minimal API + SmartEndpoints)
