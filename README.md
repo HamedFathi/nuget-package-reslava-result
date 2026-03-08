@@ -368,16 +368,15 @@ See [📦 Installation](#-installation) for NuGet setup.
 #### 2.3.1. Scenario 1: Functional Programming Foundation
 ```csharp
 using REslava.Result;
-using static REslava.Result.Functions;
 
 // Core Result pattern usage
 public Result<User> GetUser(int id)
 {
-    if (id <= 0) 
+    if (id <= 0)
         return Result<User>.Fail("Invalid user ID");
-    
+
     var user = FindUser(id);
-    return user ?? Result<User>.Fail($"User {id} not found");
+    return user is null ? Result<User>.Fail($"User {id} not found") : Result<User>.Ok(user);
 }
 
 // Functional composition
@@ -414,17 +413,18 @@ public class UsersController : ControllerBase
 
 #### 2.3.3. Scenario 3: OneOf Extensions (NEW!)
 ```csharp
-using REslava.Result.AdvancedPatterns.OneOf;
+using REslava.Result;
 using Generated.OneOfExtensions;
 
 // REslava.Result internal OneOf with automatic mapping
 public OneOf<ValidationError, NotFoundError, User> GetUser(int id)
 {
-    if (id <= 0) 
+    if (id <= 0)
         return new ValidationError("Invalid ID");
-    
+
     var user = FindUser(id);
-    return user ?? new NotFoundError($"User {id} not found");
+    if (user is null) return new NotFoundError($"User {id} not found");
+    return user;
 }
 
 [HttpGet("{id}")]
@@ -731,7 +731,7 @@ var result = GetUser(id)
 // Instead of null references
 Maybe<User> user = GetUserFromCache(id);
 var email = user
-    .Select(u => u.Email)
+    .Map(u => u.Email)
     .Filter(email => email.Contains("@"))
     .ValueOrDefault("no-reply@example.com");
 
@@ -760,13 +760,14 @@ var result = oneOf.ToResult(); // Convert OneOf to Result
 
 ##### 4.1.5.3. **Validation Rules Framework**
 ```csharp
-// Built-in validation
-var validator = Validator.Create<User>()
-    .Rule(u => u.Email, email => email.Contains("@"))
-    .Rule(u => u.Name, name => !string.IsNullOrWhiteSpace(name))
-    .Rule(u => u.Age, age => age >= 18, "Must be 18 or older");
+// Built-in validation DSL
+var rules = new ValidatorRuleBuilder<User>()
+    .EmailAddress(u => u.Email)
+    .NotEmpty(u => u.Name)
+    .GreaterThan(u => u.Age, 17, "Must be 18 or older")
+    .Build();                          // returns ValidatorRuleSet<User>
 
-var result = validator.Validate(user);
+var result = rules.Validate(user);    // returns ValidationResult<User>
 ```
 
 ##### 4.1.5.4. **JSON Serialization (System.Text.Json)**
@@ -804,8 +805,7 @@ var result = Result<User>.Ok(user)
     .Map(ToDto)
     .Tap(SendWelcomeEmail)
     .Bind(SaveToDatabase)
-    .WithSuccess("User created successfully")
-    .WithTag("UserId", user.Id);
+    .WithSuccess("User created successfully");
 ```
 
 #### 4.1.7. 🔄 Advanced Extensions
@@ -935,7 +935,7 @@ Result<User> user = await Result<User>.TryAsync(() => _api.FetchUserAsync(id))
 
 // Convert DbException to ConflictError
 Result<Order> order = await Result<Order>.TryAsync(() => _db.InsertOrderAsync(dto))
-    .Catch<DbException>(ex => new ConflictError("Order", ex.Message));
+    .Catch<DbException>(ex => new ConflictError($"Order insert failed: {ex.Message}"));
 
 // Async handler
 Result<User> result = await Result<User>.TryAsync(() => _api.FetchUserAsync(id))
@@ -1046,7 +1046,7 @@ Result<User> activeUser = userResult
 
 // Static error — convenience overload
 Result<Order> pending = orderResult
-    .Filter(o => o.Status == OrderStatus.Pending, new ConflictError("Order", "status"));
+    .Filter(o => o.Status == OrderStatus.Pending, new ConflictError("Order", "Status", OrderStatus.Pending));
 
 // String message — convenience overload
 Result<Product> inStock = productResult
@@ -1422,8 +1422,7 @@ Used with `.WithSuccess()` to attach informational messages to successful result
 
 ```csharp
 var result = Result<User>.Ok(user)
-    .WithSuccess("User created successfully")
-    .WithTag("UserId", user.Id);
+    .WithSuccess("User created successfully");
 
 result.Successes // IEnumerable<ISuccess>
 result.Successes.First().Message // "User created successfully"
@@ -1438,12 +1437,13 @@ The built-in validation framework lets you compose declarative rules that accumu
 ### 6.1. Basic Usage
 
 ```csharp
-var validator = Validator.Create<User>()
-    .Rule(u => u.Email, email => email.Contains("@"), "Invalid email address")
-    .Rule(u => u.Name, name => !string.IsNullOrWhiteSpace(name), "Name is required")
-    .Rule(u => u.Age, age => age >= 18, "Must be 18 or older");
+var rules = new ValidatorRuleBuilder<User>()
+    .EmailAddress(u => u.Email, "Invalid email address")
+    .NotEmpty(u => u.Name, "Name is required")
+    .GreaterThan(u => u.Age, 17, "Must be 18 or older")
+    .Build();
 
-Result<User> result = validator.Validate(user);
+Result<User> result = rules.Validate(user);
 ```
 
 ### 6.2. All Failures Collected
@@ -1463,27 +1463,32 @@ if (!result.IsSuccess)
 
 ```csharp
 // Validate → bind business logic → transform output
-Result<OrderDto> dto = await validator.Validate(request)
+Result<OrderDto> dto = await rules.Validate(request)
     .BindAsync(r => _service.CreateOrderAsync(r))
     .Map(order => order.ToDto());
 
 // In Minimal APIs
-return validator.Validate(request).ToIResult();
+return rules.Validate(request).ToIResult();
 ```
 
 ### 6.4. Custom Validators
 
 ```csharp
-public class PasswordValidator : IValidationRule<string>
+public class PasswordValidator : IValidatorRuleSync<RegisterRequest>
 {
-    public Result<string> Validate(string value) =>
-        value.Length >= 8
-            ? Result<string>.Ok(value)
-            : Result<string>.Fail(new ValidationError("Password must be at least 8 characters"));
+    public string Name => "Password";
+    public string ErrorMessage => "Password must be at least 8 characters";
+
+    public ValidationResult<RegisterRequest> Validate(RegisterRequest request) =>
+        request.Password.Length >= 8
+            ? ValidationResult<RegisterRequest>.Success(request)
+            : ValidationResult<RegisterRequest>.Failure(
+                new ValidationError("Password", ErrorMessage));
 }
 
-var validator = Validator.Create<RegisterRequest>()
-    .Rule(r => r.Password, new PasswordValidator());
+var rules = new ValidatorRuleBuilder<RegisterRequest>()
+    .AddRule(new PasswordValidator())
+    .Build();
 ```
 
 ### 6.5. Native Validation DSL
@@ -1609,7 +1614,7 @@ if (string.IsNullOrEmpty(email))
 // ✅ Maybe<T> functional approach
 Maybe<User> maybeUser = GetUserFromCache(id);
 string email = maybeUser
-    .Select(u => u.Email)
+    .Map(u => u.Email)
     .Filter(e => !string.IsNullOrWhiteSpace(e))
     .Map(e => e.ToLower())
     .ValueOrDefault("no-reply@example.com");
@@ -2772,7 +2777,7 @@ var result = await Result<string>.Ok(email)
     .Ensure(e => IsValidEmail(e), "Invalid email format")
     .EnsureAsync(async e => !await EmailExistsAsync(e), "Email already registered")
     .BindAsync(async e => await CreateUserAsync(e))
-    .WithSuccess("User created successfully");
+    .WithSuccessAsync("User created successfully");
 
 // Pattern matching
 return result.Match(
@@ -2790,7 +2795,7 @@ public async Task<Result<User>> GetUserAsync(int id)
     return await Result<int>.Ok(id)
         .Ensure(i => i > 0, "Invalid user ID")
         .BindAsync(async i => await _repository.FindAsync(i))
-        .Ensure(u => u != null, new NotFoundError("User", id));
+        .EnsureAsync(u => u != null, new NotFoundError("User", id));
 }
 
 // Your controller just returns the Result - auto-converted!
@@ -2815,7 +2820,7 @@ app.MapGet("/users/oneof/{id}", async (int id) =>
 // Maybe<T> for safe null handling
 Maybe<User> user = GetUserFromCache(id);
 var email = user
-    .Select(u => u.Email)
+    .Map(u => u.Email)
     .Filter(email => email.Contains("@"))
     .ValueOrDefault("no-reply@example.com");
 
@@ -2823,7 +2828,8 @@ var email = user
 OneOf<ValidationError, NotFoundError, User> result = ValidateAndCreateUser(request);
 return result.Match(
     case1: error => BadRequest(error),
-    case2: user => Ok(user)
+    case2: notFound => NotFound(notFound),
+    case3: user => Ok(user)
 );
 
 // 🆕 v1.10.0: OneOf with auto-detection
@@ -2836,12 +2842,14 @@ return GetUser(id).ToIResult(); // 🆕 Automatic HTTP mapping!
 ## 16. 🧪 Testing & Quality Assurance
 
 ### 16.1. 📊 Comprehensive Test Suite
-**3,339 Tests Passing** 🎉
-- **Core Library Tests**: 1,038 tests per TFM (net8.0, net9.0, net10.0) = 3,114 tests
+**3,783 Tests Passing** 🎉
+- **Core Library Tests**: 1,157 tests per TFM (net8.0, net9.0, net10.0) = 3,471 tests
 - **Source Generator Tests**: 131 tests for all generators
 - **Analyzer Tests**: 68 tests for RESL1001–RESL1006 + RESL2001
 - **FluentValidation Bridge Tests**: 26 tests for [FluentValidate] generator + SmartEndpoints integration
-- **Multi-TFM**: All core tests run on 3 target frameworks
+- **ResultFlow Tests**: 27 tests
+- **Http Tests**: 20 tests per TFM (net8.0, net9.0, net10.0) = 60 tests
+- **Multi-TFM**: All core and Http tests run on 3 target frameworks
 
 ### 16.2. 📐 Source Generator Test Architecture
 **Complete Test Coverage for v1.22.0**
