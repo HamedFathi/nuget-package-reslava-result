@@ -326,6 +326,81 @@ namespace TestNamespace
         Assert.IsTrue(output.Contains("transform"), "Bind should still use transform class");
     }
 
+    // ── RF-1: Async step annotation (⚡ suffix) ──────────────────────────────
+    // ───────────────────────────────────────────────────────────────────────
+    // 21. BindAsync label contains ⚡
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void AsyncAnnotation_BindAsync_Label_Should_Contain_Lightning()
+    {
+        var source = CreateSource("Svc", "Process", "GetResult(cmd).BindAsync(Handle)");
+        var output = RunGenerator(source);
+
+        Assert.IsTrue(output.Contains("BindAsync \u26a1"), "BindAsync label should contain ⚡");
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // 22. EnsureAsync label contains ⚡
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void AsyncAnnotation_EnsureAsync_Label_Should_Contain_Lightning()
+    {
+        var source = CreateSource("Svc", "Process", "GetResult(cmd).EnsureAsync(IsValid)");
+        var output = RunGenerator(source);
+
+        Assert.IsTrue(output.Contains("EnsureAsync \u26a1"), "EnsureAsync label should contain ⚡");
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // 23. MapAsync label contains ⚡
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void AsyncAnnotation_MapAsync_Label_Should_Contain_Lightning()
+    {
+        var source = CreateSource("Svc", "Process", "GetResult(cmd).Bind(Handle).MapAsync(ToDto)");
+        var output = RunGenerator(source);
+
+        Assert.IsTrue(output.Contains("MapAsync \u26a1"), "MapAsync label should contain ⚡");
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // 24. TapAsync label contains ⚡
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void AsyncAnnotation_TapAsync_Label_Should_Contain_Lightning()
+    {
+        var source = CreateSource("Svc", "Process", "GetResult(cmd).Bind(Handle).TapAsync(Log)");
+        var output = RunGenerator(source);
+
+        Assert.IsTrue(output.Contains("TapAsync \u26a1"), "TapAsync label should contain ⚡");
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // 25. Sync Bind label does NOT contain ⚡
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void AsyncAnnotation_SyncBind_Label_Should_Not_Contain_Lightning()
+    {
+        var source = CreateSource("Svc", "Process", "GetResult(cmd).Bind(Handle)");
+        var output = RunGenerator(source);
+
+        Assert.IsFalse(output.Contains("Bind \u26a1"), "Sync Bind label should not contain ⚡");
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // 26. Mixed pipeline — sync and async nodes each marked correctly
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void AsyncAnnotation_Mixed_Pipeline_Should_Mark_Async_And_Leave_Sync_Clean()
+    {
+        var source = CreateSource("Svc", "Process",
+            "await GetResult(cmd).Bind(Handle).BindAsync(SaveAsync)");
+        var output = RunGenerator(source);
+
+        Assert.IsTrue(output.Contains("\"Bind\""),             "Sync Bind should have no ⚡");
+        Assert.IsTrue(output.Contains("\"BindAsync \u26a1\""), "BindAsync should have ⚡");
+    }
+
     #region Helpers
 
     private static string CreateSource(string className, string methodName, string returnExpression) => $@"

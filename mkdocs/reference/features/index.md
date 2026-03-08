@@ -213,12 +213,13 @@ tagline: Know exactly what you're getting.
 | `resultflow.json` custom classification | AdditionalFile escape hatch — override or extend the built-in dictionary for any library | v1.36.0 | `## 🗺️ Pipeline Visualization` — `### resultflow.json` |
 | REF003 diagnostic | Warning when `resultflow.json` is malformed — falls back to built-in convention | v1.36.0 | `## 🗺️ Pipeline Visualization` — `### REF003` |
 | `REslava.ResultFlow` standalone package | Independent NuGet package — works with any Result library | v1.36.0 | `## 🗺️ Pipeline Visualization` — `### Installation` |
+| Async step annotation (`⚡`) | `*Async` nodes automatically get a `⚡` label suffix — identifies async I/O steps at a glance | v1.38.0 | `## 🗺️ Pipeline Visualization` — `### Async Annotation` |
 
 ---
 
 ## Summary
 
-!!! new "**v1.36.0** — 133 features across 13 categories."
+!!! new "**v1.38.0** — 134 features across 13 categories."
 
 
 | Category | Total Features |
@@ -235,8 +236,8 @@ tagline: Know exactly what you're getting.
 | Validation DSL | 1 |
 | FluentValidation Bridge | 2 |
 | Http Extensions | 6 |
-| ResultFlow | 10 |
-| **Total** | **133** |
+| ResultFlow | 11 |
+| **Total** | **134** |
 
 ---
 

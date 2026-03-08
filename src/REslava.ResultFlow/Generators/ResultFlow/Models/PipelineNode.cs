@@ -4,6 +4,7 @@ namespace REslava.ResultFlow.Generators.ResultFlow.Models
     {
         public string MethodName { get; }
         public NodeKind Kind { get; }
+        public bool IsAsync => MethodName.EndsWith("Async");
 
         public PipelineNode(string methodName, NodeKind kind)
         {

@@ -31,13 +31,14 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
             {
                 var node = visible[i];
                 var nodeId = $"N{i}_{node.MethodName}";
+                var label = node.IsAsync ? node.MethodName + " \u26a1" : node.MethodName;
                 bool hasNext = i < visible.Count - 1;
                 string nextId = hasNext ? $"N{i + 1}_{visible[i + 1].MethodName}" : string.Empty;
 
                 switch (node.Kind)
                 {
                     case NodeKind.Gatekeeper:
-                        lines.Add($"    {nodeId}[\"{node.MethodName}\"]:::gatekeeper");
+                        lines.Add($"    {nodeId}[\"{label}\"]:::gatekeeper");
                         if (hasNext) lines.Add($"    {nodeId} -->|pass| {nextId}");
                         lines.Add($"    {nodeId} -->|fail| F{i}[\"Failure\"]:::failure");
                         TryAddClass(declaredClasses, classDefs, "gatekeeper", "fill:#e3e9fa,color:#3f5c9a");
@@ -45,7 +46,7 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
                         break;
 
                     case NodeKind.TransformWithRisk:
-                        lines.Add($"    {nodeId}[\"{node.MethodName}\"]:::transform");
+                        lines.Add($"    {nodeId}[\"{label}\"]:::transform");
                         if (hasNext) lines.Add($"    {nodeId} -->|ok| {nextId}");
                         lines.Add($"    {nodeId} -->|fail| F{i}[\"Failure\"]:::failure");
                         TryAddClass(declaredClasses, classDefs, "transform", "fill:#e3f0e8,color:#2f7a5c");
@@ -53,7 +54,7 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
                         break;
 
                     case NodeKind.PureTransform:
-                        lines.Add($"    {nodeId}[\"{node.MethodName}\"]:::transform");
+                        lines.Add($"    {nodeId}[\"{label}\"]:::transform");
                         if (hasNext) lines.Add($"    {nodeId} --> {nextId}");
                         TryAddClass(declaredClasses, classDefs, "transform", "fill:#e3f0e8,color:#2f7a5c");
                         break;
@@ -61,19 +62,19 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
                     case NodeKind.SideEffectSuccess:
                     case NodeKind.SideEffectFailure:
                     case NodeKind.SideEffectBoth:
-                        lines.Add($"    {nodeId}[\"{node.MethodName}\"]:::sideeffect");
+                        lines.Add($"    {nodeId}[\"{label}\"]:::sideeffect");
                         if (hasNext) lines.Add($"    {nodeId} --> {nextId}");
                         TryAddClass(declaredClasses, classDefs, "sideeffect", "fill:#fff4d9,color:#b8882c");
                         break;
 
                     case NodeKind.Terminal:
-                        lines.Add($"    {nodeId}[\"{node.MethodName}\"]:::terminal");
+                        lines.Add($"    {nodeId}[\"{label}\"]:::terminal");
                         // No outbound edges — terminal node ends the pipeline
                         TryAddClass(declaredClasses, classDefs, "terminal", "fill:#f2e3f5,color:#8a4f9e");
                         break;
 
                     default: // Unknown
-                        lines.Add($"    {nodeId}[\"{node.MethodName}\"]:::operation");
+                        lines.Add($"    {nodeId}[\"{label}\"]:::operation");
                         if (hasNext) lines.Add($"    {nodeId} --> {nextId}");
                         TryAddClass(declaredClasses, classDefs, "operation", "fill:#e8f4f0,color:#1c7e6f");
                         break;
