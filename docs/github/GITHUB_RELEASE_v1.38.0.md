@@ -103,5 +103,5 @@ flowchart TD
 
 ## Stats
 
-- 3,994 tests passing across net8.0, net9.0, net10.0 (1,216×3) + generator (131) + ResultFlow (39) + analyzer (79) + FluentValidation bridge (26) + Http (20×3) + Result.Flow (11)
+- 3,983 tests passing across net8.0, net9.0, net10.0 (1,216×3) + generator (131) + ResultFlow (39) + analyzer (79) + FluentValidation bridge (26) + Http (20×3)
 - 140 features across 13 categories

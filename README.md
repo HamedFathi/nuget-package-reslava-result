@@ -12,7 +12,7 @@ REslava.Result - Railway-Oriented Programming for .NET
 [![GitHub Stars](https://img.shields.io/github/stars/reslava/REslava.Result)](https://github.com/reslava/REslava.Result/stargazers) 
 [![NuGet Downloads](https://img.shields.io/nuget/dt/REslava.Result)](https://www.nuget.org/packages/REslava.Result)
 ![Test Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
-![Test Suite](https://img.shields.io/badge/tests-3994%20passing-brightgreen)
+![Test Suite](https://img.shields.io/badge/tests-3983%20passing-brightgreen)
 
 </div>
 
@@ -2945,7 +2945,7 @@ return GetUser(id).ToIResult(); // 🆕 Automatic HTTP mapping!
 ## 16. 🧪 Testing & Quality Assurance
 
 ### 16.1. 📊 Comprehensive Test Suite
-**3,994 Tests Passing** 🎉
+**3,983 Tests Passing** 🎉
 - **Core Library Tests**: 1,157 tests per TFM (net8.0, net9.0, net10.0) = 3,471 tests
 - **Source Generator Tests**: 131 tests for all generators
 - **Analyzer Tests**: 79 tests for RESL1001–RESL1006, RESL1009 + RESL2001
@@ -3338,7 +3338,7 @@ Measured with [BenchmarkDotNet](https://benchmarkdotnet.org/) on .NET 9 / AMD Ry
 - **`REslava.Result.Flow` — new companion package** — native REslava.Result source generator; uses `IResultBase` + `IOperation` chain walker to render the pipeline entry-point call as a node; scans method bodies for `IError` constructions and renders typed `-->|DatabaseError| FAIL` edges with a shared FAIL terminal
 - **All README.md code samples reviewed and corrected** — validated against the API reference; fixed validation DSL, error constructors, async extension variants, type conversions, and stale test counts
 - 140 features across 13 categories
-- 3,994 tests
+- 3,983 tests
 
 ### 20.2. v1.37.0 ✅
 - **`Switch()` / `SwitchAsync()`** — void side-effect dispatch; routes success/failure to two actions; explicit intent signal for void branching; `Task<Result>` / `Task<Result<T>>` extensions enable clean end-of-chain dispatch after async pipelines
@@ -3485,7 +3485,7 @@ Measured with [BenchmarkDotNet](https://benchmarkdotnet.org/) on .NET 9 / AMD Ry
 
 ## 21. 📈 Version History
 
-- **v1.38.0** - RESL1009 try/catch→Try analyzer + code fix; ⚡ async annotation + success type travel in `REslava.ResultFlow`; `REslava.Result.Flow` native companion package (typed error edges, IResultBase type travel, IOperation chain walk); 140 features, 3,994 tests
+- **v1.38.0** - RESL1009 try/catch→Try analyzer + code fix; ⚡ async annotation + success type travel in `REslava.ResultFlow`; `REslava.Result.Flow` native companion package (typed error edges, IResultBase type travel, IOperation chain walk); 140 features, 3,983 tests
 - **v1.37.0** - `Switch`/`SwitchAsync` void dispatch, `MapError`/`MapErrorAsync` error-path transform, `Or`/`OrElse`/`OrElseAsync` fallback on failure; Task extensions for all three; 136 features, 3,960 tests
 - **v1.36.0** - `REslava.ResultFlow` standalone package (library-agnostic), REF002 + Code Action (insert diagram as comment), convention dictionary for ErrorOr + LanguageExt, `resultflow.json` config, `REslava.Result.AspNetCore` rename, 133 features, 3,783 tests
 - **v1.35.0** - `[ResultFlow]` source generator: auto-generate Mermaid pipeline diagrams at compile time, `Generated.ResultFlow.{Class}_Flows` constants, REF001 diagnostic, 128 features, 3,768 tests

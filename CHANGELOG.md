@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 - **RF-3 — `REslava.Result.Flow` native companion package** — new `REslava.Result.Flow` package extends pipeline visualisation with REslava.Result-specific semantics: uses `IResultBase` and `IError` as Roslyn anchors to infer both success types and error surfaces, and annotates typed failure edges in the Mermaid diagram.
 
 ### Stats
-- 3,994 tests passing across net8.0, net9.0, net10.0 (1,216×3) + generator (131) + ResultFlow (39) + analyzer (79) + FluentValidation bridge (26) + Http (20×3) + Result.Flow (11)
+- 3,983 tests passing across net8.0, net9.0, net10.0 (1,216×3) + generator (131) + ResultFlow (39) + analyzer (79) + FluentValidation bridge (26) + Http (20×3)
 - 140 features across 13 categories
 
 ---
