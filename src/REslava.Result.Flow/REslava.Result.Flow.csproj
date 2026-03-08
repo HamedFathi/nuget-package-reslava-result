@@ -1,0 +1,70 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IsRoslynComponent Condition="'$(Configuration)' == 'Debug'">true</IsRoslynComponent>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+    <!-- NuGet Package Configuration -->
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageId>REslava.Result.Flow</PackageId>
+    <Authors>REslava</Authors>
+    <Company>REslava</Company>
+    <Product>REslava.Result.Flow</Product>
+    <Description>REslava.Result-native source generator that visualises Result pipelines with full type travel and error surface. Requires REslava.Result. Uses IResultBase and IError as Roslyn anchors to infer success types and scan method bodies for possible error types.</Description>
+    <Copyright>Copyright © REslava 2025</Copyright>
+    <PackageProjectUrl>https://reslava.github.io/nuget-package-reslava-result</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/reslava/nuget-package-reslava-result</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageTags>source-generator;result;mermaid;pipeline;visualization;diagram;type-travel;error-surface</PackageTags>
+
+    <!-- Source Link -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!-- Documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591;RS1038</NoWarn>
+
+    <!-- CRITICAL: Source Generator Configuration -->
+    <DevelopmentDependency>true</DevelopmentDependency>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+  </PropertyGroup>
+
+  <!-- Package Dependencies -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.12.0-beta1.25218.8">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <!-- CRITICAL: Package this as a Source Generator -->
+  <ItemGroup>
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+  </ItemGroup>
+
+  <!-- Explicit compile items -->
+  <ItemGroup>
+    <Compile Include="Core\Interfaces\IGeneratorOrchestrator.cs" />
+    <Compile Include="Generators\ResultFlow\ResultFlowGenerator.cs" />
+    <Compile Include="Generators\ResultFlow\Orchestration\ResultFlowOrchestrator.cs" />
+    <Compile Include="Generators\ResultFlow\Attributes\ResultFlowAttributeGenerator.cs" />
+    <Compile Include="Generators\ResultFlow\Models\NodeKind.cs" />
+    <Compile Include="Generators\ResultFlow\Models\PipelineNode.cs" />
+    <Compile Include="Generators\ResultFlow\CodeGeneration\ResultTypeExtractor.cs" />
+    <Compile Include="Generators\ResultFlow\CodeGeneration\ResultFlowChainExtractor.cs" />
+    <Compile Include="Generators\ResultFlow\CodeGeneration\ResultFlowMermaidRenderer.cs" />
+    <Compile Include="Generators\ResultFlow\CodeGeneration\ResultFlowCodeGenerator.cs" />
+  </ItemGroup>
+
+</Project>
