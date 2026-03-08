@@ -31,7 +31,7 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
             {
                 var node = visible[i];
                 var nodeId = $"N{i}_{node.MethodName}";
-                var label = node.IsAsync ? node.MethodName + " \u26a1" : node.MethodName;
+                var label = BuildLabel(node);
                 bool hasNext = i < visible.Count - 1;
                 string nextId = hasNext ? $"N{i + 1}_{visible[i + 1].MethodName}" : string.Empty;
 
@@ -89,6 +89,30 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
                 sb.AppendLine(classDef);
 
             return sb.ToString().TrimEnd();
+        }
+
+        /// <summary>
+        /// Builds the Mermaid node label, appending a type-travel secondary line when type info is available.
+        /// <list type="bullet">
+        ///   <item><description>OutputType known, differs from InputType → <c>MethodName&lt;br/&gt;InputType → OutputType</c></description></item>
+        ///   <item><description>OutputType known, same as InputType (or no input) → <c>MethodName&lt;br/&gt;OutputType</c></description></item>
+        ///   <item><description>OutputType null → <c>MethodName</c> (current behavior, no regression)</description></item>
+        /// </list>
+        /// </summary>
+        private static string BuildLabel(PipelineNode node)
+        {
+            var baseName = node.IsAsync ? node.MethodName + " \u26a1" : node.MethodName;
+
+            if (node.OutputType == null)
+                return baseName;
+
+            string typeLabel;
+            if (node.InputType != null && node.InputType != node.OutputType)
+                typeLabel = node.InputType + " \u2192 " + node.OutputType; // e.g. "User → UserDto"
+            else
+                typeLabel = node.OutputType; // e.g. "User"
+
+            return baseName + "<br/>" + typeLabel;
         }
 
         private static void TryAddClass(HashSet<string> declared, List<string> classDefs, string name, string style)

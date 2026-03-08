@@ -401,6 +401,126 @@ namespace TestNamespace
         Assert.IsTrue(output.Contains("\"BindAsync \u26a1\""), "BindAsync should have ⚡");
     }
 
+    // ── RF-2: Success Type Travel ─────────────────────────────────────────────
+
+    // ───────────────────────────────────────────────────────────────────────
+    // 27. Map with type change → type transition label
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void TypeTravel_Map_ShowsTypeTransition()
+    {
+        var source = CreateTypedSource("UserService", "Register",
+            "CreateUser().Map(ToDto)",
+            extraMethods: @"
+        static Result<User> CreateUser() => Result<User>.Ok(new User());
+        static UserDto ToDto(User u) => new UserDto();");
+
+        var output = RunGenerator(source);
+
+        Assert.IsTrue(output.Contains("Map"),    "Map node present");
+        Assert.IsTrue(output.Contains("<br/>"),  "Type label separator present");
+        Assert.IsTrue(output.Contains("User"),   "Input type User present");
+        Assert.IsTrue(output.Contains("UserDto"), "Output type UserDto present");
+        Assert.IsTrue(output.Contains("\u2192"), "Transition arrow present");
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // 28. Bind same type → type-only label (no arrow)
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void TypeTravel_Bind_SameType_ShowsTypeOnly()
+    {
+        var source = CreateTypedSource("UserService", "Register",
+            "CreateUser().Bind(SaveUser)",
+            extraMethods: @"
+        static Result<User> CreateUser() => Result<User>.Ok(new User());
+        static Result<User> SaveUser(User u) => Result<User>.Ok(u);");
+
+        var output = RunGenerator(source);
+
+        Assert.IsTrue(output.Contains("Bind"),  "Bind node present");
+        Assert.IsTrue(output.Contains("<br/>"), "Type label present");
+        Assert.IsTrue(output.Contains("User"),  "User type present");
+        Assert.IsFalse(output.Contains("\u2192"), "No transition arrow for same-type Bind");
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // 29. Ensure (type-preserving) → type-only label
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void TypeTravel_Ensure_ShowsTypeOnly()
+    {
+        var source = CreateTypedSource("UserService", "Register",
+            "CreateUser().Ensure(IsValid, \"invalid\")",
+            extraMethods: @"
+        static Result<User> CreateUser() => Result<User>.Ok(new User());
+        static bool IsValid(User u) => true;");
+
+        var output = RunGenerator(source);
+
+        Assert.IsTrue(output.Contains("Ensure"), "Ensure node present");
+        Assert.IsTrue(output.Contains("<br/>"),  "Type label present");
+        Assert.IsTrue(output.Contains("User"),   "User type present");
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // 30. Tap (type-preserving side-effect) → type-only label
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void TypeTravel_Tap_ShowsTypeOnly()
+    {
+        var source = CreateTypedSource("UserService", "Register",
+            "CreateUser().Tap(SendEmail)",
+            extraMethods: @"
+        static Result<User> CreateUser() => Result<User>.Ok(new User());
+        static void SendEmail(User u) { }");
+
+        var output = RunGenerator(source);
+
+        Assert.IsTrue(output.Contains("Tap"),   "Tap node present");
+        Assert.IsTrue(output.Contains("<br/>"), "Type label present");
+        Assert.IsTrue(output.Contains("User"),  "User type present");
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // 31. Non-generic return type → falls back to method name only (no <br/>)
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void TypeTravel_NonGenericReturn_FallsBackToMethodName()
+    {
+        // Uses CreateSource (string-returning method) — Bind doesn't exist on string,
+        // so GetSymbolInfo returns null → OutputType = null → no type label
+        var source = CreateSource("Svc", "Process", "GetResult(cmd).Bind(Handle)");
+        var output = RunGenerator(source);
+
+        Assert.IsTrue(output.Contains("Bind"),   "Bind node still present");
+        Assert.IsFalse(output.Contains("<br/>"), "No type label when type cannot be resolved");
+    }
+
+    // ───────────────────────────────────────────────────────────────────────
+    // 32. Mixed pipeline → all nodes have correct type labels
+    // ───────────────────────────────────────────────────────────────────────
+    [TestMethod]
+    public void TypeTravel_Mixed_Pipeline_CorrectLabelsOnAllNodes()
+    {
+        var source = CreateTypedSource("UserService", "Register",
+            "CreateUser().Ensure(IsValid, \"x\").Bind(SaveUser).Map(ToDto)",
+            extraMethods: @"
+        static Result<User> CreateUser() => Result<User>.Ok(new User());
+        static bool IsValid(User u) => true;
+        static Result<User> SaveUser(User u) => Result<User>.Ok(u);
+        static UserDto ToDto(User u) => new UserDto();");
+
+        var output = RunGenerator(source);
+
+        Assert.IsTrue(output.Contains("Ensure"), "Ensure node present");
+        Assert.IsTrue(output.Contains("Bind"),   "Bind node present");
+        Assert.IsTrue(output.Contains("Map"),    "Map node present");
+        Assert.IsTrue(output.Contains("User"),   "User type present");
+        Assert.IsTrue(output.Contains("UserDto"), "UserDto type present");
+        Assert.IsTrue(output.Contains("\u2192"), "Transition arrow present for Map");
+    }
+
     #region Helpers
 
     private static string CreateSource(string className, string methodName, string returnExpression) => $@"
@@ -410,6 +530,32 @@ namespace TestNamespace
     {{
         [ResultFlow]
         public string {methodName}(string cmd) => {returnExpression};
+    }}
+}}";
+
+    private static string CreateTypedSource(string className, string methodName, string returnExpression, string extraMethods = "") => $@"
+using System;
+
+namespace TestNS
+{{
+    public class User {{ }}
+    public class UserDto {{ }}
+
+    public class Result<T>
+    {{
+        public static Result<T> Ok(T value) => new Result<T>();
+        public static Result<T> Fail(string msg) => new Result<T>();
+        public Result<TOut> Bind<TOut>(Func<T, Result<TOut>> f) => new Result<TOut>();
+        public Result<T> Ensure(Func<T, bool> predicate, string errorMessage) => new Result<T>();
+        public Result<TOut> Map<TOut>(Func<T, TOut> mapper) => new Result<TOut>();
+        public Result<T> Tap(Action<T> action) => this;
+    }}
+
+    public class {className}
+    {{
+        [ResultFlow]
+        public Result<UserDto> {methodName}() => {returnExpression};
+        {extraMethods}
     }}
 }}";
 

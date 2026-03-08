@@ -218,15 +218,16 @@ tagline: Know exactly what you're getting.
 | REF003 diagnostic | Warning when `resultflow.json` is malformed — falls back to built-in convention | v1.36.0 | `## 🗺️ Pipeline Visualization` — `### REF003` |
 | `REslava.ResultFlow` standalone package | Independent NuGet package — works with any Result library | v1.36.0 | `## 🗺️ Pipeline Visualization` — `### Installation` |
 | Async step annotation (`⚡`) | `*Async` nodes automatically get a `⚡` label suffix — identifies async I/O steps at a glance | v1.38.0 | `## 🗺️ Pipeline Visualization` — `### Async Annotation` |
-| `REslava.Result.Flow` — success type travel | New native package: `[ResultFlow]` infers `T` in `Result<T>` at each step via IResultBase; renders `"Bind<br/>User"` or `"Map<br/>User → UserDto"` labels | v1.39.0 | `## 🗺️ Pipeline Visualization` — `### Type Travel` |
-| `REslava.Result.Flow` — error type surface | Scans step method bodies for `new XxxError(...)` where `XxxError implements IError`; renders typed `-->|DatabaseError| FAIL` edges with shared FAIL terminal | v1.39.0 | `## 🗺️ Pipeline Visualization` — `### Error Surface` |
-| `IInvocationOperation` chain walker | IOperation-based chain extraction replaces syntax walking; `IsPipelineRoot` prevents duplicate processing | v1.39.0 | — |
+| `REslava.ResultFlow` — success type travel | Library-agnostic type travel: first generic type arg of each step's return type rendered as `"Bind<br/>User"` or `"Map<br/>User → UserDto"` labels; falls back to method name for non-generic types | v1.38.0 | `## 🗺️ Pipeline Visualization` — `### Type Travel` |
+| `REslava.Result.Flow` — success type travel | New native package: `[ResultFlow]` infers `T` in `Result<T>` at each step via IResultBase; renders `"Bind<br/>User"` or `"Map<br/>User → UserDto"` labels | v1.38.0 | `## 🗺️ Pipeline Visualization` — `### Type Travel` |
+| `REslava.Result.Flow` — error type surface | Scans step method bodies for `new XxxError(...)` where `XxxError implements IError`; renders typed `-->|DatabaseError| FAIL` edges with shared FAIL terminal | v1.38.0 | `## 🗺️ Pipeline Visualization` — `### Error Surface` |
+| `IInvocationOperation` chain walker | IOperation-based chain extraction replaces syntax walking; `IsPipelineRoot` prevents duplicate processing | v1.38.0 | — |
 
 ---
 
 ## Summary
 
-!!! new "**v1.39.0** — 139 features across 13 categories."
+!!! new "**v1.38.0** — 140 features across 13 categories."
 
 
 | Category | Total Features |
@@ -243,8 +244,8 @@ tagline: Know exactly what you're getting.
 | Validation DSL | 1 |
 | FluentValidation Bridge | 2 |
 | Http Extensions | 6 |
-| ResultFlow | 14 |
-| **Total** | **139** |
+| ResultFlow | 15 |
+| **Total** | **140** |
 
 ---
 

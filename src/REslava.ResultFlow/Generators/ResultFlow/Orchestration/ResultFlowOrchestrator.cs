@@ -83,6 +83,8 @@ namespace REslava.ResultFlow.Generators.ResultFlow.Orchestration
                     }
                 }
 
+                var compilation = source.Left.Left;
+
                 foreach (var group in methods.GroupBy(m => m.Parent))
                 {
                     // Both ClassDeclarationSyntax and RecordDeclarationSyntax inherit TypeDeclarationSyntax
@@ -93,7 +95,8 @@ namespace REslava.ResultFlow.Generators.ResultFlow.Orchestration
 
                     foreach (var methodDecl in group)
                     {
-                        var chain = ResultFlowChainExtractor.Extract(methodDecl, customMappings);
+                        var semanticModel = compilation.GetSemanticModel(methodDecl.SyntaxTree);
+                        var chain = ResultFlowChainExtractor.Extract(methodDecl, semanticModel, customMappings);
                         if (chain == null)
                         {
                             spc.ReportDiagnostic(Diagnostic.Create(

@@ -1,3 +1,4 @@
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using REslava.ResultFlow.Generators.ResultFlow.Models;
 using System.Collections.Generic;
@@ -52,6 +53,11 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
         /// as a fluent chain (triggers REF001 diagnostic).
         /// </summary>
         /// <param name="method">The method declaration to analyse.</param>
+        /// <param name="semanticModel">
+        /// Optional semantic model used to extract generic type arguments from each step's return type.
+        /// When provided, nodes are populated with <see cref="PipelineNode.InputType"/> and
+        /// <see cref="PipelineNode.OutputType"/> for inline type-travel labels in the Mermaid diagram.
+        /// </param>
         /// <param name="customMappings">
         /// Optional entries loaded from <c>resultflow.json</c>.
         /// These <b>override</b> the built-in convention dictionary — allowing full substitution
@@ -59,6 +65,7 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
         /// </param>
         public static IReadOnlyList<PipelineNode>? Extract(
             MethodDeclarationSyntax method,
+            SemanticModel? semanticModel = null,
             IReadOnlyDictionary<string, NodeKind>? customMappings = null)
         {
             var rootExpr = GetRootExpression(method);
@@ -69,15 +76,15 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
             if (!(rootExpr is InvocationExpressionSyntax))
                 return null;
 
-            // Walk the chain bottom-up, collecting method names
-            var collected = new List<string>();
+            // Walk the chain bottom-up, collecting (method name, invocation node) pairs
+            var collected = new List<(string name, InvocationExpressionSyntax invocationNode)>();
             ExpressionSyntax? current = rootExpr;
 
             while (current is InvocationExpressionSyntax invocation)
             {
                 if (invocation.Expression is MemberAccessExpressionSyntax memberAccess)
                 {
-                    collected.Add(memberAccess.Name.Identifier.ValueText);
+                    collected.Add((memberAccess.Name.Identifier.ValueText, invocation));
                     current = Unwrap(memberAccess.Expression);
                 }
                 else
@@ -91,8 +98,15 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
             // Reverse: bottom-up → top-down order
             collected.Reverse();
 
+            // Seed prevOutputType from the root expression (the call before the chain begins)
+            // e.g. CreateUser() in  CreateUser().Bind(SaveUser).Map(ToDto)
+            string? prevOutputType = null;
+            if (semanticModel != null && current is InvocationExpressionSyntax rootCall)
+                prevOutputType = GenericTypeExtractor.GetFirstTypeArgument(rootCall, semanticModel);
+
             var nodes = new List<PipelineNode>(collected.Count);
-            foreach (var name in collected)
+
+            foreach (var (name, invocationNode) in collected)
             {
                 // customMappings override built-ins (explicit user config wins)
                 NodeKind kind;
@@ -103,7 +117,18 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
                 else
                     kind = NodeKind.Unknown;
 
-                nodes.Add(new PipelineNode(name, kind));
+                string? outputType = null;
+                if (semanticModel != null)
+                    outputType = GenericTypeExtractor.GetFirstTypeArgument(invocationNode, semanticModel);
+
+                var node = new PipelineNode(name, kind)
+                {
+                    InputType = prevOutputType,
+                    OutputType = outputType
+                };
+
+                nodes.Add(node);
+                prevOutputType = outputType;
             }
 
             return nodes;
