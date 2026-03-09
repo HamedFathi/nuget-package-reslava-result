@@ -706,6 +706,24 @@ public Task<Result<UserDto>> RegisterAsync(RegisterCommand cmd) =>
 ```
 
 Paste the comment into [mermaid.live](https://mermaid.live) — `CreateUser` becomes the pipeline root, `ValidationError` and `DatabaseError` appear as typed failure edges on their respective steps.
+Here you can see the resulting diagram:
+```mermaid
+flowchart LR
+    N0_CreateUser["CreateUser<br/>User"]:::operation
+    N0_CreateUser --> N1_EnsureAsync
+    N1_EnsureAsync["EnsureAsync ⚡<br/>User"]:::gatekeeper
+    N1_EnsureAsync -->|pass| N2_BindAsync
+    N1_EnsureAsync -->|ValidationError| FAIL
+    N2_BindAsync["BindAsync ⚡<br/>User"]:::transform
+    N2_BindAsync -->|ok| N3_MapAsync
+    N2_BindAsync -->|DatabaseError| FAIL
+    N3_MapAsync["MapAsync ⚡<br/>User → UserDto"]:::transform
+    FAIL([fail]):::failure
+    classDef gatekeeper fill:#e3e9fa,color:#3f5c9a
+    classDef transform fill:#e3f0e8,color:#2f7a5c
+    classDef failure fill:#f8e3e3,color:#b13e3e
+    classDef operation fill:#e8f4f0,color:#1c7e6f
+```
 
 **Error scanning is best-effort** — only scans methods in the same compilation; errors created but not returned may appear as false positives; helper methods are not recursively followed.
 
