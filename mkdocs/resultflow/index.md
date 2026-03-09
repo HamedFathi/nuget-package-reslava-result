@@ -18,11 +18,11 @@ dotnet add package REslava.ResultFlow
 
 <div class="grid cards" markdown>
 
--   :material-graph: __`[Result.Flow]` Attribute__
+-   :material-graph: __`[Result.Flow]` Native Companion Package__
 
     Annotate any fluent pipeline method. The source generator walks the chain and emits a Mermaid flowchart block comment — no runtime cost, no maintenance. See how `type` and `customs errors` travel. To be used with REslava.Result
 
-    [](reslavaresultflow--native-companion-package)
+    [](reslava.result.flow--native-companion-package.md)
 
 
 -   :material-graph: __`[ResultFlow]` Attribute__

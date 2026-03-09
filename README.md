@@ -541,6 +541,7 @@ Annotate any fluent pipeline with `[ResultFlow]` and with **single-click code ac
 
 ```csharp
 /*
+```mermaid
 flowchart LR
     N0_EnsureAsync["EnsureAsync ⚡<br/>User"]:::gatekeeper
     N0_EnsureAsync -->|pass| N1_BindAsync
@@ -555,6 +556,7 @@ flowchart LR
     classDef failure fill:#f8e3e3,color:#b13e3e
     classDef transform fill:#e3f0e8,color:#2f7a5c
     classDef sideeffect fill:#fff4d9,color:#b8882c
+```
 */
 [ResultFlow]
 public async Task<Result<UserDto>> RegisterAsync(RegisterCommand cmd)
@@ -565,6 +567,23 @@ public async Task<Result<UserDto>> RegisterAsync(RegisterCommand cmd)
         .TapAsync(SendWelcomeEmail)
         .MapAsync(ToUserDto);
 }
+```
+Here you can see the resulting diagram:
+```mermaid
+flowchart LR
+    N0_EnsureAsync["EnsureAsync ⚡<br/>User"]:::gatekeeper
+    N0_EnsureAsync -->|pass| N1_BindAsync
+    N0_EnsureAsync -->|fail| F0["Failure"]:::failure
+    N1_BindAsync["BindAsync ⚡<br/>User"]:::transform
+    N1_BindAsync -->|ok| N2_TapAsync
+    N1_BindAsync -->|fail| F1["Failure"]:::failure
+    N2_TapAsync["TapAsync ⚡<br/>User"]:::sideeffect
+    N2_TapAsync --> N3_MapAsync
+    N3_MapAsync["MapAsync ⚡<br/>User → UserDto"]:::transform
+    classDef gatekeeper fill:#e3e9fa,color:#3f5c9a
+    classDef failure fill:#f8e3e3,color:#b13e3e
+    classDef transform fill:#e3f0e8,color:#2f7a5c
+    classDef sideeffect fill:#fff4d9,color:#b8882c
 ```
 
 Paste the comment into any [Mermaid renderer](https://mermaid.live) to instantly see the data flow.
