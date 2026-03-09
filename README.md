@@ -569,6 +569,7 @@ public async Task<Result<UserDto>> RegisterAsync(RegisterCommand cmd)
 }
 ```
 Here you can see the resulting diagram:
+
 ```mermaid
 flowchart LR
     N0_EnsureAsync["EnsureAsync ⚡<br/>User"]:::gatekeeper
@@ -726,6 +727,7 @@ public Task<Result<UserDto>> RegisterAsync(RegisterCommand cmd) =>
 
 Paste the comment into [mermaid.live](https://mermaid.live) — `CreateUser` becomes the pipeline root, `ValidationError` and `DatabaseError` appear as typed failure edges on their respective steps.
 Here you can see the resulting diagram:
+
 ```mermaid
 flowchart LR
     N0_CreateUser["CreateUser<br/>User"]:::operation
