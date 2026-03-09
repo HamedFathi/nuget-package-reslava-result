@@ -556,8 +556,7 @@ flowchart LR
     classDef failure fill:#f8e3e3,color:#b13e3e
     classDef transform fill:#e3f0e8,color:#2f7a5c
     classDef sideeffect fill:#fff4d9,color:#b8882c
-```
-*/
+```*/
 [ResultFlow]
 public async Task<Result<UserDto>> RegisterAsync(RegisterCommand cmd)
 {

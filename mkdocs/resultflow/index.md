@@ -20,36 +20,36 @@ dotnet add package REslava.ResultFlow
 
 -   :material-graph: __`[Result.Flow]` Native Companion Package__
 
-    Annotate any fluent pipeline method. The source generator walks the chain and emits a Mermaid flowchart block comment — no runtime cost, no maintenance. See how `type` and `customs errors` travel. To be used with REslava.Result
+    Annotate any fluent pipeline method. The source generator walks the chain and emits a Mermaid flowchart block comment — no runtime cost, no maintenance. See how `type` and `customs errors` travel. **To be used with REslava.Result**
 
     [](reslava.result.flow--native-companion-package.md)
 
 
 -   :material-graph: __`[ResultFlow]` Attribute__
 
-    Annotate any fluent pipeline method. The source generator walks the chain and emits a Mermaid flowchart constant — no runtime cost, no maintenance. See how `type` travel. To be used with external result libraries like FlentResuts, ErrorOr, ...
+    Annotate any fluent pipeline method. The source generator walks the chain and emits a Mermaid flowchart constant — no runtime cost, no maintenance. See how `type` travel. **To be used with external result libraries like FlentResuts, ErrorOr, ...**
 
     [](pipeline-visualization--resultflow)
 
--   :material-package-variant-closed-check: __Standalone Package__    
+-   :material-package-variant-closed-check: __`[ResultFlow]` Standalone Package__    
   
     [ResultFlow] is provided by the REslava.ResultFlow package — completely independent of REslava.Result. It works with any fluent Result library.
 
     [](standalone-package)    
 
--   :material-book-open-variant: __Convention Dictionary__
+-   :material-book-open-variant: __`[ResultFlow]` Convention Dictionary__
 
     Built-in support for **REslava.Result**, **ErrorOr**, and **LanguageExt** — classify Ensure, Bind, Map, Tap, Match, Filter, Then, and more out of the box.
 
     [](supported-libraries)
 
--   :material-file-cog: __`resultflow.json` Configuration__
+-   :material-file-cog: __`[ResultFlow]` - `resultflow.json` Configuration__
 
     Escape hatch for custom or third-party libraries. Add a single JSON file and override any built-in classification with your own method names.
 
     [](resultflow.json--custom-classification)
 
--   :material-wrench: __Code Action — Insert Diagram__
+-   :material-wrench: __`[Result.Flow]` & `[ResultFlow]`Code Action — Insert Diagram__
 
     The companion analyzer detects missing diagram comments on `[ResultFlow]` methods. One click inserts the generated Mermaid diagram directly above the method body.
 
