@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) guideline.
 
+## [1.38.1] - 2026-03-09
+
+### 🐛 Fixed
+- **`REslava.Result.Flow` chain walker bug** — `IInvocationOperation.Instance` traversal stopped after the first node for two patterns: (1) chains starting with `Result<T>.Ok(...)` (static call — `Instance` is null for static methods), and (2) async chains on `Task<Result<T>>` (`*Async` extension methods). Fixed by replacing `Instance` traversal with a **syntax-walk + per-node `semanticModel.GetOperation()`** approach — reliably captures all steps regardless of calling convention.
+
+### ✨ Added
+- **`REslava.ResultFlow` — ` ```mermaid ` fence in code action** — the "Insert diagram as comment" code action (REF002) now wraps the inserted Mermaid diagram in a `` ```mermaid `` / ` ``` ` fence. The diagram renders inline in VS Code, GitHub, Rider, and any other Markdown-aware IDE. The `[ResultFlow] Pipeline: {name}` header line is removed (method name is already visible below the comment).
+- **`REslava.Result.Flow` — REF002 analyzer + "Insert diagram as comment" code action** — the native companion package now emits the same REF002 diagnostic on every `[ResultFlow]` method whose chain is detectable. Accepting the code action inserts a full-fidelity Mermaid comment (type travel + typed error edges) with the `` ```mermaid `` fence — matching the source-generated `const string` output exactly.
+- **3 regression tests** in `REslava.Result.Flow.Tests` — guard against recurrence of the chain walker bug for Ensure×3 chains, `Result<T>.Ok(...)` roots, and multi-step mixed chains.
+- **Pre-inserted Mermaid diagrams** in both sample projects (`samples/resultflow/Program.cs` — 7 methods; `samples/result-flow/Program.cs` — 5 methods) — each `[ResultFlow]` method ships with its diagram as an IDE-previewable comment.
+
+### Stats
+- 3,986 tests passing across net8.0, net9.0, net10.0 (1,216×3) + generator AspNetCore (131) + Result.Flow (22) + ResultFlow (40) + analyzer (79) + FluentValidation bridge (26) + Http (20×3)
+
+---
+
 ## [1.38.0] - 2026-03-08
 
 ### ✨ Added
