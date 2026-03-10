@@ -118,13 +118,18 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
                     kind = NodeKind.Unknown;
 
                 string? outputType = null;
+                string? errorType = null;
                 if (semanticModel != null)
+                {
                     outputType = GenericTypeExtractor.GetFirstTypeArgument(invocationNode, semanticModel);
+                    errorType  = GenericTypeExtractor.GetErrorTypeArgument(invocationNode, semanticModel);
+                }
 
                 var node = new PipelineNode(name, kind)
                 {
                     InputType = prevOutputType,
-                    OutputType = outputType
+                    OutputType = outputType,
+                    ErrorType  = errorType
                 };
 
                 nodes.Add(node);

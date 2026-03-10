@@ -4,6 +4,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) guideline.
 
+## [1.39.0] - 2026-03-10
+
+### ⚠️ Breaking Changes
+- **`OneOf<T1..T8>` — `readonly struct` → `sealed class`** — copy semantics become reference semantics; `default(OneOf<T1,T2>)` returns `null` (was zeroed struct). Nullable reference types (already enabled) flag every unsafe callsite. Extremely rare to depend on copy semantics in practice.
+
+### ✨ Added
+- **`OneOf<T1..T7>` and `OneOf<T1..T8>`** — two new arities for full arity symmetry alongside the existing T2–T6 types
+- **`OneOfBase<T1..T8>`** — new unconstrained abstract class holding all shared dispatch logic (`IsT1..T8`, `AsT1..T8`, `Match`, `Switch`, `Equals`, `GetHashCode`, `ToString`); `OneOf` and `ErrorsOf` both inherit it — dispatch logic written once
+- **`IOneOf<T1..T8>`** — new shared interface implemented by both `OneOf<>` and `ErrorsOf<>`; enables generic programming over any discriminated union
+- **`ErrorsOf<T1..T8>`** — new error union type; `where Ti : IError` constraint on all type parameters; implements `IError` itself (delegates `Message`/`Tags` to the active case); implicit conversions from each `Ti`; factory methods `FromT1..FromT8`; inherits `OneOfBase` shared dispatch
+- **`Result<TValue, TError> where TError : IError`** — new typed result type; factory `Ok(value)` / `Fail(error)`; `IsSuccess`, `IsFailure`, `Value` (throws on failure), `Error` (throws on success)
+- **`Bind` ×7 — typed pipeline** — grows the error union one slot per step: `Result<TIn,T1>.Bind(f) → Result<TOut, ErrorsOf<T1,T2>>` through 7→8 slot; the normalization trick (each step normalizes via implicit conversion) keeps the overload count O(n) not combinatorial
+- **`Map` — typed pipeline** — transforms the success value; error type unchanged; single generic overload
+- **`Tap` / `TapOnFailure` — typed pipeline** — side effects on success / failure; original result returned unchanged
+- **`Ensure` ×7 — typed pipeline** — guard conditions that widen the error union by one slot when the predicate fails; same growth pattern as `Bind`; eagerly evaluates the error argument
+- **`EnsureAsync` ×7 — typed pipeline** — async variant of `Ensure`; predicate is `Func<TValue, Task<bool>>`; result itself evaluated synchronously
+- **`MapError` — typed pipeline** — translates the error surface via `Func<TErrorIn, TErrorOut>`; use at layer boundaries to collapse unions or adapt to a different error vocabulary; success forwarded unchanged
+- **`Result.Flow` — type-read mode** — when a `[ResultFlow]`-annotated method returns `Result<T, TError>`, failure edges in the generated Mermaid diagram now show the exact error type (e.g. `fail: ErrorsOf<ValidationError, InventoryError>`); reads `TypeArguments[1]` from the Roslyn return type symbol — zero body scanning; body-scan mode for `Result<T>` is unchanged
+- **Sample 17** — end-to-end typed checkout pipeline with exhaustive `Match` at callsite over `ErrorsOf<ValidationError, InventoryError, PaymentError, DatabaseError>`
+
+### Stats
+- 4,198 tests passing across net8.0, net9.0, net10.0 (1,280×3) + generator AspNetCore (131) + Result.Flow (22) + ResultFlow (40) + analyzer (79) + FluentValidation bridge (26) + Http (20×3)
+- 153 features across 13 categories
+
+---
+
 ## [1.38.1] - 2026-03-09
 
 ### 🐛 Fixed

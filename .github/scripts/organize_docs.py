@@ -27,13 +27,13 @@ DOCS_DIR = Path("mkdocs")
 MAPPING = {
     # ── Section-number routing (###-level files from mdsplit -l 3) ──────────
     # Numbers map to the same destinations as the ## section they belong to.
-    # README structure (v1.38.0+):
+    # README structure (v1.39.0+):
     #   2 = Getting Started  3 = ResultFlow  4 = Core Library  5 = Error Types
-    #   6 = Validation  7 = Maybe  8 = OneOf  9 = SmartEndpoints  10 = ASP.NET
-    #   11 = Architecture  12 = Package Structure  13 = How Generators Work
-    #   14 = Sample Projects  15 = Quick Examples  16 = Testing  17 = Safety Analyzers
-    #   18 = Production Benefits  19 = Performance  20 = Roadmap  21 = Version History
-    #   22-25 = Community
+    #   6 = Validation  7 = Maybe  8 = OneOf  9 = Typed Error Pipelines  10 = SmartEndpoints
+    #   11 = ASP.NET  12 = Architecture  13 = Package Structure  14 = How Generators Work
+    #   15 = Sample Projects  16 = Quick Examples  17 = Testing  18 = Safety Analyzers
+    #   19 = Production Benefits  20 = Performance  21 = Roadmap  22 = Version History
+    #   23-26 = Community
     "2.1.": "getting-started/installation",
     "2.2.": "getting-started",
     "2.3.": "getting-started/quick-start-scenarios",
@@ -46,29 +46,30 @@ MAPPING = {
     "6.":   "core-concepts/validation",
     "7.":   "core-concepts/advanced-types",
     "8.":   "core-concepts/advanced-types",
-    "9.":   "aspnet/smartendpoints",
-    "10.":  "aspnet",
-    "11.2.": "architecture/source-generators",
-    "11.5.": "architecture/source-generators",
-    "11.6.": "architecture/source-generators",
-    "11.7.": "architecture/source-generators",
-    "11.":  "architecture",
-    "12.2.": "architecture/source-generators",
-    "12.3.": "architecture/source-generators",
-    "12.":  "architecture",
-    "13.":  "architecture/source-generators",
-    "14.":  "code-examples",
+    "9.":   "advanced/typed-pipelines",
+    "10.":  "aspnet/smartendpoints",
+    "11.":  "aspnet",
+    "12.2.": "advanced/architecture/source-generators",
+    "12.5.": "advanced/architecture/source-generators",
+    "12.6.": "advanced/architecture/source-generators",
+    "12.7.": "advanced/architecture/source-generators",
+    "12.":  "advanced/architecture",
+    "13.2.": "advanced/architecture/source-generators",
+    "13.3.": "advanced/architecture/source-generators",
+    "13.":  "advanced/architecture",
+    "14.":  "advanced/architecture/source-generators",
     "15.":  "code-examples",
-    "16.":  "testing",
-    "17.":  "safety-analyzers",
-    "18.":  "testing",
-    "19.":  "reference",
+    "16.":  "code-examples",
+    "17.":  "testing",
+    "18.":  "advanced/safety-analyzers",
+    "19.":  "testing",
     "20.":  "reference",
     "21.":  "reference",
-    "22.":  "community",
+    "22.":  "reference",
     "23.":  "community",
     "24.":  "community",
     "25.":  "community",
+    "26.":  "community",
 
     # ── Content-name routing (##-level wrapper files + legacy flat names) ────
     # Getting Started
@@ -126,22 +127,26 @@ MAPPING = {
     "problem-details": "aspnet",
     "http-client": "aspnet",
 
-    # Architecture
-    "architecture": "architecture",
-    "complete-architecture": "architecture",
-    "package-structure": "architecture",
-    "how-generators-work": "architecture/source-generators",
-    "reslava.result.sourcegenerators": "architecture/source-generators",
-    "generators": "architecture/source-generators",
-    "solid-architecture": "architecture/solid",
-    "uml-v1.12.1-core": "architecture/solid",
-    "uml-v1.12.1-generators": "architecture/solid",
-    "uml-v1.25.0-core": "architecture/solid",
-    "uml-v1.25.0-generators": "architecture/solid",
+    # Advanced — Architecture
+    "architecture": "advanced/architecture",
+    "complete-architecture": "advanced/architecture",
+    "package-structure": "advanced/architecture",
+    "how-generators-work": "advanced/architecture/source-generators",
+    "reslava.result.sourcegenerators": "advanced/architecture/source-generators",
+    "generators": "advanced/architecture/source-generators",
+    "solid-architecture": "advanced/architecture/solid",
+    "uml-v1.12.1-core": "advanced/architecture/solid",
+    "uml-v1.12.1-generators": "advanced/architecture/solid",
+    "uml-v1.25.0-core": "advanced/architecture/solid",
+    "uml-v1.25.0-generators": "advanced/architecture/solid",
 
-    # Safety Analyzers
-    "safety-analyzers": "safety-analyzers",
-    "roslyn-analyzers": "safety-analyzers",
+    # Advanced — Safety Analyzers
+    "safety-analyzers": "advanced/safety-analyzers",
+    "roslyn-analyzers": "advanced/safety-analyzers",
+
+    # Advanced — Typed Pipelines
+    "typed-pipelines": "advanced/typed-pipelines",
+    "typed-error-pipelines": "advanced/typed-pipelines",
 
     # Testing & Quality
     "testing": "testing",

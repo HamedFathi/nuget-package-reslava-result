@@ -40,7 +40,7 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
                     case NodeKind.Gatekeeper:
                         lines.Add($"    {nodeId}[\"{label}\"]:::gatekeeper");
                         if (hasNext) lines.Add($"    {nodeId} -->|pass| {nextId}");
-                        lines.Add($"    {nodeId} -->|fail| F{i}[\"Failure\"]:::failure");
+                        lines.Add($"    {nodeId} -->|\"{FailLabel(node)}\"| F{i}[\"Failure\"]:::failure");
                         TryAddClass(declaredClasses, classDefs, "gatekeeper", "fill:#e3e9fa,color:#3f5c9a");
                         TryAddClass(declaredClasses, classDefs, "failure",    "fill:#f8e3e3,color:#b13e3e");
                         break;
@@ -48,7 +48,7 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
                     case NodeKind.TransformWithRisk:
                         lines.Add($"    {nodeId}[\"{label}\"]:::transform");
                         if (hasNext) lines.Add($"    {nodeId} -->|ok| {nextId}");
-                        lines.Add($"    {nodeId} -->|fail| F{i}[\"Failure\"]:::failure");
+                        lines.Add($"    {nodeId} -->|\"{FailLabel(node)}\"| F{i}[\"Failure\"]:::failure");
                         TryAddClass(declaredClasses, classDefs, "transform", "fill:#e3f0e8,color:#2f7a5c");
                         TryAddClass(declaredClasses, classDefs, "failure",   "fill:#f8e3e3,color:#b13e3e");
                         break;
@@ -113,6 +113,20 @@ namespace REslava.ResultFlow.Generators.ResultFlow.CodeGeneration
                 typeLabel = node.OutputType; // e.g. "User"
 
             return baseName + "<br/>" + typeLabel;
+        }
+
+        /// <summary>
+        /// Returns the failure edge label. When the node carries a typed error (type-read mode),
+        /// the error type is appended and angle brackets are HTML-escaped for Mermaid compatibility.
+        /// </summary>
+        private static string FailLabel(PipelineNode node)
+        {
+            if (node.ErrorType == null)
+                return "fail";
+
+            // Escape < and > so Mermaid renders them as text inside a quoted edge label
+            var escaped = node.ErrorType.Replace("<", "&lt;").Replace(">", "&gt;");
+            return "fail: " + escaped;
         }
 
         private static void TryAddClass(HashSet<string> declared, List<string> classDefs, string name, string style)

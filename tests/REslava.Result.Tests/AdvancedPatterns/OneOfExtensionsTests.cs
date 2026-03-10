@@ -55,9 +55,9 @@ public class OneOfExtensionsTests
         var twoWay = threeWay.ToTwoWay<TestError, string, int>();
 
         // Assert
-        Assert.IsTrue(twoWay.HasValue);
-        Assert.IsTrue(twoWay.Value.IsT1);
-        Assert.AreEqual(error, twoWay.Value.AsT1);
+        Assert.IsNotNull(twoWay);
+        Assert.IsTrue(twoWay.IsT1);
+        Assert.AreEqual(error, twoWay.AsT1);
     }
 
     [TestMethod]
@@ -71,9 +71,9 @@ public class OneOfExtensionsTests
         var twoWay = threeWay.ToTwoWay<TestError, string, int>();
 
         // Assert
-        Assert.IsTrue(twoWay.HasValue);
-        Assert.IsTrue(twoWay.Value.IsT2);
-        Assert.AreEqual(value, twoWay.Value.AsT2);
+        Assert.IsNotNull(twoWay);
+        Assert.IsTrue(twoWay.IsT2);
+        Assert.AreEqual(value, twoWay.AsT2);
     }
 
     [TestMethod]
@@ -87,7 +87,7 @@ public class OneOfExtensionsTests
         var twoWay = threeWay.ToTwoWay<TestError, string, int>();
 
         // Assert
-        Assert.IsFalse(twoWay.HasValue);
+        Assert.IsNull(twoWay);
     }
 
     #endregion

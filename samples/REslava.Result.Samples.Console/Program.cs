@@ -25,6 +25,7 @@ await RunExample("13. OneOf ↔ Result Integration", OneOf_Result_Integration.Ru
 await RunExample("14. Validation DSL", ValidationDSL.Run);
 await RunExample("15. Advanced Patterns - OneOf<T1..T5> / OneOf<T1..T6>", AdvancedPatterns_OneOf5_OneOf6.Run);
 await RunExample("16. Advanced Async Patterns", AsyncPatterns_Advanced.Run);
+await RunExample("17. Typed Error Pipeline (v1.39.0)", TypedErrorPipeline.Run);
 
 Console.WriteLine("\\n===========================================");
 Console.WriteLine("All examples completed!");

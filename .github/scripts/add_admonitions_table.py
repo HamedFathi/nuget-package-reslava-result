@@ -116,6 +116,12 @@ def add_admonitions_to_file(filepath, patterns):
             i += 1
             continue
 
+        # Skip markdown table rows — patterns like RESL\d{4} must not wrap table cells
+        if is_table_row(line):
+            new_lines.append(line)
+            i += 1
+            continue
+
         # Check for comparison table first
         admon, next_i = wrap_comparison_table(lines, i, in_code_block)
         if admon is not None:

@@ -18,6 +18,13 @@ namespace REslava.ResultFlow.Generators.ResultFlow.Models
         /// </summary>
         public string? OutputType { get; set; }
 
+        /// <summary>
+        /// The error type of the typed pipeline — <c>TError</c> in <c>Result&lt;T, TError&gt;</c>.
+        /// Only set when the method return type carries a second generic argument (type-read mode).
+        /// Null for <c>Result&lt;T&gt;</c> pipelines (body-scan mode).
+        /// </summary>
+        public string? ErrorType { get; set; }
+
         public PipelineNode(string methodName, NodeKind kind)
         {
             MethodName = methodName;

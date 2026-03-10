@@ -23,8 +23,13 @@ tagline: Railway-oriented .NET made simple.
 
 **:material-source-repository: [nuget-package-reslava-result GitHub repo](https://github.com/reslava/nuget-package-reslava-result)**
 
-!!! tip "🗺️ See how your `Result<T>` flows — before it runs. Pipeline Visualization."
-    Annotate any fluent pipeline with `[ResultFlow]` and with **single-click code action** ResultFlow will insert a **Mermaid diagram comment** so you can visualize every success path, failure branch, and side effect in your pipeline — zero runtime overhead, zero maintenance.
+!!! tip "🎯 Typed Error Pipelines — compile-time failure edges with `Result<TValue, TError>` (v1.39.0)"
+    Replace `IEnumerable<IError>` bags with **exact, exhaustive error types**. Each `Bind` step grows the error union by one slot (`ErrorsOf<T1,T2,...>`). At the callsite, `Match` is exhaustive — the compiler tells you if you missed a case.
+
+    [→ Typed Error Pipelines](advanced/typed-pipelines){ .md-button }
+
+!!! tip "🗺️ See how your `Result<T>` / `Result<T, TError>` flows — before it runs. Pipeline Visualization."
+    Annotate any fluent pipeline with `[ResultFlow]` and with **single-click code action** ResultFlow will insert a **Mermaid diagram comment** — every success path, failure branch, and side effect visualized. For `Result<T, TError>` pipelines, failure edges show the **exact error type** (`ErrorsOf<ValidationError, InventoryError>`) — no body scanning, reads directly from the return type.
 
     [→ ResultFlow](resultflow){ .md-button }
 
@@ -54,13 +59,17 @@ tagline: Railway-oriented .NET made simple.
     [](aspnet)
     {: .is-featured }
 
+-   :material-target: __Typed Error Pipelines__
+    `ErrorsOf<T1..T8>` + `Result<TValue, TError>` — compile-time typed failure edges, exhaustive match.
+    [](advanced/typed-pipelines)
+
 -   :material-shield-check: __Safety Analyzers__
     7 Roslyn diagnostics + 3 code fixes — catch `Result<T>` and `OneOf` mistakes at compile time.
-    [](safety-analyzers)
+    [](advanced/safety-analyzers)
 
 -   :material-puzzle: __Architecture & Design__
     How the library is built – SOLID, package structure, and the source generator pipeline.
-    [](architecture)
+    [](advanced/architecture)
 
 -   :material-school: __Tutorial Series__
     9 progressive lessons — functional & railway-oriented programming from scratch. `REslava.Result` · `REslava.ResultFlow` · `REslava.Result.AspNetCore`. YouTube series coming soon.
@@ -96,7 +105,8 @@ tagline: Railway-oriented .NET made simple.
     | | REslava.Result | FluentResults | ErrorOr | LanguageExt |
     |---|:---:|:---:|:---:|:---:|
     | Result&lt;T&gt; pattern | ✅ | ✅ | ✅ | ✅ |
-    | OneOf discriminated unions | ✅ (2-6 types) | — | — | ✅ |
+    | OneOf discriminated unions | ✅ (2-8 types) | — | — | ✅ |
+    | **Typed error pipelines (`ErrorsOf` + `Result<T,TError>`)** | **✅** | — | — | — |
     | Maybe&lt;T&gt; | ✅ | — | — | ✅ |
     | **ASP.NET source generators (Minimal API + MVC)** | **✅** | — | — | — |
     | **SmartEndpoints (zero-boilerplate APIs)** | **✅** | — | — | — |

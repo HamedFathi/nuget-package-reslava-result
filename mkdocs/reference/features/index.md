@@ -51,6 +51,19 @@ tagline: Know exactly what you're getting.
 | `OneOf<T1,T2,T3,T4>` | 4-type discriminated union | v1.12.0 | `## Advanced Patterns` — `### OneOf` |
 | `OneOf<T1..T5>` | 5-type discriminated union | v1.27.0 | `## Advanced Patterns` — `### OneOf` |
 | `OneOf<T1..T6>` | 6-type discriminated union | v1.27.0 | `## Advanced Patterns` — `### OneOf` |
+| `OneOf<T1..T7>` | 7-type discriminated union (sealed class) | v1.39.0 | `## OneOf Unions` — `### 8.1.` |
+| `OneOf<T1..T8>` | 8-type discriminated union (sealed class) | v1.39.0 | `## OneOf Unions` — `### 8.1.` |
+| `OneOf` sealed class | All `OneOf<>` types converted from `readonly struct` to `sealed class`; copy → reference semantics ⚠️ breaking | v1.39.0 | `## OneOf Unions` — `### 8.1.` |
+| `OneOfBase<T1..T8>` | Abstract base class with all shared dispatch (`IsT1..T8`, `AsT1..T8`, `Match`, `Switch`, equality); inherited by `OneOf` and `ErrorsOf` | v1.39.0 | `## OneOf Unions` |
+| `IOneOf<T1..T8>` | Shared interface implemented by `OneOf<>` and `ErrorsOf<>`; enables generic programming over any discriminated union | v1.39.0 | `## OneOf Unions` |
+| `ErrorsOf<T1..T8>` | Typed error union; `where Ti : IError`; implements `IError` (delegates to active case); implicit conversions; factory `FromT1..FromT8` | v1.39.0 | `## Typed Error Pipelines` — `### 9.1.` |
+| `Result<TValue, TError>` | Typed result with concrete error type; `Ok(value)` / `Fail(error)`; `IsSuccess`, `IsFailure`, `Value`, `Error` | v1.39.0 | `## Typed Error Pipelines` — `### 9.2.` |
+| `Bind` ×7 — typed pipeline | Grows error union one slot per step: `Result<TIn,T1> → Result<TOut, ErrorsOf<T1,T2>>` through 7→8 slots | v1.39.0 | `## Typed Error Pipelines` — `### 9.3.` |
+| `Map` — typed pipeline | Transforms success value; `TError` unchanged; single generic overload | v1.39.0 | `## Typed Error Pipelines` — `### 9.4.` |
+| `Tap` / `TapOnFailure` — typed pipeline | Side effects on success / failure; original result returned unchanged | v1.39.0 | `## Typed Error Pipelines` — `### 9.4.` |
+| `Ensure` ×7 — typed pipeline | Guard conditions that widen the error union by one slot when predicate fails; same O(n) growth as `Bind` | v1.39.0 | `## Typed Error Pipelines` — `### 9.5.` |
+| `EnsureAsync` ×7 — typed pipeline | Async variant of `Ensure`; predicate is `Func<TValue, Task<bool>>` | v1.39.0 | `## Typed Error Pipelines` — `### 9.5.` |
+| `MapError` — typed pipeline | Translates error surface via `Func<TErrorIn, TErrorOut>`; collapse unions, adapt at layer boundaries | v1.39.0 | `## Typed Error Pipelines` — `### 9.6.` |
 | OneOf chain extensions | `ToFourWay`, `ToFiveWay`, `ToSixWay` + down-conversions across full 2↔3↔4↔5↔6 arity chain | v1.27.0 | `## Advanced Patterns` — `### OneOf` |
 | Native Validation DSL | 19 fluent methods on `ValidatorRuleBuilder<T>`: `NotEmpty`, `MaxLength`, `EmailAddress`, `Range`, `Positive`, `NonNegative`, etc. `Expression<Func<T,TProperty>>` auto-infers field names | v1.27.0 | `## Validation Rules` — `### Validation DSL` |
 | JSON Serialization | `AddREslavaResultConverters()` for Result, OneOf, Maybe | v1.17.0 | `## REslava.Result Core Library` — `#### JSON Serialization` |
@@ -224,17 +237,18 @@ tagline: Know exactly what you're getting.
 | `IInvocationOperation` chain walker | Syntax-walk + per-node `GetOperation()` chain extraction (fixed in v1.38.1 to handle static roots + async extension methods); `IsPipelineRoot` prevents duplicate processing | v1.38.0 | — |
 | `REslava.Result.Flow` — REF002 + Code Action | REslava.Result-native counterpart: REF002 info diagnostic on every `[ResultFlow]` method; one-click code fix inserts full-fidelity diagram (type travel + typed error edges) as a `mermaid` fence comment | v1.38.1 | `## 🗺️ Pipeline Visualization` — `### REF002 & Code Action` |
 | `mermaid` fence comment format | Both `REslava.ResultFlow` and `REslava.Result.Flow` code actions now wrap the inserted diagram in a `\`\`\`mermaid … \`\`\`` fence — renders inline in VS Code, GitHub, Rider | v1.38.1 | — |
+| `Result.Flow` — type-read mode | When method returns `Result<T, TError>`, failure edges show exact error type (reads `TypeArguments[1]`); e.g. `fail: ErrorsOf<ValidationError, InventoryError>`; zero body scanning; HTML-escaped angle brackets for Mermaid | v1.39.0 | `## 🗺️ Pipeline Visualization` — `### Type-Read Mode` |
 
 ---
 
 ## Summary
 
-!!! new "**v1.38.1** — 142 features across 13 categories."
+!!! new "**v1.39.0** — 153 features across 13 categories."
 
 
 | Category | Total Features |
 |----------|---------------|
-| Core Library | 34 |
+| Core Library | 42 |
 | Error Types | 12 |
 | SmartEndpoints | 18 |
 | Result/OneOf → IResult | 14 |
@@ -242,12 +256,12 @@ tagline: Know exactly what you're getting.
 | Validate | 5 |
 | Problem Details | 5 |
 | Analyzers | 12 |
-| OneOf (incl. OneOf5/6 + chains) | 8 |
+| OneOf (incl. OneOf5/6/7/8 + chains + ErrorsOf) | 10 |
 | Validation DSL | 1 |
 | FluentValidation Bridge | 2 |
 | Http Extensions | 6 |
-| ResultFlow | 17 |
-| **Total** | **142** |
+| ResultFlow | 18 |
+| **Total** | **153** |
 
 ---
 
