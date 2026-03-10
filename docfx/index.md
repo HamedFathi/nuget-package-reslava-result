@@ -29,17 +29,25 @@ _layout: landing
        class="btn btn-outline-secondary">
       NuGet: REslava.Result
     </a>
-    <a href="https://www.nuget.org/packages/REslava.Result.SourceGenerators/"
+    <a href="https://www.nuget.org/packages/REslava.Result.AspNetCore/"
        class="btn btn-outline-secondary">
-      NuGet: SourceGenerators
+      NuGet: AspNetCore
     </a>
     <a href="https://www.nuget.org/packages/REslava.Result.Analyzers/"
        class="btn btn-outline-secondary">
       NuGet: Analyzers
     </a>
+    <a href="https://www.nuget.org/packages/REslava.Result.FluentValidation/"
+       class="btn btn-outline-secondary">
+      NuGet: FluentValidation
+    </a>
     <a href="https://www.nuget.org/packages/REslava.Result.Http/"
        class="btn btn-outline-secondary">
       NuGet: Http
+    </a>
+    <a href="https://www.nuget.org/packages/REslava.ResultFlow/"
+       class="btn btn-outline-secondary">
+      NuGet: ResultFlow
     </a>
   </div>
 </div>
@@ -57,8 +65,8 @@ _layout: landing
           <a href="REslava.Result.html" class="text-decoration-none stretched-link">REslava.Result</a>
         </h5>
         <p class="card-text text-muted small">
-          Core library. Contains <code>Result&lt;T&gt;</code>, <code>Maybe&lt;T&gt;</code>,
-          <code>OneOf&lt;T1,T2[,T3,T4]&gt;</code>, and the full error hierarchy —
+          Core library. <code>Result&lt;T&gt;</code>, <code>Result&lt;TValue,TError&gt;</code>,
+          <code>Maybe&lt;T&gt;</code>, and the full error hierarchy —
           <code>Error</code>, <code>ValidationError</code>, <code>ExceptionError</code>,
           <code>ConversionError</code>, <code>Reason&lt;T&gt;</code>.
         </p>
@@ -73,8 +81,11 @@ _layout: landing
           <a href="REslava.Result.AdvancedPatterns.html" class="text-decoration-none stretched-link">REslava.Result.AdvancedPatterns</a>
         </h5>
         <p class="card-text text-muted small">
-          Advanced compositional types. Utilities for building richer domain models
-          with discriminated unions, validation pipelines, and structured error hierarchies.
+          Discriminated unions and typed error pipelines.
+          <code>OneOf&lt;T1..T8&gt;</code> (sealed class) ·
+          <code>ErrorsOf&lt;T1..T8&gt;</code> (typed error union, implements <code>IError</code>) ·
+          <code>OneOfBase&lt;T1..T8&gt;</code> (shared dispatch) ·
+          <code>IOneOf&lt;T1..T8&gt;</code> · <code>Maybe&lt;T&gt;</code>.
         </p>
       </div>
     </div>
@@ -87,10 +98,10 @@ _layout: landing
           <a href="REslava.Result.Extensions.html" class="text-decoration-none stretched-link">REslava.Result.Extensions</a>
         </h5>
         <p class="card-text text-muted small">
-          Functional extension methods: <code>Map</code>, <code>MapAsync</code>,
-          <code>Bind</code>, <code>BindAsync</code>, <code>Tap</code>, <code>Ensure</code>,
-          <code>WhenAll</code>, <code>Retry</code>, <code>Timeout</code>,
-          <code>ToIResult</code>, <code>ToActionResult</code> and more.
+          Functional extension methods for <code>Result&lt;T&gt;</code> and <code>Result&lt;TValue,TError&gt;</code>:
+          <code>Map</code>, <code>Bind</code> ×7, <code>Tap</code>, <code>Ensure</code> ×7,
+          <code>MapError</code>, <code>WhenAll</code>, <code>Retry</code>, <code>Timeout</code>,
+          <code>ToIResult</code>, <code>ToActionResult</code> and async variants.
         </p>
       </div>
     </div>
@@ -162,10 +173,36 @@ _layout: landing
   <div class="col">
     <div class="card h-100 bg-body-secondary border-0">
       <div class="card-body">
-        <h6 class="card-title fw-semibold"><a href="REslava.Result.AdvancedPatterns.OneOf-2.html" class="text-decoration-none">OneOf&lt;T1, T2[, T3, T4, T5, T6]&gt;</a></h6>
+        <h6 class="card-title fw-semibold"><a href="REslava.Result.AdvancedPatterns.OneOf-2.html" class="text-decoration-none">OneOf&lt;T1..T8&gt;</a></h6>
         <p class="card-text small text-muted">
-          Discriminated union. Represents exactly one of 2–6 types.
+          Discriminated union (sealed class). Represents exactly one of 2–8 types.
           Ideal for service methods that return different success shapes.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100 bg-body-secondary border-0">
+      <div class="card-body">
+        <h6 class="card-title fw-semibold"><a href="REslava.Result.AdvancedPatterns.ErrorsOf-2.html" class="text-decoration-none">ErrorsOf&lt;T1..T8&gt;</a></h6>
+        <p class="card-text small text-muted">
+          Typed error union (<code>where Ti : IError</code>). Implements <code>IError</code> — usable as
+          <code>TError</code> in <code>Result&lt;TValue,TError&gt;</code>.
+          Exhaustive <code>Match</code> enforced at compile time.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card h-100 bg-body-secondary border-0">
+      <div class="card-body">
+        <h6 class="card-title fw-semibold"><a href="REslava.Result.Results.ResultTError-2.html" class="text-decoration-none">Result&lt;TValue, TError&gt;</a></h6>
+        <p class="card-text small text-muted">
+          Typed result with a concrete compile-time error type.
+          Each <code>Bind</code> step grows the error union by one slot.
+          Use <code>.IsSuccess</code>, <code>.Value</code>, <code>.Error</code>.
         </p>
       </div>
     </div>
