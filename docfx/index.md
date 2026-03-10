@@ -31,7 +31,7 @@ _layout: landing
     </a>
     <a href="https://www.nuget.org/packages/REslava.Result.Flow/"
        class="btn btn-outline-secondary">
-      NuGet: ResultFlow
+      NuGet: Result.Flow
     </a>
     <a href="https://www.nuget.org/packages/REslava.Result.AspNetCore/"
        class="btn btn-outline-secondary">
