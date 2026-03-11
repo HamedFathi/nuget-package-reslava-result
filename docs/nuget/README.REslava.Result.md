@@ -8,7 +8,8 @@
 
 ## Why REslava.Result?
 
-- **Result\<T\> + OneOf (2–6 types) + Maybe\<T\>** in a single zero-dependency package
+- **Result\<T\> + OneOf (2–8 types) + Maybe\<T\>** in a single zero-dependency package
+- Use **Result<TValue, TError>** and **ErrorsOf<T1..T8>** — **Typed Error Pipelines** when you want compile-time-known, exhaustive failure edges
 - **Domain error hierarchy** — `NotFoundError`, `ValidationError`, `ConflictError`, `UnauthorizedError`, `ForbiddenError` with HTTP status code tags
 - **Implicit conversions** — just `return user;` or `return new NotFoundError();`
 - **LINQ query syntax** — compose results with `from ... in ... select`
@@ -71,9 +72,10 @@ var message = result.Match(
 
 | Package | Description |
 |---------|-------------|
-| [REslava.Result.SourceGenerators](https://www.nuget.org/packages/REslava.Result.SourceGenerators) | Auto-generate ASP.NET endpoints (Minimal API + MVC), IResult/IActionResult conversions, OneOf extensions, OpenAPI metadata |
-| [REslava.Result.Analyzers](https://www.nuget.org/packages/REslava.Result.Analyzers) | Roslyn analyzers that catch unsafe Result/OneOf usage at compile time |
+| [REslava.Result.Flow](https://www.nuget.org/packages/REslava.Result.Flow) | Visualises `Result<T>` pipelines with **full type travel and typed error surface** in generated Mermaid diagrams |
+| [REslava.Result.AspNetCore](https://www.nuget.org/packages/REslava.Result.AspNetCore) | Auto-generate ASP.NET endpoints (Minimal API + MVC), IResult/IActionResult conversions, OneOf extensions, OpenAPI metadata |
 | [REslava.Result.Http](https://www.nuget.org/packages/REslava.Result.Http) | Wrap `HttpClient` calls so every HTTP response and network failure becomes a typed `Result<T>` |
+| [REslava.Result.Analyzers](https://www.nuget.org/packages/REslava.Result.Analyzers) | Roslyn analyzers that catch unsafe Result/OneOf usage at compile time |
 | [FluentValidation](https://www.nuget.org/packages/FluentValidation) | ≥ 11.x (installed by user) ⚠️ **Optional**  FluentValidation bridge |
 
 ## Links
